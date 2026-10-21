@@ -6,6 +6,17 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.8.2
+
+Released 2026-10-21. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.8.2)
+
+### What's Changed
+* Stop notifying the website, which now checks for itself by @Aethar01 in [#26](https://github.com/Aethar01/onon/pull/26)
+* Set the window icon only on Linux by @Aethar01 in [#27](https://github.com/Aethar01/onon/pull/27)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.8.1...0.8.2
+
 ## 0.8.1
 
 Released 2026-10-21. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.8.1)

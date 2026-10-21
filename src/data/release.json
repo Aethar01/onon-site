@@ -1,31 +1,31 @@
 {
-  "tag": "0.8.1",
-  "url": "https://github.com/Aethar01/onon/releases/tag/0.8.1",
+  "tag": "0.8.2",
+  "url": "https://github.com/Aethar01/onon/releases/tag/0.8.2",
   "assets": {
     "macos_amd64": {
-      "name": "onon-0.8.1-darwin-amd64.dmg",
-      "url": "https://github.com/Aethar01/onon/releases/download/0.8.1/onon-0.8.1-darwin-amd64.dmg",
-      "size": 58899016
+      "name": "onon-0.8.2-darwin-amd64.dmg",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.8.2/onon-0.8.2-darwin-amd64.dmg",
+      "size": 58898821
     },
     "macos_arm64": {
-      "name": "onon-0.8.1-darwin-arm64.dmg",
-      "url": "https://github.com/Aethar01/onon/releases/download/0.8.1/onon-0.8.1-darwin-arm64.dmg",
-      "size": 57065308
+      "name": "onon-0.8.2-darwin-arm64.dmg",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.8.2/onon-0.8.2-darwin-arm64.dmg",
+      "size": 57201896
     },
     "linux_appimage": {
-      "name": "onon-0.8.1-linux-x86_64.AppImage",
-      "url": "https://github.com/Aethar01/onon/releases/download/0.8.1/onon-0.8.1-linux-x86_64.AppImage",
+      "name": "onon-0.8.2-linux-x86_64.AppImage",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.8.2/onon-0.8.2-linux-x86_64.AppImage",
       "size": 77433336
     },
     "windows_installer": {
-      "name": "onon-0.8.1-windows-amd64-installer.exe",
-      "url": "https://github.com/Aethar01/onon/releases/download/0.8.1/onon-0.8.1-windows-amd64-installer.exe",
-      "size": 39380742
+      "name": "onon-0.8.2-windows-amd64-installer.exe",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.8.2/onon-0.8.2-windows-amd64-installer.exe",
+      "size": 39379814
     },
     "windows_zip": {
-      "name": "onon-0.8.1-windows-amd64.zip",
-      "url": "https://github.com/Aethar01/onon/releases/download/0.8.1/onon-0.8.1-windows-amd64.zip",
-      "size": 50793355
+      "name": "onon-0.8.2-windows-amd64.zip",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.8.2/onon-0.8.2-windows-amd64.zip",
+      "size": 50793314
     }
   },
   "date": "2026-10-21"
