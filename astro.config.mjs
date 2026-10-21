@@ -8,7 +8,7 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'onon',
-			description: 'A keyboard-driven viewer for PDF, e-books, comics and images, configured in Lua.',
+			description: 'A keyboard-driven PDF viewer, configured in Lua.',
 			logo: { src: './src/assets/onon.svg' },
 			favicon: '/favicon.svg',
 			customCss: ['./src/styles/starlight.css'],

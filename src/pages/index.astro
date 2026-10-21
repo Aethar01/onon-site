@@ -6,7 +6,7 @@ import mark from '../assets/onon.svg?raw';
 
 const title = 'onon, a keyboard-driven document viewer';
 const description =
-	'onon is a fast, keyboard-driven viewer for PDF, e-books, comics and images. Built on MuPDF, configured in Lua, for macOS, Windows and Linux.';
+	'onon is a fast, keyboard-driven PDF viewer. Built on MuPDF, configured in Lua, for macOS, Windows and Linux.';
 ---
 
 <!doctype html>
@@ -53,9 +53,9 @@ const description =
 			<section class="hero">
 				<h1>Read with the keyboard. Nothing else on the page.</h1>
 				<p class="lede">
-					onon is a fast viewer for PDF, e-books, comics and images. It opens straight to the page,
-					remembers where you stopped, and does everything from a few keys. Built on MuPDF and
-					configured in Lua, for macOS, Windows and Linux.
+					onon is a fast PDF viewer. It opens straight to the page, remembers where you stopped, and
+					does everything from a few keys. Built on MuPDF and configured in Lua, for macOS, Windows and
+					Linux.
 				</p>
 				<div class="actions">
 					<a class="button primary" href="#download" data-download-cta>Download onon</a>
@@ -76,14 +76,11 @@ const description =
 					</p>
 				</article>
 				<article class="feature">
-					<h2>Opens what you have</h2>
-					<p class="formats">
-						PDF and XPS, EPUB, MOBI and FictionBook, CBZ and CBT comics, and PNG, JPEG, TIFF, GIF,
-						BMP, JPEG 2000, PSD and SVG images.
-					</p>
+					<h2>Picks up where you stopped</h2>
 					<p>
 						One window shows one document, at its own place and zoom. Open it next week and you are on
-						the same line, with your marks and highlights where you left them.
+						the same line, with your marks and highlights where you left them. EPUB, comics and images
+						open too.
 					</p>
 				</article>
 				<article class="feature">
@@ -337,11 +334,6 @@ onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
 	}
 	.nowrap {
 		white-space: nowrap;
-	}
-	.formats {
-		font: 400 1.05rem/1.7 var(--display);
-		font-style: italic;
-		color: var(--accent);
 	}
 	.code {
 		margin: 0;
