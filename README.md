@@ -16,7 +16,7 @@ The guides in `src/content/docs/docs/` are written by hand. These files are gene
 - `src/content/docs/docs/changelog.md`: from the GitHub releases
 - `src/data/release.json`: the latest release's downloads, for the landing page
 
-`scripts/update-generated.sh ../onon` regenerates them from a checkout of onon with its tags. The **Update generated pages** workflow does this when onon notifies it (every push to onon's `main` or a tag), every day, or when run by hand, and commits the result.
+`scripts/update-generated.sh ../onon` regenerates them from a checkout of onon with its tags. The **Update generated pages** workflow checks onon every hour and, when its `main` branch or latest release has moved since `src/data/onon-source.txt` was written, regenerates them and commits the result. Run it by hand to regenerate now.
 
 ## Deploying
 

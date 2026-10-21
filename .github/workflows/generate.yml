@@ -1,11 +1,8 @@
 name: Update generated pages
 
 on:
-  repository_dispatch:
-    types:
-      - onon-update
   schedule:
-    - cron: "0 3 * * *"
+    - cron: "23 * * * *"
   workflow_dispatch:
     inputs:
       force:
@@ -21,7 +18,33 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Cheap hourly look at onon; the build below runs only when its main
+  # branch or latest release moved since the pages were generated.
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      source: ${{ steps.check.outputs.source }}
+      changed: ${{ steps.check.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          main="$(gh api repos/Aethar01/onon/commits/main --jq .sha)"
+          tag="$(gh api repos/Aethar01/onon/releases/latest --jq .tag_name)"
+          now="$main $tag"
+          was="$(cat src/data/onon-source.txt 2>/dev/null || true)"
+          echo "onon is at ${now}; the pages are from ${was:-nothing}"
+          echo "source=${now}" >> "$GITHUB_OUTPUT"
+          if [ "$now" != "$was" ] || [ "$FORCE" = true ] || [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
   generate:
+    needs: check
+    if: needs.check.outputs.changed == 'true'
     runs-on: ubuntu-latest
     container: archlinux:base-devel
     steps:
@@ -49,11 +72,12 @@ jobs:
           git config --global --add safe.directory "$GITHUB_WORKSPACE/site"
           git config --global --add safe.directory "$GITHUB_WORKSPACE/onon"
           site/scripts/update-generated.sh onon
+          echo "${{ needs.check.outputs.source }}" > site/src/data/onon-source.txt
 
       - name: Commit changes
         working-directory: site
         run: |
-          git add -A src/content/docs/docs/reference src/content/docs/docs/changelog.md src/data/release.json
+          git add -A src/content/docs/docs/reference src/content/docs/docs/changelog.md src/data/release.json src/data/onon-source.txt
           if git diff --cached --quiet; then
             echo "Nothing changed"
             exit 0
