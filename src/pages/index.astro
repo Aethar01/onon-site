@@ -1,6 +1,5 @@
 ---
 import release from '../data/release.json';
-import Demo from '../components/Demo.astro';
 import Downloads from '../components/Downloads.astro';
 import mark from '../assets/onon.svg?raw';
 
@@ -62,8 +61,6 @@ const description =
 					<a class="button" href="/docs/">Get started</a>
 				</div>
 			</section>
-
-			<Demo />
 
 			<section class="features" aria-label="What onon does">
 				<article class="feature">
@@ -130,7 +127,7 @@ onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
 </html>
 
 <style is:global>
-	/* Layout: a single reading column, the demo breaking out wider as the one bold element. */
+	/* Layout: a single reading column above the wider feature grid and downloads. */
 	:root {
 		--stone: #e6e4dd;
 		--paper: #fbfaf7;
