@@ -6,6 +6,26 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.8.1
+
+Released 2026-10-21. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.8.1)
+
+### What's Changed
+* Ship the adaptive macOS icon compiled, not built in CI by @Aethar01 in [#25](https://github.com/Aethar01/onon/pull/25)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.8.0...0.8.1
+
+## 0.8.0
+
+Released 2026-10-21. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.8.0)
+
+### What's Changed
+* Rename gopdf to onon by @Aethar01 in [#24](https://github.com/Aethar01/onon/pull/24)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.7.4...0.8.0
+
 ## 0.7.4
 
 Released 2026-10-19. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.7.4)

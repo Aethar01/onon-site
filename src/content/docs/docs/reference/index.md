@@ -1,6 +1,6 @@
 ---
 title: "Reference"
-description: "Every option, command, Lua function, key and action in gopdf 0.7.4."
+description: "Every option, command, Lua function, key and action in onon 0.8.1."
 editUrl: false
 tableOfContents:
   maxHeadingLevel: 2
@@ -12,7 +12,7 @@ This page is generated from the same registries used by the application.
 
 ## Configuration options
 
-Assign options with `gopdf.options.<name> = <value>` in Lua or `:set <name>=<value>` at runtime. Colors use `{ r, g, b }` in Lua and `r,g,b` or `#RRGGBB` with `:set`.
+Assign options with `onon.options.<name> = <value>` in Lua or `:set <name>=<value>` at runtime. Colors use `{ r, g, b }` in Lua and `r,g,b` or `#RRGGBB` with `:set`.
 
 | Option | Type | Default | Description |
 |---|---|---|---|
@@ -59,6 +59,7 @@ Assign options with `gopdf.options.<name> = <value>` in Lua or `:set <name>=<val
 | <code>render_mode</code> | string | <code>&#34;continuous&#34;</code> | Initial render mode: continuous or single. |
 | <code>render_oversample</code> | number | <code>1</code> | Render scale multiplier; values above 1 supersample. |
 | <code>render_threads</code> | integer | <code>0</code> | Page rendering threads; 0 picks one per core up to 4, leaving a core free. Applies to newly opened documents. |
+| <code>renderer</code> | string | <code>&#34;auto&#34;</code> | Renderer SDL draws with, read when onon starts: "auto" for SDL's own choice, "gpu" for its GPU renderer (Vulkan, Metal or Direct3D 12), or one of SDL's drivers, such as "vulkan", "opengl", "metal", "direct3d11" or "software". One that cannot start falls back to "auto"; SDL_RENDER_DRIVER in the environment overrides it. |
 | <code>scroll_off</code> | integer | <code>1</code> | Minimum number of rows kept visible above and below the selected item in UI menus, like Vim's scrolloff. |
 | <code>scroll_step</code> | integer | <code>64</code> | Keyboard and mouse scroll distance in pixels. |
 | <code>sequence_timeout_ms</code> | integer | <code>700</code> | Maximum delay between keys in a binding sequence. |
@@ -80,7 +81,7 @@ Assign options with `gopdf.options.<name> = <value>` in Lua or `:set <name>=<val
 The theme is everything about how the viewer looks: its colours, UI font and the shape of its panels. Assign it as one table, so a theme can be shared as a single table:
 
 ```lua
-gopdf.theme = {
+onon.theme = {
   base = "birch",  -- start from a built-in theme; the default is moss
   accent = "#335533",
   alt = { accent = "#88aa88" },
@@ -88,11 +89,11 @@ gopdf.theme = {
 }
 ```
 
-`require` searches the configuration file's directory first, so a theme can live in a file of its own beside `config.lua`. Have it return its table, as `themes/forest.lua` holding `return { accent = "#2f5d3a" }`, and apply it with `gopdf.theme = require("themes.forest")`; dots in the name are directories, and `require("forest")` would load `forest.lua`.
+`require` searches the configuration file's directory first, so a theme can live in a file of its own beside `config.lua`. Have it return its table, as `themes/forest.lua` holding `return { accent = "#2f5d3a" }`, and apply it with `onon.theme = require("themes.forest")`; dots in the name are directories, and `require("forest")` would load `forest.lua`.
 
-`:theme` lists the built-in themes and the theme files, each named for its file: those in `themes/` beside `config.lua`, then those in each directory plugins are searched for with `themes` in place of `plugins`, as `/usr/lib/gopdf/themes` and `~/.config/gopdf/themes` on Linux. Where two directories have a file of the same name, the first wins. `:theme` shows each one as it is selected: Enter keeps it, Esc puts back the theme before, and `:theme <name>` switches straight to one. A file named for a built-in theme is left out. The theme chosen is remembered and applied before `config.lua` runs, so what `config.lua` changes field by field, as `gopdf.theme.accent = "#335533"` does, changes the chosen theme too; assigning `gopdf.theme` whole replaces it, and `:theme` then says that a theme it picks lasts only until gopdf restarts.
+`:theme` lists the built-in themes and the theme files, each named for its file: those in `themes/` beside `config.lua`, then those in each directory plugins are searched for with `themes` in place of `plugins`, as `/usr/lib/onon/themes` and `~/.config/onon/themes` on Linux. Where two directories have a file of the same name, the first wins. `:theme` shows each one as it is selected: Enter keeps it, Esc puts back the theme before, and `:theme <name>` switches straight to one. A file named for a built-in theme is left out. The theme chosen is remembered and applied before `config.lua` runs, so what `config.lua` changes field by field, as `onon.theme.accent = "#335533"` does, changes the chosen theme too; assigning `onon.theme` whole replaces it, and `:theme` then says that a theme it picks lasts only until onon restarts.
 
-Fields left out keep the base theme's values. Assign a preset by name with `gopdf.theme = "birch"`, or a single field with `gopdf.theme.accent = "#335533"`; at runtime use `:set theme=birch` or `:set theme.accent=#335533`. Built-in themes: `birch`, `classic`, and `moss`. `gopdf.themes.<name>` gives a copy of one to change. Fields and element properties this version does not know are skipped with a warning, so a theme written for a newer version still loads; `:set` refuses them.
+Fields left out keep the base theme's values. Assign a preset by name with `onon.theme = "birch"`, or a single field with `onon.theme.accent = "#335533"`; at runtime use `:set theme=birch` or `:set theme.accent=#335533`. Built-in themes: `birch`, `classic`, and `moss`. `onon.themes.<name>` gives a copy of one to change. Fields and element properties this version does not know are skipped with a warning, so a theme written for a newer version still loads; `:set` refuses them.
 
 Colours are `"#RRGGBB"` or `{ r, g, b }`. The `alt` table holds the colours used in alternate-color mode, toggled with `:colors`, and has the same colour fields as the theme. The `font` table picks the UI font; with neither `family` nor `path` set it is the system's interface font.
 
@@ -148,7 +149,7 @@ The `motion` table sets how the UI moves. Each transition is written as CSS writ
 Each piece of the UI is an element with a style of its own, which the theme's `elements` table changes. The fields above still shape every element: an element's style starts from the theme's `radius`, `padding`, `shadow` and `status_bar_style`, and from the element it inherits from, and the properties set here go over that.
 
 ```lua
-gopdf.theme = {
+onon.theme = {
   elements = {
     panel = { radius = 12, shadow = "0 8 24 shadow" },
     row_selected = { fill = "accent", text = "panel" },
@@ -157,7 +158,7 @@ gopdf.theme = {
 }
 ```
 
-Set one property with `gopdf.theme.elements.panel.radius = 12`, or at runtime with `:set theme.elements.panel.radius=12`. Reading a property gives the value in effect, and assigning `nil` returns it to its default. The `status_bar_style` field picks the defaults of `status`, `status_left` and `status_right`: `bar` lays a bar along the bottom of the window, and `pill` floats a pill for each side over the page.
+Set one property with `onon.theme.elements.panel.radius = 12`, or at runtime with `:set theme.elements.panel.radius=12`. Reading a property gives the value in effect, and assigning `nil` returns it to its default. The `status_bar_style` field picks the defaults of `status`, `status_left` and `status_right`: `bar` lays a bar along the bottom of the window, and `pill` floats a pill for each side over the page.
 
 Colours name a palette colour, which follows the color mode, or are `"#RRGGBB"`, `"#RRGGBBAA"` or `"none"`; any can be followed by an opacity percentage, as `"accent/16"`. The name `shadow` is black at the strength shadows need over the background. Lengths are logical pixels, scaled on high-density displays.
 
@@ -204,7 +205,7 @@ Every element starts from `shape = "rect", radius = 0, fill = "none", border = {
 | <code>hint</code> | A link hint label. Its secondary colour is for the letters already typed. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding | <code>radius = 1.5, fill = &#34;accent&#34;, text = &#34;hint_foreground&#34;, secondary = &#34;hint_foreground/55&#34;, bold = true, padding = { 2, 5 }</code> |
 | <code>overview_selection</code> | The outline around the overview's selected page; padding is its distance from the page. | shape, radius, fill, border, shadow, opacity, draw, padding | <code>radius = 3, border = { width = 2.5, color = &#34;accent&#34; }, padding = 3</code> |
 | <code>link_preview</code> | The popup previewing a link's target, a rect with corners rounded by its radius. Its fill shows while the page renders. | radius, fill, border, shadow, opacity, draw | <code>radius = 3, fill = &#34;page&#34;, border = { width = 1 }, shadow = &#34;0 2 1 0 shadow&#34;</code> |
-| <code>title_bar</code> | Behind the window buttons gopdf draws where the system draws no title bar, as on Windows. Its text colour draws the buttons' symbols. | shape, radius, fill, border, shadow, opacity, draw, text | <code>fill = &#34;status_bar&#34;</code> |
+| <code>title_bar</code> | Behind the window buttons onon draws where the system draws no title bar, as on Windows. Its text colour draws the buttons' symbols. | shape, radius, fill, border, shadow, opacity, draw, text | <code>fill = &#34;status_bar&#34;</code> |
 | <code>title_button</code> | A window button under the pointer, drawn a little fainter while pressed. | shape, radius, fill, border, shadow, opacity, draw, text | <code>fill = &#34;foreground/15&#34;</code> |
 | <code>title_close</code> | The close button under the pointer. Starts from <code>title_button</code>. | shape, radius, fill, border, shadow, opacity, draw, text | <code>fill = &#34;#c42b1c&#34;, text = &#34;#ffffff&#34;</code> |
 | <code>loader</code> | The drops bouncing on a page still rendering; its box is the page. | fill, opacity, draw | <code>fill = &#34;muted&#34;</code> |
@@ -218,20 +219,20 @@ A `rect` has its corners rounded by `radius`, and a `pill` has round ends whatev
 Path data takes the commands `M`, `L`, `H`, `V`, `Q`, `C` and `Z`, lowercase for relative coordinates. A coordinate is in logical pixels from the box's top left, or a percentage of the box's width or height, offset by pixels written straight after it. This arrow points right whatever the row's width:
 
 ```lua
-gopdf.theme.elements.row_selected.shape = "M0,0 H100%-8 L100%,50% L100%-8,100% H0 Z"
+onon.theme.elements.row_selected.shape = "M0,0 H100%-8 L100%,50% L100%-8,100% H0 Z"
 ```
 
 A function is called as `shape(path, w, h)` with the box's size in logical pixels, whenever an element is drawn at a size not drawn before. Its `path` has the methods `move_to(x, y)`, `line_to(x, y)`, `quad_to(cx, cy, x, y)`, `cubic_to(c1x, c1y, c2x, c2y, x, y)`, `close()`, `rect(x, y, w, h [, radius])` and `ellipse(cx, cy, rx [, ry])`, each returning `path`. If a shape fails, its element is drawn as a plain rect and the error is reported once.
 
 ```lua
-gopdf.theme.elements.status_left.shape = function(path, w, h)
+onon.theme.elements.status_left.shape = function(path, w, h)
   path:move_to(h / 2, 0):line_to(w, 0):line_to(w - h / 2, h):line_to(0, h):close()
 end
 ```
 
 #### Drawing
 
-An element's `draw` function draws its box in place of the default drawing, as `draw(canvas, box, state)`, each time the element is drawn; its text is drawn over it as usual. `box` holds the box's `x`, `y`, `w` and `h` in logical pixels from the window's top left, and `state` the `element` being drawn, whether `alt` colours are on, and the `time` in seconds since gopdf started, for drawing that moves, so a function set on `row` can tell `row_selected` apart. Both tables are reused from call to call, so copy what you keep. Like other properties, a draw function carries to the elements that start from its element; assigning `false` or `nil` removes it.
+An element's `draw` function draws its box in place of the default drawing, as `draw(canvas, box, state)`, each time the element is drawn; its text is drawn over it as usual. `box` holds the box's `x`, `y`, `w` and `h` in logical pixels from the window's top left, and `state` the `element` being drawn, whether `alt` colours are on, and the `time` in seconds since onon started, for drawing that moves, so a function set on `row` can tell `row_selected` apart. Both tables are reused from call to call, so copy what you keep. Like other properties, a draw function carries to the elements that start from its element; assigning `false` or `nil` removes it.
 
 The canvas's coordinates are logical pixels from the box's top left, and may reach outside it. Its methods are:
 
@@ -248,7 +249,7 @@ The canvas's coordinates are logical pixels from the box's top left, and may rea
 Colours are written as in the elements table, and the element's `opacity` applies to them. Panels and the link preview draw their border over their contents, which they do only when the function called `canvas:default()`. If the function fails, the element is drawn as it would be without it, the error is reported once, and the function is not called again until the configuration changes.
 
 ```lua
-gopdf.theme.elements.row_selected.draw = function(canvas, box, state)
+onon.theme.elements.row_selected.draw = function(canvas, box, state)
   canvas:default()
   canvas:rect(0, 5, 3, box.h - 10, "accent", 1.5) -- a bar at the left
 end
@@ -260,6 +261,7 @@ end
 |---|---|
 | <code>:back</code> | Jump back to the previous position |
 | <code>:colors normal&#124;alt</code> | Set color mode |
+| <code>:config</code> | Open the config file in a text editor, creating it if there is none |
 | <code>:copy</code> | Copy the selection |
 | <code>:cover [on&#124;off]</code> | Show the first page alone in dual-page mode |
 | <code>:dual [on&#124;off]</code> | Toggle or set dual-page mode |
@@ -294,7 +296,7 @@ end
 | <code>:theme [name]</code> | Pick a theme, seeing each as it is selected, or switch to one |
 | <code>:trim [on&#124;off]</code> | Lay pages out by their content, trimming margins |
 | <code>:undo</code> | Undo the last edit |
-| <code>:version</code> | Show the gopdf version |
+| <code>:version</code> | Show the onon version |
 | <code>:write [path], :w</code> | Save edits, or a copy to path; :wq saves and exits |
 | <code>:zoom in&#124;out&#124;reset&#124;PERCENT</code> | Zoom a step, reset, or set e.g. :zoom 150 |
 
@@ -308,48 +310,48 @@ The index below is followed by a detailed entry for every function. Lua errors a
 
 | Function | Summary |
 |---|---|
-| <code>gopdf.bind(key, action)</code> | binds a key sequence to an action or Lua callback. |
-| <code>gopdf.bind_mouse(event, action)</code> | binds a mouse event to an action or Lua callback. |
-| <code>gopdf.cache.clear()</code> | drops all rendered tiles and thumbnails. |
-| <code>gopdf.cache.entries()</code> | returns the number of cached page tiles and thumbnails. |
-| <code>gopdf.cache.limit([mib])</code> | reads or changes the render cache memory limit in MiB. |
-| <code>gopdf.cache.pending()</code> | returns the number of queued tile renders. |
-| <code>gopdf.clear_pending_keys()</code> | clears pending key, mark, and numeric-count input. |
-| <code>gopdf.clipboard.get_text()</code> | returns the current clipboard contents as UTF-8 text. |
-| <code>gopdf.clipboard.set_text(text)</code> | replaces the clipboard with UTF-8 text. |
-| <code>gopdf.command(command)</code> | executes a viewer command. |
-| <code>gopdf.current_count()</code> | returns the pending numeric action count. |
-| <code>gopdf.fit_mode([mode])</code> | reads or changes the fit mode. Valid modes are manual, page, width, and height. |
-| <code>gopdf.formats.extensions()</code> | returns extensions supported by the linked document engine. |
-| <code>gopdf.formats.supports(path)</code> | checks whether a path extension names a supported format. |
-| <code>gopdf.fullscreen([enabled])</code> | reads or changes fullscreen state. |
-| <code>gopdf.goto_document_point(spec)</code> | moves to a page coordinate in document space. |
-| <code>gopdf.log(level, message)</code> | writes a diagnostic without changing the user-facing message. |
-| <code>gopdf.message([text])</code> | reads or replaces the viewer's status message. |
-| <code>gopdf.mode()</code> | returns the current viewer input mode. |
-| <code>gopdf.open(path)</code> | opens another document. |
-| <code>gopdf.open_external(uri_or_path)</code> | asks the operating system to open a URI or path. |
-| <code>gopdf.page([page])</code> | reads or changes the current physical page. |
-| <code>gopdf.page_count()</code> | returns the current document's page count. |
-| <code>gopdf.pending_keys()</code> | returns pending key-sequence tokens. |
-| <code>gopdf.pick_directory(callback)</code> | opens the native directory picker and invokes a callback with its result. |
-| <code>gopdf.pick_file(callback)</code> | opens the native document picker, filtered to the formats this build can open, and invokes a callback with its result. |
-| <code>gopdf.plugin.register(id[, spec])</code> | registers and returns a lazily loaded plugin module. |
-| <code>gopdf.recent_files([limit])</code> | returns recent document paths. |
-| <code>gopdf.render_mode([mode])</code> | reads or changes the render mode. Valid modes are continuous and single. |
-| <code>gopdf.rotation([degrees])</code> | reads or changes clockwise rotation in degrees. |
-| <code>gopdf.schedule(callback)</code> | queues a callback on the main Lua thread after the current dispatch. |
-| <code>gopdf.search(query[, backward])</code> | starts an asynchronous document search. |
-| <code>gopdf.search_match_count()</code> | returns the number of discovered search matches. |
-| <code>gopdf.search_match_index()</code> | returns the current search match index. |
-| <code>gopdf.search_query()</code> | returns the active search query. |
-| <code>gopdf.ui.create(spec)</code> | creates a searchable list view. |
-| <code>gopdf.unbind(key)</code> | removes a key binding. |
-| <code>gopdf.unbind_mouse(event)</code> | removes a mouse binding. |
-| <code>gopdf.version()</code> | returns gopdf's version. |
-| <code>gopdf.zoom([scale])</code> | reads or changes the zoom and clamps values to the configured range. |
+| <code>onon.bind(key, action)</code> | binds a key sequence to an action or Lua callback. |
+| <code>onon.bind_mouse(event, action)</code> | binds a mouse event to an action or Lua callback. |
+| <code>onon.cache.clear()</code> | drops all rendered tiles and thumbnails. |
+| <code>onon.cache.entries()</code> | returns the number of cached page tiles and thumbnails. |
+| <code>onon.cache.limit([mib])</code> | reads or changes the render cache memory limit in MiB. |
+| <code>onon.cache.pending()</code> | returns the number of queued tile renders. |
+| <code>onon.clear_pending_keys()</code> | clears pending key, mark, and numeric-count input. |
+| <code>onon.clipboard.get_text()</code> | returns the current clipboard contents as UTF-8 text. |
+| <code>onon.clipboard.set_text(text)</code> | replaces the clipboard with UTF-8 text. |
+| <code>onon.command(command)</code> | executes a viewer command. |
+| <code>onon.current_count()</code> | returns the pending numeric action count. |
+| <code>onon.fit_mode([mode])</code> | reads or changes the fit mode. Valid modes are manual, page, width, and height. |
+| <code>onon.formats.extensions()</code> | returns extensions supported by the linked document engine. |
+| <code>onon.formats.supports(path)</code> | checks whether a path extension names a supported format. |
+| <code>onon.fullscreen([enabled])</code> | reads or changes fullscreen state. |
+| <code>onon.goto_document_point(spec)</code> | moves to a page coordinate in document space. |
+| <code>onon.log(level, message)</code> | writes a diagnostic without changing the user-facing message. |
+| <code>onon.message([text])</code> | reads or replaces the viewer's status message. |
+| <code>onon.mode()</code> | returns the current viewer input mode. |
+| <code>onon.open(path)</code> | opens another document. |
+| <code>onon.open_external(uri_or_path)</code> | asks the operating system to open a URI or path. |
+| <code>onon.page([page])</code> | reads or changes the current physical page. |
+| <code>onon.page_count()</code> | returns the current document's page count. |
+| <code>onon.pending_keys()</code> | returns pending key-sequence tokens. |
+| <code>onon.pick_directory(callback)</code> | opens the native directory picker and invokes a callback with its result. |
+| <code>onon.pick_file(callback)</code> | opens the native document picker, filtered to the formats this build can open, and invokes a callback with its result. |
+| <code>onon.plugin.register(id[, spec])</code> | registers and returns a lazily loaded plugin module. |
+| <code>onon.recent_files([limit])</code> | returns recent document paths. |
+| <code>onon.render_mode([mode])</code> | reads or changes the render mode. Valid modes are continuous and single. |
+| <code>onon.rotation([degrees])</code> | reads or changes clockwise rotation in degrees. |
+| <code>onon.schedule(callback)</code> | queues a callback on the main Lua thread after the current dispatch. |
+| <code>onon.search(query[, backward])</code> | starts an asynchronous document search. |
+| <code>onon.search_match_count()</code> | returns the number of discovered search matches. |
+| <code>onon.search_match_index()</code> | returns the current search match index. |
+| <code>onon.search_query()</code> | returns the active search query. |
+| <code>onon.ui.create(spec)</code> | creates a searchable list view. |
+| <code>onon.unbind(key)</code> | removes a key binding. |
+| <code>onon.unbind_mouse(event)</code> | removes a mouse binding. |
+| <code>onon.version()</code> | returns onon's version. |
+| <code>onon.zoom([scale])</code> | reads or changes the zoom and clamps values to the configured range. |
 
-### <code>gopdf.bind(key, action)</code>
+### <code>onon.bind(key, action)</code>
 
 binds a key sequence to an action or Lua callback.
 
@@ -358,7 +360,7 @@ binds a key sequence to an action or Lua callback.
   - key: A printable key, special key name, modified key, or multi-key
     sequence, such as `j`, `<PgDn>`, `<C-p>`, or `gg`. See
     [Key and mouse names](#key-and-mouse-names).
-  - action: A bindable action such as gopdf.next_page, or a Lua callback.
+  - action: A bindable action such as onon.next_page, or a Lua callback.
 
 #### Returns
 
@@ -370,12 +372,12 @@ Raises an error when the key or action is invalid.
 
 #### Example
 
-	gopdf.bind("<C-p>", function()
-	  gopdf.page(1)
+	onon.bind("<C-p>", function()
+	  onon.page(1)
 	end)
 
 
-### <code>gopdf.bind_mouse(event, action)</code>
+### <code>onon.bind_mouse(event, action)</code>
 
 binds a mouse event to an action or Lua callback.
 
@@ -395,10 +397,10 @@ Raises an error when the event or action is invalid.
 
 #### Example
 
-	gopdf.bind_mouse("<C-wheel_up>", gopdf.zoom_in)
+	onon.bind_mouse("<C-wheel_up>", onon.zoom_in)
 
 
-### <code>gopdf.cache.clear()</code>
+### <code>onon.cache.clear()</code>
 
 drops all rendered tiles and thumbnails.
 
@@ -408,10 +410,10 @@ Nothing.
 
 #### Example
 
-	gopdf.cache.clear()
+	onon.cache.clear()
 
 
-### <code>gopdf.cache.entries()</code>
+### <code>onon.cache.entries()</code>
 
 returns the number of cached page tiles and thumbnails.
 
@@ -421,10 +423,10 @@ The number of rendered textures currently held in the render cache.
 
 #### Example
 
-	gopdf.log("debug", tostring(gopdf.cache.entries()))
+	onon.log("debug", tostring(onon.cache.entries()))
 
 
-### <code>gopdf.cache.limit([mib])</code>
+### <code>onon.cache.limit([mib])</code>
 
 reads or changes the render cache memory limit in MiB.
 
@@ -432,7 +434,7 @@ An omitted limit reads the current limit; supplying an integer changes it and
 returns the resulting limit. 0 removes the limit.
 
 
-### <code>gopdf.cache.pending()</code>
+### <code>onon.cache.pending()</code>
 
 returns the number of queued tile renders.
 
@@ -442,10 +444,10 @@ The number of tile renders waiting to be processed.
 
 #### Example
 
-	if gopdf.cache.pending() > 0 then gopdf.message("rendering") end
+	if onon.cache.pending() > 0 then onon.message("rendering") end
 
 
-### <code>gopdf.clear_pending_keys()</code>
+### <code>onon.clear_pending_keys()</code>
 
 clears pending key, mark, and numeric-count input.
 
@@ -455,10 +457,10 @@ Nothing.
 
 #### Example
 
-	gopdf.clear_pending_keys()
+	onon.clear_pending_keys()
 
 
-### <code>gopdf.clipboard.get_text()</code>
+### <code>onon.clipboard.get_text()</code>
 
 returns the current clipboard contents as UTF-8 text.
 
@@ -471,7 +473,7 @@ The current clipboard contents as UTF-8 text.
 Raises an error when clipboard access is unavailable.
 
 
-### <code>gopdf.clipboard.set_text(text)</code>
+### <code>onon.clipboard.set_text(text)</code>
 
 replaces the clipboard with UTF-8 text.
 
@@ -484,7 +486,7 @@ replaces the clipboard with UTF-8 text.
 Nothing.
 
 
-### <code>gopdf.command(command)</code>
+### <code>onon.command(command)</code>
 
 executes a viewer command.
 
@@ -502,10 +504,10 @@ Raises an error when the command is invalid or cannot be executed.
 
 #### Example
 
-	gopdf.command(":fit width")
+	onon.command(":fit width")
 
 
-### <code>gopdf.current_count()</code>
+### <code>onon.current_count()</code>
 
 returns the pending numeric action count.
 
@@ -515,10 +517,10 @@ The pending numeric prefix as a string, or an empty string when no count is pend
 
 #### Example
 
-	gopdf.message("count: " .. gopdf.current_count())
+	onon.message("count: " .. onon.current_count())
 
 
-### <code>gopdf.fit_mode([mode])</code>
+### <code>onon.fit_mode([mode])</code>
 
 reads or changes the fit mode. Valid modes are manual, page, width,
 and height.
@@ -537,10 +539,10 @@ Raises an error for an invalid mode or when setting it without a viewer host.
 
 #### Example
 
-	gopdf.fit_mode("width")
+	onon.fit_mode("width")
 
 
-### <code>gopdf.formats.extensions()</code>
+### <code>onon.formats.extensions()</code>
 
 returns extensions supported by the linked document engine.
 
@@ -550,12 +552,12 @@ An alphabetically sorted array of lower-case extensions without leading dots.
 
 #### Example
 
-	for _, extension in ipairs(gopdf.formats.extensions()) do
-	  gopdf.log("debug", extension)
+	for _, extension in ipairs(onon.formats.extensions()) do
+	  onon.log("debug", extension)
 	end
 
 
-### <code>gopdf.formats.supports(path)</code>
+### <code>onon.formats.supports(path)</code>
 
 checks whether a path extension names a supported format.
 
@@ -573,10 +575,10 @@ This is an extension hint. Opening also sniffs content, so a missing or misleadi
 
 #### Example
 
-	if gopdf.formats.supports("book.epub") then gopdf.open("book.epub") end
+	if onon.formats.supports("book.epub") then onon.open("book.epub") end
 
 
-### <code>gopdf.fullscreen([enabled])</code>
+### <code>onon.fullscreen([enabled])</code>
 
 reads or changes fullscreen state.
 
@@ -590,10 +592,10 @@ The current fullscreen state.
 
 #### Example
 
-	gopdf.fullscreen(true)
+	onon.fullscreen(true)
 
 
-### <code>gopdf.goto_document_point(spec)</code>
+### <code>onon.goto_document_point(spec)</code>
 
 moves to a page coordinate in document space.
 
@@ -607,10 +609,10 @@ Nothing. Coordinates are measured from the page's top-left corner in document po
 
 #### Example
 
-	gopdf.goto_document_point({ page = 3, x = 72, y = 144 })
+	onon.goto_document_point({ page = 3, x = 72, y = 144 })
 
 
-### <code>gopdf.log(level, message)</code>
+### <code>onon.log(level, message)</code>
 
 writes a diagnostic without changing the user-facing message.
 
@@ -626,10 +628,10 @@ Nothing. The viewer's user-facing message is unchanged.
 
 #### Example
 
-	gopdf.log("info", "plugin loaded")
+	onon.log("info", "plugin loaded")
 
 
-### <code>gopdf.message([text])</code>
+### <code>onon.message([text])</code>
 
 reads or replaces the viewer's status message.
 
@@ -643,11 +645,11 @@ The current message as a string.
 
 #### Example
 
-	gopdf.message("ready")
-	local current = gopdf.message()
+	onon.message("ready")
+	local current = onon.message()
 
 
-### <code>gopdf.mode()</code>
+### <code>onon.mode()</code>
 
 returns the current viewer input mode.
 
@@ -657,10 +659,10 @@ The current input mode: normal, command, goto, or search; nil without a viewer h
 
 #### Example
 
-	if gopdf.mode() == "normal" then gopdf.message("ready") end
+	if onon.mode() == "normal" then onon.message("ready") end
 
 
-### <code>gopdf.open(path)</code>
+### <code>onon.open(path)</code>
 
 opens another document.
 
@@ -678,10 +680,10 @@ Raises an error when the document cannot be opened.
 
 #### Example
 
-	gopdf.open("appendix.pdf")
+	onon.open("appendix.pdf")
 
 
-### <code>gopdf.open_external(uri_or_path)</code>
+### <code>onon.open_external(uri_or_path)</code>
 
 asks the operating system to open a URI or path.
 
@@ -699,10 +701,10 @@ Raises an error when the operating-system opener cannot be started.
 
 #### Example
 
-	gopdf.open_external("https://example.com")
+	onon.open_external("https://example.com")
 
 
-### <code>gopdf.page([page])</code>
+### <code>onon.page([page])</code>
 
 reads or changes the current physical page.
 
@@ -716,11 +718,11 @@ The current 1-based page number, or nil when no document is open.
 
 #### Example
 
-	local page = gopdf.page()
-	gopdf.page(page + 1)
+	local page = onon.page()
+	onon.page(page + 1)
 
 
-### <code>gopdf.page_count()</code>
+### <code>onon.page_count()</code>
 
 returns the current document's page count.
 
@@ -730,10 +732,10 @@ The number of pages, or nil when no document is open.
 
 #### Example
 
-	if (gopdf.page_count() or 0) > 100 then gopdf.message("long document") end
+	if (onon.page_count() or 0) > 100 then onon.message("long document") end
 
 
-### <code>gopdf.pending_keys()</code>
+### <code>onon.pending_keys()</code>
 
 returns pending key-sequence tokens.
 
@@ -743,10 +745,10 @@ An array of pending key-sequence tokens.
 
 #### Example
 
-	for _, key in ipairs(gopdf.pending_keys()) do gopdf.log("debug", key) end
+	for _, key in ipairs(onon.pending_keys()) do onon.log("debug", key) end
 
 
-### <code>gopdf.pick_directory(callback)</code>
+### <code>onon.pick_directory(callback)</code>
 
 opens the native directory picker and invokes a callback with its result.
 
@@ -760,12 +762,12 @@ Nothing. The callback completes before this function returns.
 
 #### Example
 
-	gopdf.pick_directory(function(result)
-	  if result.success then gopdf.message(result.path) end
+	onon.pick_directory(function(result)
+	  if result.success then onon.message(result.path) end
 	end)
 
 
-### <code>gopdf.pick_file(callback)</code>
+### <code>onon.pick_file(callback)</code>
 
 opens the native document picker, filtered to the formats this
 build can open, and invokes a callback with its result.
@@ -784,12 +786,12 @@ Raises an error when the callback fails.
 
 #### Example
 
-	gopdf.pick_file(function(result)
-	  if result.success then gopdf.open(result.path) end
+	onon.pick_file(function(result)
+	  if result.success then onon.open(result.path) end
 	end)
 
 
-### <code>gopdf.plugin.register(id[, spec])</code>
+### <code>onon.plugin.register(id[, spec])</code>
 
 registers and returns a lazily loaded plugin module.
 
@@ -809,10 +811,10 @@ match the plugin currently being loaded.
 
 #### Example
 
-	local plugin = gopdf.plugin.register("my-plugin")
+	local plugin = onon.plugin.register("my-plugin")
 
 
-### <code>gopdf.recent_files([limit])</code>
+### <code>onon.recent_files([limit])</code>
 
 returns recent document paths.
 
@@ -825,7 +827,7 @@ returns recent document paths.
 An array of document paths, or an empty array when session storage is disabled.
 
 
-### <code>gopdf.render_mode([mode])</code>
+### <code>onon.render_mode([mode])</code>
 
 reads or changes the render mode. Valid modes are continuous and single.
 
@@ -843,10 +845,10 @@ Raises an error for an invalid mode or when setting it without a viewer host.
 
 #### Example
 
-	gopdf.render_mode("single")
+	onon.render_mode("single")
 
 
-### <code>gopdf.rotation([degrees])</code>
+### <code>onon.rotation([degrees])</code>
 
 reads or changes clockwise rotation in degrees.
 
@@ -860,10 +862,10 @@ The normalized clockwise rotation, or nil without a viewer host.
 
 #### Example
 
-	gopdf.rotation(90)
+	onon.rotation(90)
 
 
-### <code>gopdf.schedule(callback)</code>
+### <code>onon.schedule(callback)</code>
 
 queues a callback on the main Lua thread after the current dispatch.
 
@@ -877,10 +879,10 @@ An operation handle with numeric id, cancel(), and active() members.
 
 #### Example
 
-	local handle = gopdf.schedule(function() gopdf.message("later") end)
+	local handle = onon.schedule(function() onon.message("later") end)
 
 
-### <code>gopdf.search(query[, backward])</code>
+### <code>onon.search(query[, backward])</code>
 
 starts an asynchronous document search.
 
@@ -895,10 +897,10 @@ Nothing. Matching runs asynchronously.
 
 #### Example
 
-	gopdf.search("-iw introduction")
+	onon.search("-iw introduction")
 
 
-### <code>gopdf.search_match_count()</code>
+### <code>onon.search_match_count()</code>
 
 returns the number of discovered search matches.
 
@@ -908,10 +910,10 @@ The number of matches discovered so far. Search may still be running.
 
 #### Example
 
-	gopdf.message(gopdf.search_match_count() .. " matches")
+	onon.message(onon.search_match_count() .. " matches")
 
 
-### <code>gopdf.search_match_index()</code>
+### <code>onon.search_match_index()</code>
 
 returns the current search match index.
 
@@ -921,10 +923,10 @@ The current 1-based match index, or nil when no match is focused.
 
 #### Example
 
-	local index = gopdf.search_match_index()
+	local index = onon.search_match_index()
 
 
-### <code>gopdf.search_query()</code>
+### <code>onon.search_query()</code>
 
 returns the active search query.
 
@@ -934,10 +936,10 @@ The active query without search flags, or an empty string when search is inactiv
 
 #### Example
 
-	local query = gopdf.search_query()
+	local query = onon.search_query()
 
 
-### <code>gopdf.ui.create(spec)</code>
+### <code>onon.ui.create(spec)</code>
 
 creates a searchable list view.
 
@@ -951,15 +953,15 @@ A view object with show, close, visible, row/query setters, and state accessors.
 
 #### Example
 
-	local view = gopdf.ui.create({
+	local view = onon.ui.create({
 	  title = "Recent files",
-	  rows = gopdf.recent_files(10),
-	  on_select = function(_, path) gopdf.open(path) end,
+	  rows = onon.recent_files(10),
+	  on_select = function(_, path) onon.open(path) end,
 	})
 	view:show()
 
 
-### <code>gopdf.unbind(key)</code>
+### <code>onon.unbind(key)</code>
 
 removes a key binding.
 
@@ -977,10 +979,10 @@ Raises an error when the key is invalid.
 
 #### Example
 
-	gopdf.unbind("<C-p>")
+	onon.unbind("<C-p>")
 
 
-### <code>gopdf.unbind_mouse(event)</code>
+### <code>onon.unbind_mouse(event)</code>
 
 removes a mouse binding.
 
@@ -998,24 +1000,24 @@ Raises an error when the event is invalid.
 
 #### Example
 
-	gopdf.unbind_mouse("middle_down")
+	onon.unbind_mouse("middle_down")
 
 
-### <code>gopdf.version()</code>
+### <code>onon.version()</code>
 
-returns gopdf's version.
+returns onon's version.
 
 #### Returns
 
-The release tag gopdf was built from, such as v0.7.0, or dev for a build not
+The release tag onon was built from, such as v0.7.0, or dev for a build not
 made from a tag.
 
 #### Example
 
-	gopdf.log("info", "running gopdf " .. gopdf.version())
+	onon.log("info", "running onon " .. onon.version())
 
 
-### <code>gopdf.zoom([scale])</code>
+### <code>onon.zoom([scale])</code>
 
 reads or changes the zoom and clamps values to the configured range.
 
@@ -1033,43 +1035,43 @@ Raises an error when the scale is invalid or cannot be set.
 
 #### Example
 
-	gopdf.zoom(1.5)
+	onon.zoom(1.5)
 
 
 ### UI views
 
-Create views with `local view = gopdf.ui.create(spec)`, then call `view:show()`. The specification supports `id`, `title`, `rows`, `selected`, `scroll`, `query`, `searchable`, `on_select`, and `on_close`. A row may be a string or a table with `text`, `value`, `id`, `secondary`, `depth`, and `disabled`.
+Create views with `local view = onon.ui.create(spec)`, then call `view:show()`. The specification supports `id`, `title`, `rows`, `selected`, `scroll`, `query`, `searchable`, `on_select`, and `on_close`. A row may be a string or a table with `text`, `value`, `id`, `secondary`, `depth`, and `disabled`.
 
 View methods are `show()`, `close()`, `visible()`, `set_rows(rows)`, `set_selected(index)`, `set_scroll(scroll)`, `set_query(query)`, `selected()`, `scroll()`, and `query()`. Selection indices are 1-based, with 0 meaning no selection. `on_select` receives `(index, value, text, id)`, preserving the original row index and ID when the list is filtered. `on_close` runs for user, programmatic, replacement, and document-close paths.
 
 ### Portable API
 
-The `gopdf` tables below are available to configuration and plugin Lua code.
+The `onon` tables below are available to configuration and plugin Lua code.
 
 | Module | Returns / fields | Description |
 |---|---|---|
-| <code>gopdf.platform</code> | table | Also available from `require("gopdf.platform")`. Fields: `os` (`linux`, `macos`, or `windows`), `arch`, `home_dir`, `config_dir`, `data_dir`, `cache_dir`, and `temp_dir`. Directory fields are absolute when the platform supplies a location and may be empty when it does not. |
-| <code>gopdf.path</code> | table | Also available from `require("gopdf.path")`. Fields: `separator`, `list_separator`; functions: `join(...)`, `clean(path)`, `basename(path)`, `dirname(path)`, `extension(path)`, `is_absolute(path)`, `absolute(path)`, `relative(base, target)`, and `expand_home(path)`. Operations use native platform path rules; `expand_home` expands only `~`, `~/...`, and `~\...`. |
-| <code>gopdf.json</code> | table | Also available from `require("gopdf.json")`. `encode(value)` returns compact JSON and `decode(text)` returns a Lua value. `null` is the stable module-local JSON null sentinel. Arrays require contiguous positive integer keys; objects require string keys. Cycles, sparse or mixed tables, non-finite numbers, unsupported Lua values, and trailing input are errors. Decoded empty arrays and objects retain their shape when re-encoded. |
+| <code>onon.platform</code> | table | Also available from `require("onon.platform")`. Fields: `os` (`linux`, `macos`, or `windows`), `arch`, `home_dir`, `config_dir`, `data_dir`, `cache_dir`, and `temp_dir`. Directory fields are absolute when the platform supplies a location and may be empty when it does not. |
+| <code>onon.path</code> | table | Also available from `require("onon.path")`. Fields: `separator`, `list_separator`; functions: `join(...)`, `clean(path)`, `basename(path)`, `dirname(path)`, `extension(path)`, `is_absolute(path)`, `absolute(path)`, `relative(base, target)`, and `expand_home(path)`. Operations use native platform path rules; `expand_home` expands only `~`, `~/...`, and `~\...`. |
+| <code>onon.json</code> | table | Also available from `require("onon.json")`. `encode(value)` returns compact JSON and `decode(text)` returns a Lua value. `null` is the stable module-local JSON null sentinel. Arrays require contiguous positive integer keys; objects require string keys. Cycles, sparse or mixed tables, non-finite numbers, unsupported Lua values, and trailing input are errors. Decoded empty arrays and objects retain their shape when re-encoded. |
 
 #### Document inspection
 
-These read the open document. The `gopdf.document` fields `path`, `name`, `extension`, `exists`, `size_bytes`, and `page_count` remain available and are refreshed when the document changes. The functions below raise an error when no document is open. Rectangles are `x0`, `y0`, `x1`, `y1` in unrotated PDF points.
+These read the open document. The `onon.document` fields `path`, `name`, `extension`, `exists`, `size_bytes`, and `page_count` remain available and are refreshed when the document changes. The functions below raise an error when no document is open. Rectangles are `x0`, `y0`, `x1`, `y1` in unrotated PDF points.
 
 | Function | Returns / fields | Description |
 |---|---|---|
-| <code>gopdf.document.metadata()</code> | table | Return document metadata: `format`, `encryption`, `title`, `author`, `subject`, `keywords`, `creator`, `producer`, `creation_date`, and `modification_date`. Absent fields are empty strings. |
-| <code>gopdf.document.outline()</code> | table[] | Return the outline as a tree. Each entry has `title`, `uri`, `external`, `page`, `children`, and optional `x` and `y` destination coordinates. `page` is 1-based, or 0 when the entry has no page destination. |
-| <code>gopdf.document.page_info(page)</code> | table | Return `page`, `label`, `width`, `height`, and `bounds` for a 1-based page. Sizes are unrotated PDF points; an out-of-range page raises an error. |
-| <code>gopdf.document.selection()</code> | table | Return the current selection: `active`, `text`, and `pages`, a list in page order of `{ page = n, quads = { ... } }` with quads as bounding rectangles. `pages` is empty when nothing is selected. |
+| <code>onon.document.metadata()</code> | table | Return document metadata: `format`, `encryption`, `title`, `author`, `subject`, `keywords`, `creator`, `producer`, `creation_date`, and `modification_date`. Absent fields are empty strings. |
+| <code>onon.document.outline()</code> | table[] | Return the outline as a tree. Each entry has `title`, `uri`, `external`, `page`, `children`, and optional `x` and `y` destination coordinates. `page` is 1-based, or 0 when the entry has no page destination. |
+| <code>onon.document.page_info(page)</code> | table | Return `page`, `label`, `width`, `height`, and `bounds` for a 1-based page. Sizes are unrotated PDF points; an out-of-range page raises an error. |
+| <code>onon.document.selection()</code> | table | Return the current selection: `active`, `text`, and `pages`, a list in page order of `{ page = n, quads = { ... } }` with quads as bounding rectangles. `pages` is empty when nothing is selected. |
 | <code>plugin.document:page_text(page, callback)</code> | handle | Extract a page's text asynchronously. The result adds `page` and `text`. |
 | <code>plugin.document:page_links(page, callback)</code> | handle | Read a page's links asynchronously. The result adds `page` and `links`; each link has `bounds`, `uri`, `external`, `page`, and optional `x` and `y`. |
 
 ### Plugins
 
-Plugins are discovered without being executed. Enable one explicitly with `local plugin = require("plugin-id")`; only the required plugin and its declared dependencies execute. The entrypoint must call `gopdf.plugin.register("plugin-id"[, spec])`; `require` returns the registered module.
+Plugins are discovered without being executed. Enable one explicitly with `local plugin = require("plugin-id")`; only the required plugin and its declared dependencies execute. The entrypoint must call `onon.plugin.register("plugin-id"[, spec])`; `require` returns the registered module.
 
-A plugin manifest is `gopdf-plugin.json` with `id`, `version`, `module`, and `dependencies`; only `id` is required, and unrecognised fields are ignored. `module` selects `lua/<module>.lua` or `lua/<module>/init.lua`. Plugin modules contain `id`, `version`, `actions`, `fs`, `timer`, `storage`, `http`, and `document`, plus `register_action`, `register_command`, `on`, `off`, and `job`. Registered actions use `plugin-id.action`; commands use `:plugin-id-command`, where the command name cannot contain `-`; options use `plugin-id.option`.
+A plugin manifest is `onon-plugin.json` with `id`, `version`, `module`, and `dependencies`; only `id` is required, and unrecognised fields are ignored. `module` selects `lua/<module>.lua` or `lua/<module>/init.lua`. Plugin modules contain `id`, `version`, `actions`, `fs`, `timer`, `storage`, `http`, and `document`, plus `register_action`, `register_command`, `on`, `off`, and `job`. Registered actions use `plugin-id.action`; commands use `:plugin-id-command`, where the command name cannot contain `-`; options use `plugin-id.option`.
 
 | Function | Returns / fields | Description |
 |---|---|---|
@@ -1114,15 +1116,15 @@ A successful `:reload-config` replaces the Lua state and cancels all handles and
 
 Supported events are `app_ready`, `document_open_pre`, `document_opened`, `document_close_pre`, `document_closed`, `document_reloaded`, `config_reloaded`, `mouse_button_pre`, `mouse_button`, `selection_changed`, `page_changed`, `zoom_changed`, `option_changed`, and `shutdown`. `page_changed` carries `page`, `label`, `previous_page`, and `page_count`; `zoom_changed` carries `scale`, `previous_scale`, and `percent`. Both are emitted once per frame with the settled value, so a continuous gesture reports where it came to rest. Event callbacks run in subscription order within each plugin; returning true marks an event consumed where the host supports consumption but does not stop later callbacks.
 
-Plugins are found in every one of the platform plugin directories, and rescanned by `:reload-config`: on Linux `/usr/lib/gopdf/plugins`, `$XDG_DATA_HOME/gopdf/plugins` (or `~/.local/share/gopdf/plugins`), `$XDG_CONFIG_HOME/gopdf/plugins`, `~/.config/gopdf/plugins` and each `$XDG_CONFIG_DIRS/gopdf/plugins`; on macOS `~/Library/Application Support/gopdf/plugins` and `~/.config/gopdf/plugins`; on Windows `%LOCALAPPDATA%\gopdf\plugins` and `%APPDATA%\gopdf\plugins`. Where two have a plugin with the same id, the first wins. Disable plugin discovery with `--no-plugins`, or start from built-in defaults with `--no-config`, which also skips the generated settings file.
+Plugins are found in every one of the platform plugin directories, and rescanned by `:reload-config`: on Linux `/usr/lib/onon/plugins`, `$XDG_DATA_HOME/onon/plugins` (or `~/.local/share/onon/plugins`), `$XDG_CONFIG_HOME/onon/plugins`, `~/.config/onon/plugins` and each `$XDG_CONFIG_DIRS/onon/plugins`; on macOS `~/Library/Application Support/onon/plugins` and `~/.config/onon/plugins`; on Windows `%LOCALAPPDATA%\onon\plugins` and `%APPDATA%\onon\plugins`. Where two have a plugin with the same id, the first wins. Disable plugin discovery with `--no-plugins`, or start from built-in defaults with `--no-config`, which also skips the generated settings file.
 
 #### Single instance
 
-Instances are per document. Each window listens on a socket named after the document it is showing, and the address follows the document when the window opens another one. `--unique` hands the request to the window already showing that document and exits; with no such window, this process opens it. `--goto PAGE` opens at a page and `--goto PAGE:X:Y` at a point on it, overriding any remembered session position, whether the work is done here or by an existing window. `--command TEXT` runs a viewer command there, as typed after `:`, including any command registered by a plugin. An unrecognised command exits non-zero. `X` and `Y` are points measured from the page's top-left corner, which is also SyncTeX's convention. Sockets live under `$XDG_RUNTIME_DIR/gopdf` on Linux, the per-user temporary directory on macOS, and `%LOCALAPPDATA%\gopdf` on Windows. They are mode 0600 and named by a hash of the document path, which keeps them within the platform socket length limit. A socket left by a crashed process is reclaimed on the next start.
+Instances are per document. Each window listens on a socket named after the document it is showing, and the address follows the document when the window opens another one. `--unique` hands the request to the window already showing that document and exits; with no such window, this process opens it. `--goto PAGE` opens at a page and `--goto PAGE:X:Y` at a point on it, overriding any remembered session position, whether the work is done here or by an existing window. `--command TEXT` runs a viewer command there, as typed after `:`, including any command registered by a plugin. An unrecognised command exits non-zero. `X` and `Y` are points measured from the page's top-left corner, which is also SyncTeX's convention. Sockets live under `$XDG_RUNTIME_DIR/onon` on Linux, the per-user temporary directory on macOS, and `%LOCALAPPDATA%\onon` on Windows. They are mode 0600 and named by a hash of the document path, which keeps them within the platform socket length limit. A socket left by a crashed process is reclaimed on the next start.
 
 ## Key and mouse names
 
-`gopdf.bind` and `gopdf.unbind` take a key sequence; `gopdf.bind_mouse` and `gopdf.unbind_mouse` take a mouse event. An unknown name is an error. To find the name of a key, bind it in `:keybinds`, which records the keys you press.
+`onon.bind` and `onon.unbind` take a key sequence; `onon.bind_mouse` and `onon.unbind_mouse` take a mouse event. An unknown name is an error. To find the name of a key, bind it in `:keybinds`, which records the keys you press.
 
 ### Keys
 
@@ -1152,17 +1154,24 @@ Other keys are written by name in angle brackets. Names are case-insensitive.
 
 ### Modifiers
 
-Modifiers go inside the brackets before the key name, as in `<C-p>`, `<C-S-Tab>` or `<D-c>`.
+Modifiers go inside the brackets before the key name, as in `<C-p>`, `<C-S-Tab>`, `<A-Left>` or `<D-c>`.
 
 | Prefix | Modifier |
 |---|---|
 | `C-` | Ctrl. |
+| `A-` | Alt; Option on macOS. `M-` is the same. |
 | `D-` | Cmd on macOS; the Super or Windows key elsewhere. |
 | `S-` | Shift. |
 
-Ctrl and Cmd combine with any key: letters, digits, symbols and the names above, as in `<C-a>`, `<C-=>`, `<C-Space>` or `<D-Up>`. With them, a key is named by its unshifted character and Shift is written out: `<C-S-r>` is Ctrl+Shift+r, `<C-S-1>` is Ctrl+Shift+1, and `<C-R>` is Ctrl+r. Write `>` as `<gt>` after a modifier, as in `<C-gt>`. Without Ctrl or Cmd, Shift applies to named keys, as in `<S-Tab>` or `<S-F5>`, and `<S-j>` means `J`; for other printable keys, write the shifted character. Alt is not a modifier: a key pressed with Alt runs no binding.
+Ctrl, Alt and Cmd combine with any key: letters, digits, symbols and the names above, as in `<C-a>`, `<C-=>`, `<A-Space>` or `<D-Up>`. With them, a key is named by its unshifted character and Shift is written out: `<C-S-r>` is Ctrl+Shift+r, `<C-S-1>` is Ctrl+Shift+1, `<A-j>` is Alt+j, whatever character Option+j types on macOS, and `<C-R>` is Ctrl+r. Write `>` as `<gt>` after a modifier, as in `<C-gt>`. Without Ctrl, Alt or Cmd, Shift applies to named keys, as in `<S-Tab>` or `<S-F5>`, and `<S-j>` means `J`; for other printable keys, write the shifted character. While a prompt is open, a character pressed with Alt alone is typed rather than running its binding, since Option on macOS and AltGr elsewhere type characters of their own.
 
-Modifiers may be written in any order, so `<C-S-Tab>`, `<s-c-tab>` and `<S-C-TAB>` are the same key. Bindings are stored and shown in the first form.
+Modifiers may be written in any order, so `<C-S-Tab>`, `<s-c-tab>` and `<S-C-TAB>` are the same key. Bindings are stored and shown in the first form, with modifiers in C, A, D, S order.
+
+### Editing a prompt
+
+While a prompt is open, these keys edit its text before any binding of theirs runs. On every system, Left and Right move a character and with Ctrl a word, Home and End go to the ends, Shift with any of them selects, Backspace and Delete delete a character and with Ctrl a word, `<C-w>` deletes the word before the cursor, and `<C-v>` pastes. Up and Down step through the prompt's history. `<C-a>` on Windows and Linux, and `<D-a>` on macOS, selects all of it.
+
+On macOS, prompts also edit as Mac text fields do: Option with Left, Right, Backspace or Delete works by word, Cmd with Left or Right goes to the ends and Cmd-Backspace deletes to the start, and `<C-a>`, `<C-e>`, `<C-b>`, `<C-f>`, `<C-h>`, `<C-d>` and `<C-k>` work as in Emacs.
 
 ### Mouse events
 
@@ -1182,81 +1191,86 @@ A bound button event replaces that button's built-in behaviour, such as text sel
 
 ## Bindable actions
 
-Every action is available as `gopdf.<action>`, can be passed to `gopdf.bind`, and can be called from a runtime Lua callback.
+Every action is available as `onon.<action>`, can be passed to `onon.bind`, and can be called from a runtime Lua callback.
 
-| Action | Default keys | Countable |
-|---|---|---|
-| <code>next_page</code> | <code>J</code>, <code>&lt;PgDn&gt;</code> | true |
-| <code>prev_page</code> | <code>K</code>, <code>&lt;PgUp&gt;</code> | true |
-| <code>scroll_down</code> | <code>j</code>, <code>&lt;Down&gt;</code> | true |
-| <code>scroll_up</code> | <code>k</code>, <code>&lt;Up&gt;</code> | true |
-| <code>scroll_left</code> | <code>h</code>, <code>&lt;Left&gt;</code> | true |
-| <code>scroll_right</code> | <code>l</code>, <code>&lt;Right&gt;</code> | true |
-| <code>next_spread</code> |  | true |
-| <code>prev_spread</code> |  | true |
-| <code>first_page</code> | <code>gg</code> | false |
-| <code>last_page</code> | <code>G</code> | false |
-| <code>command_mode</code> | <code>:</code> | false |
-| <code>search_prompt</code> | <code>/</code> | false |
-| <code>search_prompt_backward</code> | <code>?</code> | false |
-| <code>search_next</code> | <code>n</code> | true |
-| <code>search_prev</code> | <code>N</code> | true |
-| <code>toggle_dual_page</code> | <code>d</code> | false |
-| <code>toggle_render_mode</code> | <code>m</code> | false |
-| <code>toggle_alt_colors</code> | <code>&lt;C-r&gt;</code> | false |
-| <code>toggle_first_page_offset</code> | <code>co</code> | false |
-| <code>toggle_trim_margins</code> | <code>ct</code> | false |
-| <code>toggle_status_bar</code> | <code>&lt;C-n&gt;</code> | false |
-| <code>toggle_fullscreen</code> | <code>f</code> | false |
-| <code>presentation</code> | <code>&lt;F5&gt;</code> | false |
-| <code>follow_link</code> | <code>F</code> | false |
-| <code>outline</code> | <code>o</code> | false |
-| <code>overview</code> | <code>O</code> | false |
-| <code>confirm</code> | <code>&lt;CR&gt;</code> | false |
-| <code>zoom_in</code> | <code>+</code>, <code>=</code> | true |
-| <code>zoom_out</code> | <code>-</code> | true |
-| <code>reset_zoom</code> | <code>0</code> | false |
-| <code>fit_width</code> | <code>a</code> | false |
-| <code>fit_page</code> | <code>s</code> | false |
-| <code>fit_height</code> | <code>S</code> | false |
-| <code>reload_config</code> | <code>&lt;C-S-r&gt;</code> | false |
-| <code>rotate_cw</code> | <code>r</code> | false |
-| <code>rotate_ccw</code> | <code>R</code> | false |
-| <code>goto_page_prompt</code> | <code>&lt;C-g&gt;</code> | false |
-| <code>clear_search</code> |  | false |
-| <code>highlight_selection</code> | <code>H</code> | false |
-| <code>undo</code> | <code>u</code> | false |
-| <code>redo</code> | <code>U</code> | false |
-| <code>delete_annotation</code> | <code>x</code> | false |
-| <code>search_matches</code> | <code>gm</code> | false |
-| <code>show_completion</code> | <code>&lt;Tab&gt;</code> | false |
-| <code>next_completion</code> |  | false |
-| <code>prev_completion</code> | <code>&lt;S-Tab&gt;</code> | false |
-| <code>copy</code> | <code>&lt;C-c&gt;</code> | false |
-| <code>cut</code> | <code>&lt;C-x&gt;</code> | false |
-| <code>paste</code> | <code>&lt;C-v&gt;</code> | false |
-| <code>close</code> | <code>&lt;Esc&gt;</code> | false |
-| <code>jump_forward</code> | <code>&lt;C-i&gt;</code> | false |
-| <code>jump_backward</code> | <code>&lt;C-o&gt;</code> | false |
-| <code>open_file_picker</code> | <code>&lt;C-S-o&gt;</code> | false |
-| <code>show_recent_files</code> | <code>gr</code> | false |
-| <code>help</code> | <code>&lt;F1&gt;</code>, <code>g?</code> | false |
-| <code>keybinds</code> |  | false |
-| <code>pan</code> | <code>&lt;Space&gt;</code> | false |
-| <code>autoscroll</code> |  | false |
-| <code>quit</code> | <code>q</code> | false |
+Keys in a system's own column are bound there as well as the default keys.
+
+| Action | Default keys | macOS | Windows | Linux | Countable |
+|---|---|---|---|---|---|
+| <code>next_page</code> | <code>J</code>, <code>&lt;PgDn&gt;</code> |  |  |  | true |
+| <code>prev_page</code> | <code>K</code>, <code>&lt;PgUp&gt;</code> |  |  |  | true |
+| <code>scroll_down</code> | <code>j</code>, <code>&lt;Down&gt;</code> |  |  |  | true |
+| <code>scroll_up</code> | <code>k</code>, <code>&lt;Up&gt;</code> |  |  |  | true |
+| <code>scroll_left</code> | <code>h</code>, <code>&lt;Left&gt;</code> |  |  |  | true |
+| <code>scroll_right</code> | <code>l</code>, <code>&lt;Right&gt;</code> |  |  |  | true |
+| <code>next_spread</code> |  |  |  |  | true |
+| <code>prev_spread</code> |  |  |  |  | true |
+| <code>first_page</code> | <code>gg</code> | <code>&lt;D-Up&gt;</code> | <code>&lt;C-Home&gt;</code> | <code>&lt;C-Home&gt;</code> | false |
+| <code>last_page</code> | <code>G</code> | <code>&lt;D-Down&gt;</code> | <code>&lt;C-End&gt;</code> | <code>&lt;C-End&gt;</code> | false |
+| <code>command_mode</code> | <code>:</code> |  |  |  | false |
+| <code>search_prompt</code> | <code>/</code> | <code>&lt;D-f&gt;</code> | <code>&lt;C-f&gt;</code> | <code>&lt;C-f&gt;</code> | false |
+| <code>search_prompt_backward</code> | <code>?</code> |  |  |  | false |
+| <code>search_next</code> | <code>n</code> | <code>&lt;D-g&gt;</code> | <code>&lt;F3&gt;</code> | <code>&lt;F3&gt;</code> | true |
+| <code>search_prev</code> | <code>N</code> | <code>&lt;D-S-g&gt;</code> | <code>&lt;S-F3&gt;</code> | <code>&lt;S-F3&gt;</code> | true |
+| <code>toggle_dual_page</code> | <code>d</code> |  |  |  | false |
+| <code>toggle_render_mode</code> | <code>m</code> |  |  |  | false |
+| <code>toggle_alt_colors</code> | <code>&lt;C-r&gt;</code> |  |  |  | false |
+| <code>toggle_first_page_offset</code> | <code>co</code> |  |  |  | false |
+| <code>toggle_trim_margins</code> | <code>ct</code> |  |  |  | false |
+| <code>toggle_status_bar</code> | <code>&lt;C-n&gt;</code> |  |  |  | false |
+| <code>toggle_fullscreen</code> | <code>f</code> | <code>&lt;C-D-f&gt;</code> | <code>&lt;F11&gt;</code> | <code>&lt;F11&gt;</code> | false |
+| <code>presentation</code> | <code>&lt;F5&gt;</code> |  |  |  | false |
+| <code>follow_link</code> | <code>F</code> |  |  |  | false |
+| <code>outline</code> | <code>o</code> |  |  |  | false |
+| <code>overview</code> | <code>O</code> |  |  |  | false |
+| <code>confirm</code> | <code>&lt;CR&gt;</code> |  |  |  | false |
+| <code>zoom_in</code> | <code>+</code>, <code>=</code> | <code>&lt;D-=&gt;</code>, <code>&lt;D-S-=&gt;</code> | <code>&lt;C-=&gt;</code>, <code>&lt;C-S-=&gt;</code>, <code>&lt;C-kPlus&gt;</code> | <code>&lt;C-=&gt;</code>, <code>&lt;C-S-=&gt;</code>, <code>&lt;C-kPlus&gt;</code> | true |
+| <code>zoom_out</code> | <code>-</code> | <code>&lt;D--&gt;</code> | <code>&lt;C--&gt;</code>, <code>&lt;C-kMinus&gt;</code> | <code>&lt;C--&gt;</code>, <code>&lt;C-kMinus&gt;</code> | true |
+| <code>reset_zoom</code> | <code>0</code> | <code>&lt;D-0&gt;</code> | <code>&lt;C-0&gt;</code> | <code>&lt;C-0&gt;</code> | false |
+| <code>fit_width</code> | <code>a</code> |  |  |  | false |
+| <code>fit_page</code> | <code>s</code> |  |  |  | false |
+| <code>fit_height</code> | <code>S</code> |  |  |  | false |
+| <code>reload_config</code> | <code>&lt;C-S-r&gt;</code> |  |  |  | false |
+| <code>open_config</code> |  | <code>&lt;D-,&gt;</code> |  |  | false |
+| <code>rotate_cw</code> | <code>r</code> |  |  |  | false |
+| <code>rotate_ccw</code> | <code>R</code> |  |  |  | false |
+| <code>goto_page_prompt</code> | <code>&lt;C-g&gt;</code> |  |  |  | false |
+| <code>clear_search</code> |  |  |  |  | false |
+| <code>highlight_selection</code> | <code>H</code> |  |  |  | false |
+| <code>undo</code> | <code>u</code> | <code>&lt;D-z&gt;</code> | <code>&lt;C-z&gt;</code> | <code>&lt;C-z&gt;</code> | false |
+| <code>redo</code> | <code>U</code> | <code>&lt;D-S-z&gt;</code> | <code>&lt;C-y&gt;</code>, <code>&lt;C-S-z&gt;</code> | <code>&lt;C-y&gt;</code>, <code>&lt;C-S-z&gt;</code> | false |
+| <code>delete_annotation</code> | <code>x</code> |  |  |  | false |
+| <code>search_matches</code> | <code>gm</code> |  |  |  | false |
+| <code>show_completion</code> | <code>&lt;Tab&gt;</code> |  |  |  | false |
+| <code>next_completion</code> |  |  |  |  | false |
+| <code>prev_completion</code> | <code>&lt;S-Tab&gt;</code> |  |  |  | false |
+| <code>copy</code> | <code>&lt;C-c&gt;</code> | <code>&lt;D-c&gt;</code> |  |  | false |
+| <code>cut</code> | <code>&lt;C-x&gt;</code> | <code>&lt;D-x&gt;</code> |  |  | false |
+| <code>paste</code> | <code>&lt;C-v&gt;</code> | <code>&lt;D-v&gt;</code> |  |  | false |
+| <code>close</code> | <code>&lt;Esc&gt;</code> |  |  |  | false |
+| <code>jump_forward</code> | <code>&lt;C-i&gt;</code> | <code>&lt;D-]&gt;</code> | <code>&lt;A-Right&gt;</code> | <code>&lt;A-Right&gt;</code> | false |
+| <code>jump_backward</code> | <code>&lt;C-o&gt;</code> | <code>&lt;D-[&gt;</code> | <code>&lt;A-Left&gt;</code> | <code>&lt;A-Left&gt;</code> | false |
+| <code>open_file_picker</code> | <code>&lt;C-S-o&gt;</code> | <code>&lt;D-o&gt;</code> |  |  | false |
+| <code>show_recent_files</code> | <code>gr</code> |  |  |  | false |
+| <code>save</code> | <code>&lt;C-s&gt;</code> | <code>&lt;D-s&gt;</code> |  |  | false |
+| <code>print</code> | <code>&lt;C-p&gt;</code> | <code>&lt;D-p&gt;</code> |  |  | false |
+| <code>help</code> | <code>&lt;F1&gt;</code>, <code>g?</code> |  |  |  | false |
+| <code>keybinds</code> |  |  |  |  | false |
+| <code>pan</code> | <code>&lt;Space&gt;</code> |  |  |  | false |
+| <code>autoscroll</code> |  |  |  |  | false |
+| <code>quit</code> | <code>q</code> | <code>&lt;D-q&gt;</code>, <code>&lt;D-w&gt;</code> | <code>&lt;C-q&gt;</code>, <code>&lt;C-w&gt;</code> | <code>&lt;C-q&gt;</code>, <code>&lt;C-w&gt;</code> | false |
 
 ## Lua tables
 
-- `gopdf.document`: `path`, `name`, `extension`, `exists`, `size_bytes`, and `page_count`.
-- `gopdf.options` (alias `gopdf.o`): all entries from the configuration-options table.
-- `gopdf.theme`: the theme; see [Theme](#theme). Read or assign whole, or one field at a time.
-- `gopdf.themes`: each built-in theme as a fresh table, such as `gopdf.themes.birch`.
-- `gopdf.cache`, `gopdf.ui`, and `gopdf.plugin`: functions are listed above.
+- `onon.document`: `path`, `name`, `extension`, `exists`, `size_bytes`, and `page_count`.
+- `onon.options` (alias `onon.o`): all entries from the configuration-options table.
+- `onon.theme`: the theme; see [Theme](#theme). Read or assign whole, or one field at a time.
+- `onon.themes`: each built-in theme as a fresh table, such as `onon.themes.birch`.
+- `onon.cache`, `onon.ui`, and `onon.plugin`: functions are listed above.
 
 ### Status bar
 
-Show or hide the status bar with `gopdf.options.status_bar_visible`. Its look comes from the theme: `status_bar_style` places it along the bottom or floating as pills, `status_bar_padding` sets its horizontal spacing and `font.size` its text size, and the `status`, `status_left` and `status_right` elements style it further. The `status_bar_left` and `status_bar_right` options are templates with these substitutions:
+Show or hide the status bar with `onon.options.status_bar_visible`. Its look comes from the theme: `status_bar_style` places it along the bottom or floating as pills, `status_bar_padding` sets its horizontal spacing and `font.size` its text size, and the `status`, `status_left` and `status_right` elements style it further. The `status_bar_left` and `status_bar_right` options are templates with these substitutions:
 
 | Placeholder | Value |
 |---|---|
