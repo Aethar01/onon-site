@@ -1,0 +1,80 @@
+---
+title: Getting started
+description: Install onon, open a document and learn the handful of keys that do most of the work.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+onon is a document viewer you drive from the keyboard. It opens PDF, XPS, EPUB, MOBI, FictionBook, comic book archives (CBZ, CBT) and most image formats, renders them with MuPDF, and keeps out of the way: no toolbar, just the page and a status bar you can hide.
+
+## Install
+
+<Tabs syncKey="os">
+<TabItem label="macOS">
+
+With [Homebrew](https://brew.sh):
+
+```sh
+brew install aethar01/tap/onon
+```
+
+Or download the disk image for Apple silicon or Intel from the [latest release](https://github.com/Aethar01/onon/releases/latest) and drag `onon.app` to Applications. onon runs on macOS 12 and later.
+
+</TabItem>
+<TabItem label="Windows">
+
+Download the installer from the [latest release](https://github.com/Aethar01/onon/releases/latest). It can make onon the default app for PDFs and other documents. A portable zip is there too, if you would rather not install.
+
+</TabItem>
+<TabItem label="Linux">
+
+Download the AppImage from the [latest release](https://github.com/Aethar01/onon/releases/latest), make it executable and run it:
+
+```sh
+chmod +x onon-*-linux-x86_64.AppImage
+./onon-*-linux-x86_64.AppImage paper.pdf
+```
+
+On Arch Linux and its derivatives, install [`onon-git`](https://aur.archlinux.org/packages/onon-git) from the AUR:
+
+```sh
+yay -S onon-git
+```
+
+</TabItem>
+</Tabs>
+
+## Open a document
+
+Open a file from your file manager, drop it on the window, or start onon from a terminal:
+
+```sh
+onon paper.pdf
+```
+
+With no file, onon reopens the document you read last, at the place you left it. Every document keeps its own place, zoom and marks between sessions.
+
+## The keys that matter
+
+| Key | Does |
+|---|---|
+| <kbd>j</kbd> / <kbd>k</kbd> | Scroll down / up |
+| <kbd>J</kbd> / <kbd>K</kbd> | Next / previous page |
+| <kbd>g</kbd><kbd>g</kbd> / <kbd>G</kbd> | First / last page |
+| <kbd>/</kbd> / <kbd>?</kbd> | Search forward / backward |
+| <kbd>n</kbd> / <kbd>N</kbd> | Next / previous match |
+| <kbd>o</kbd> | Outline (table of contents) |
+| <kbd>O</kbd> | Overview grid of every page |
+| <kbd>F</kbd> | Follow a link by typing its hint |
+| <kbd>g</kbd><kbd>r</kbd> | Recent files |
+| <kbd>:</kbd> | Command prompt |
+| <kbd>F1</kbd> or <kbd>g</kbd><kbd>?</kbd> | Help: every command, key and option |
+| <kbd>q</kbd> | Quit |
+
+Counts work the way they do in Vim: <kbd>1</kbd><kbd>0</kbd><kbd>j</kbd> scrolls ten steps and <kbd>3</kbd><kbd>J</kbd> moves three pages. Each system's usual shortcuts work too. On macOS that is Cmd-F to search, Cmd-Z to undo and Cmd-= to zoom, and the menu bar lists actions with their keys. On Windows and Linux it is Ctrl-F, Ctrl-Z, Ctrl-= and F11.
+
+## Next
+
+- [Reading](/docs/reading/) covers search, links, marks, highlights and presentation mode.
+- [Configuration](/docs/configuration/) shows where `config.lua` lives and how to change keys and options.
+- [Themes](/docs/themes/) changes how onon looks, from one colour to every panel's shape.

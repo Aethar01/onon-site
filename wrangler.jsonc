@@ -1,0 +1,10 @@
+// ononreader.com is static: Cloudflare serves what `npm run build` puts in dist.
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "onon-site",
+	"compatibility_date": "2026-10-01",
+	"assets": {
+		"directory": "./dist",
+		"not_found_handling": "404-page"
+	}
+}

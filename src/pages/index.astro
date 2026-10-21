@@ -1,0 +1,420 @@
+---
+import release from '../data/release.json';
+import Demo from '../components/Demo.astro';
+import Downloads from '../components/Downloads.astro';
+import mark from '../assets/onon.svg?raw';
+
+const title = 'onon, a keyboard-driven document viewer';
+const description =
+	'onon is a fast, keyboard-driven viewer for PDF, e-books, comics and images. Built on MuPDF, configured in Lua, for macOS, Windows and Linux.';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<meta property="og:title" content="onon" />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://ononreader.com/" />
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<link rel="canonical" href="https://ononreader.com/" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,650;1,7..72,400&display=swap"
+		/>
+		<script is:inline>
+			// Follow the theme chosen in the docs, if any.
+			try {
+				const t = localStorage.getItem('starlight-theme');
+				if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+			} catch {}
+		</script>
+	</head>
+	<body>
+		<header class="top">
+			<a class="brand" href="/" aria-label="onon home">
+				<span class="brand-mark" set:html={mark} />
+				<span>onon</span>
+			</a>
+			<nav aria-label="Main">
+				<a href="/docs/">Docs</a>
+				<a href="#download">Download</a>
+				<a href="https://github.com/Aethar01/onon">GitHub</a>
+			</nav>
+		</header>
+
+		<main>
+			<section class="hero">
+				<h1>Read with the keyboard. Nothing else on the page.</h1>
+				<p class="lede">
+					onon is a fast viewer for PDF, e-books, comics and images. It opens straight to the page,
+					remembers where you stopped, and does everything from a few keys. Built on MuPDF and
+					configured in Lua, for macOS, Windows and Linux.
+				</p>
+				<div class="actions">
+					<a class="button primary" href="#download" data-download-cta>Download onon</a>
+					<a class="button" href="/docs/">Get started</a>
+				</div>
+			</section>
+
+			<Demo />
+
+			<section class="features" aria-label="What onon does">
+				<article class="feature">
+					<h2>Your hands stay on the keys</h2>
+					<p>
+						Scroll with <kbd>j</kbd> and <kbd>k</kbd>, turn pages with <kbd>J</kbd> and <kbd>K</kbd>,
+						search with <kbd>/</kbd>. Counts, marks and a jump list work as they do in Vim, and
+						<kbd>F</kbd> follows any link by its hint. The usual Cmd and Ctrl shortcuts work too, for
+						the days your hands are on the mouse.
+					</p>
+				</article>
+				<article class="feature">
+					<h2>Opens what you have</h2>
+					<p class="formats">
+						PDF and XPS, EPUB, MOBI and FictionBook, CBZ and CBT comics, and PNG, JPEG, TIFF, GIF,
+						BMP, JPEG 2000, PSD and SVG images.
+					</p>
+					<p>
+						One window shows one document, at its own place and zoom. Open it next week and you are on
+						the same line, with your marks and highlights where you left them.
+					</p>
+				</article>
+				<article class="feature">
+					<h2>Written in Lua, styled to the last pixel</h2>
+					<p>
+						Change an option, bind a key to a function, or write a plugin with commands, events, timers
+						and background jobs. Themes go from one accent colour to the shape of every panel.
+					</p>
+					<pre class="code"><code><span class="c">-- ~/.config/onon/config.lua</span>
+onon.o.dual_page = <span class="k">true</span>
+onon.theme.font = {'{'} family = <span class="s">"Iosevka"</span>, size = <span class="n">15</span> {'}'}
+onon.bind(<span class="s">"&lt;C-d&gt;"</span>, onon.next_page)
+onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
+  onon.rotation(onon.rotation() + <span class="n">90</span>)
+<span class="k">end</span>)</code></pre>
+					<ul class="themes" aria-label="Built-in themes">
+						<li><span class="swatch" style="--a:#e6e4dd;--b:#4d7044;--c:#121412;--d:#9dc48b"></span>moss</li>
+						<li><span class="swatch" style="--a:#ebe5da;--b:#8b5e34;--c:#16130f;--d:#d6a670"></span>birch</li>
+						<li><span class="swatch" style="--a:#dcdcdc;--b:#3c3c3c;--c:#141414;--d:#c8c8c8"></span>classic</li>
+					</ul>
+				</article>
+				<article class="feature">
+					<h2>Works with your editor</h2>
+					<p>
+						Each window answers for its document. Rebuild a paper and the open window reloads; send it
+						to a line from Neovim, VS Code or any editor that runs a command.
+					</p>
+					<pre class="code"><code>onon --unique --goto 42:100:250 paper.pdf</code></pre>
+				</article>
+			</section>
+
+			<Downloads release={release} />
+		</main>
+
+		<footer class="foot">
+			<p>
+				onon is free software under the <a href="https://github.com/Aethar01/onon/blob/main/LICENSE">AGPL</a>,
+				built on <a href="https://mupdf.com/">MuPDF</a>. It was called gopdf until 0.8.0:
+				<a href="/docs/upgrading/">see what changed</a>.
+			</p>
+		</footer>
+	</body>
+</html>
+
+<style is:global>
+	/* Layout: a single reading column, the demo breaking out wider as the one bold element. */
+	:root {
+		--stone: #e6e4dd;
+		--paper: #fbfaf7;
+		--ink: #2a2e29;
+		--muted: #646b61;
+		--line: #d5d2c9;
+		--accent: #4d7044;
+		--accent-ink: #fbfaf7;
+		--select: #bfd9a9;
+		--search: #f2dc8c;
+		--search-current: #eaa660;
+		--code-bg: #f1f0eb;
+		--display: 'Literata', Georgia, 'Times New Roman', serif;
+		--body: 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+		--mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+		color-scheme: light;
+	}
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme='light']) {
+			--stone: #121412;
+			--paper: #1f2420;
+			--ink: #d9dfd4;
+			--muted: #8b9487;
+			--line: #363c35;
+			--accent: #9dc48b;
+			--accent-ink: #121412;
+			--select: #4f6b45;
+			--search: #f2dc8c;
+			--search-current: #eaa660;
+			--code-bg: #1c1f1c;
+			color-scheme: dark;
+		}
+	}
+	:root[data-theme='dark'] {
+		--stone: #121412;
+		--paper: #1f2420;
+		--ink: #d9dfd4;
+		--muted: #8b9487;
+		--line: #363c35;
+		--accent: #9dc48b;
+		--accent-ink: #121412;
+		--select: #4f6b45;
+		--search: #f2dc8c;
+		--search-current: #eaa660;
+		--code-bg: #1c1f1c;
+		color-scheme: dark;
+	}
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+	}
+	html {
+		background: var(--stone);
+	}
+	body {
+		margin: 0;
+		background: var(--stone);
+		color: var(--ink);
+		font: 17px/1.6 var(--body);
+		-webkit-font-smoothing: antialiased;
+	}
+	a {
+		color: var(--accent);
+		text-underline-offset: 0.18em;
+	}
+	a:focus-visible,
+	button:focus-visible,
+	[tabindex]:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 3px;
+	}
+	kbd {
+		font: 600 0.82em/1 var(--mono);
+		padding: 0.18em 0.42em;
+		border: 1px solid var(--line);
+		border-bottom-width: 2px;
+		border-radius: 5px;
+		background: var(--paper);
+		color: var(--ink);
+		white-space: nowrap;
+	}
+	h1,
+	h2,
+	h3 {
+		font-family: var(--display);
+		font-weight: 650;
+		letter-spacing: -0.015em;
+		text-wrap: balance;
+		margin: 0;
+		line-height: 1.15;
+	}
+	main,
+	.top,
+	.foot {
+		width: 100%;
+		max-width: 1120px;
+		margin: 0 auto;
+		padding-left: max(20px, env(safe-area-inset-left, 0px));
+		padding-right: max(20px, env(safe-area-inset-right, 0px));
+	}
+
+	.top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		padding-block: 20px;
+	}
+	.brand {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		font: 650 1.45rem/1 var(--display);
+		color: var(--ink);
+		text-decoration: none;
+	}
+	.brand-mark svg {
+		width: 34px;
+		height: 34px;
+		display: block;
+	}
+	.top nav {
+		display: flex;
+		gap: 22px;
+		flex-wrap: wrap;
+	}
+	.top nav a {
+		color: var(--ink);
+		text-decoration: none;
+		font-weight: 700;
+		font-size: 0.95rem;
+	}
+	.top nav a:hover {
+		color: var(--accent);
+	}
+
+	main {
+		display: grid;
+		gap: 88px;
+		padding-block: 40px 96px;
+	}
+	.hero {
+		display: grid;
+		gap: 22px;
+		max-width: 760px;
+	}
+	.hero h1 {
+		font-size: clamp(2.3rem, 5.6vw, 4rem);
+	}
+	.lede {
+		margin: 0;
+		font-size: 1.15rem;
+		color: var(--muted);
+		max-width: 62ch;
+	}
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		margin-top: 6px;
+	}
+	.button {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 12px 20px;
+		border-radius: 10px;
+		border: 1px solid var(--line);
+		background: var(--paper);
+		color: var(--ink);
+		font-weight: 700;
+		text-decoration: none;
+	}
+	.button:hover {
+		border-color: var(--accent);
+	}
+	.button.primary {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: var(--accent-ink);
+	}
+
+	.features {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 56px 64px;
+	}
+	.feature {
+		display: grid;
+		gap: 14px;
+		align-content: start;
+		min-width: 0;
+	}
+	.feature h2 {
+		font-size: 1.6rem;
+	}
+	.feature p {
+		margin: 0;
+		max-width: 60ch;
+	}
+	.formats {
+		font: 400 1.05rem/1.7 var(--display);
+		font-style: italic;
+		color: var(--accent);
+	}
+	.code {
+		margin: 0;
+		padding: 16px 18px;
+		background: var(--code-bg);
+		border: 1px solid var(--line);
+		border-radius: 10px;
+		overflow-x: auto;
+		font: 0.86rem/1.6 var(--mono);
+	}
+	.code .c {
+		color: var(--muted);
+	}
+	.code .k {
+		color: var(--accent);
+		font-weight: 600;
+	}
+	.code .s {
+		color: #9a6430;
+	}
+	.code .n {
+		color: #7a6a32;
+	}
+	:root[data-theme='dark'] .code .s,
+	:root[data-theme='dark'] .code .n {
+		color: var(--search);
+	}
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme='light']) .code .s,
+		:root:not([data-theme='light']) .code .n {
+			color: var(--search);
+		}
+	}
+	.themes {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 18px;
+		font: 0.85rem var(--mono);
+	}
+	.themes li {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.swatch {
+		width: 44px;
+		height: 22px;
+		border-radius: 6px;
+		border: 1px solid var(--line);
+		background: linear-gradient(90deg, var(--a) 0 25%, var(--b) 25% 50%, var(--c) 50% 75%, var(--d) 75%);
+	}
+
+	.foot {
+		padding-block: 32px 48px;
+		border-top: 1px solid var(--line);
+		color: var(--muted);
+		font-size: 0.92rem;
+	}
+	.foot p {
+		margin: 0;
+		max-width: 70ch;
+	}
+
+	@media (max-width: 760px) {
+		body {
+			font-size: 16px;
+		}
+		main {
+			gap: 64px;
+			padding-block: 16px 64px;
+		}
+		.features {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 44px;
+		}
+		.top nav {
+			gap: 16px;
+		}
+	}
+</style>

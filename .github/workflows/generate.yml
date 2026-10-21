@@ -1,0 +1,63 @@
+name: Update generated pages
+
+on:
+  repository_dispatch:
+    types:
+      - onon-update
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Regenerate every version's reference
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: generate
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    container: archlinux:base-devel
+    steps:
+      - name: Install build dependencies
+        run: pacman -Syu --noconfirm git go gtk3 pkgconf python github-cli
+
+      - name: Checkout site
+        uses: actions/checkout@v4
+        with:
+          path: site
+
+      - name: Checkout onon
+        uses: actions/checkout@v4
+        with:
+          repository: Aethar01/onon
+          ref: main
+          fetch-depth: 0
+          path: onon
+
+      - name: Regenerate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FORCE: ${{ inputs.force && '1' || '' }}
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE/site"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE/onon"
+          site/scripts/update-generated.sh onon
+
+      - name: Commit changes
+        working-directory: site
+        run: |
+          git add -A src/content/docs/docs/reference src/content/docs/docs/changelog.md src/data/release.json
+          if git diff --cached --quiet; then
+            echo "Nothing changed"
+            exit 0
+          fi
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -m "Update generated pages from onon $(git -C ../onon rev-parse --short HEAD)"
+          git push

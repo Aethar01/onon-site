@@ -1,0 +1,432 @@
+---
+// A working miniature of onon: two pages of Walden, scrolled, searched and
+// spread with onon's own default keys. Text is Thoreau's, public domain.
+const pages = [
+	{
+		label: '186',
+		heading: 'The Ponds',
+		paras: [
+			"A lake is the landscape's most beautiful and expressive feature. It is earth's eye; looking into which the beholder measures the depth of his own nature. The fluviatile trees next the shore are the slender eyelashes which fringe it, and the wooded hills and cliffs around are its overhanging brows.",
+			'A field of water betrays the spirit that is in the air. It is continually receiving new life and motion from above. It is intermediate in its nature between land and sky. On land only the grass and trees wave, but the water itself is rippled by the wind.',
+		],
+	},
+	{
+		label: '187',
+		heading: '',
+		paras: [
+			'Walden is a perfect forest mirror, set round with stones as precious to my eye as if fewer or rarer. Nothing so fair, so pure, and at the same time so large, as a lake, perchance, lies on the surface of the earth. Sky water. It needs no fence. Nations come and go without defiling it.',
+			'It is a mirror which no stone can crack, whose quicksilver will never wear off, whose gilding Nature continually repairs; no storms, no dust, can dim its surface ever fresh; a mirror in which all impurity presented to it sinks, swept and dusted by the sun\'s hazy brush.',
+		],
+	},
+];
+const keys = [
+	{ key: 'j', label: 'scroll down' },
+	{ key: 'k', label: 'scroll up' },
+	{ key: 'J', label: 'next page' },
+	{ key: 'K', label: 'previous page' },
+	{ key: '/', label: 'search' },
+	{ key: 'n', label: 'next match' },
+	{ key: 'N', label: 'previous match' },
+	{ key: 'd', label: 'dual pages' },
+];
+---
+
+<section class="demo" aria-label="Try onon">
+	<div
+		class="viewer"
+		id="viewer"
+		tabindex="0"
+		aria-label="A working miniature of onon showing two pages of Walden. Use the keys listed below it."
+	>
+		<div class="viewport" id="viewport">
+			<div class="pages" id="pages">
+				{
+					pages.map((p, i) => (
+						<article class="page" data-index={i} data-label={p.label}>
+							<span class="folio">{p.label}</span>
+							{p.heading && <h3>{p.heading}</h3>}
+							{p.paras.map((t) => (
+								<p data-text={t}>{t}</p>
+							))}
+						</article>
+					))
+				}
+			</div>
+		</div>
+		<div class="status" id="status">
+			<span class="left">
+				<span id="message">/water</span>
+				<label class="prompt" id="prompt" hidden>
+					<span aria-hidden="true">/</span>
+					<input id="query" type="text" autocomplete="off" spellcheck="false" aria-label="Search the demo" />
+				</label>
+			</span>
+			<span class="right"><span id="counter"></span>walden.pdf&nbsp;&nbsp;<span id="label">186</span>/352&nbsp;&nbsp;100%</span>
+		</div>
+	</div>
+	<ul class="keys" aria-label="Keys you can try">
+		{
+			keys.map((k) => (
+				<li>
+					<button type="button" data-key={k.key}>
+						<kbd>{k.key}</kbd>
+						<span>{k.label}</span>
+					</button>
+				</li>
+			))
+		}
+	</ul>
+	<p class="caption">These are onon's default keys. Press them here, or tap them. From <cite>Walden</cite>, Henry David Thoreau, 1854.</p>
+</section>
+
+<style>
+	.demo {
+		display: grid;
+		gap: 16px;
+		margin-inline: max(-20px, calc((100% - 1200px) / 2));
+	}
+	.viewer {
+		position: relative;
+		border-radius: 14px;
+		border: 1px solid var(--line);
+		background: color-mix(in srgb, var(--stone) 88%, var(--ink) 12%);
+		overflow: hidden;
+		box-shadow: 0 24px 60px -30px rgba(20, 30, 18, 0.45);
+	}
+	.viewer:focus-visible {
+		outline: 3px solid var(--accent);
+		outline-offset: 3px;
+	}
+	.viewport {
+		height: clamp(380px, 56vh, 540px);
+		overflow: hidden;
+		position: relative;
+	}
+	.pages {
+		display: grid;
+		justify-content: center;
+		grid-template-columns: minmax(0, 600px);
+		gap: 18px;
+		padding: 28px 20px 120px;
+		transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1);
+		will-change: transform;
+	}
+	.viewer.dual .pages {
+		grid-template-columns: repeat(2, minmax(0, 520px));
+		gap: 6px;
+	}
+	.page {
+		position: relative;
+		background: #fffdf8;
+		color: #22261f;
+		padding: 48px 56px 64px;
+		min-height: 560px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18), 0 8px 24px -12px rgba(0, 0, 0, 0.25);
+		font: 400 1.04rem/1.75 var(--display);
+		hyphens: auto;
+	}
+	.page h3 {
+		font: 500 0.82rem/1 var(--display);
+		letter-spacing: 0.22em;
+		text-transform: uppercase;
+		text-align: center;
+		margin: 6px 0 28px;
+		color: #4b5046;
+	}
+	.page p {
+		margin: 0 0 1em;
+		text-align: justify;
+		text-indent: 1.5em;
+	}
+	.folio {
+		position: absolute;
+		bottom: 26px;
+		left: 0;
+		right: 0;
+		text-align: center;
+		font: 0.78rem var(--display);
+		color: #7a7f74;
+	}
+	.page :global(mark) {
+		background: var(--search);
+		color: inherit;
+		border-radius: 2px;
+		padding: 0 1px;
+	}
+	.page :global(mark.current) {
+		background: var(--search-current);
+	}
+	.status {
+		display: flex;
+		justify-content: space-between;
+		gap: 16px;
+		padding: 9px 14px;
+		background: var(--paper);
+		border-top: 1px solid var(--line);
+		font: 0.86rem/1.3 var(--body);
+		color: var(--ink);
+		min-height: 38px;
+	}
+	.status .left {
+		min-width: 0;
+		flex: 1;
+		display: flex;
+	}
+	.status .right {
+		white-space: nowrap;
+		font-variant-numeric: tabular-nums;
+		color: var(--muted);
+	}
+	#counter:not(:empty) {
+		margin-right: 12px;
+		color: var(--ink);
+	}
+	.prompt {
+		display: flex;
+		gap: 2px;
+		flex: 1;
+		min-width: 0;
+	}
+	.prompt[hidden] {
+		display: none;
+	}
+	.prompt input {
+		flex: 1;
+		min-width: 0;
+		border: 0;
+		padding: 0;
+		background: transparent;
+		color: var(--ink);
+		font: inherit;
+		outline: none;
+		caret-color: var(--accent);
+	}
+	.keys {
+		list-style: none;
+		margin: 0;
+		padding: 0 4px;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 10px;
+	}
+	.keys button {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 6px 10px 6px 6px;
+		border: 1px solid transparent;
+		border-radius: 8px;
+		background: transparent;
+		color: var(--muted);
+		font: 0.9rem var(--body);
+		cursor: pointer;
+	}
+	.keys button:hover,
+	.keys button.pressed {
+		border-color: var(--line);
+		background: var(--paper);
+		color: var(--ink);
+	}
+	.caption {
+		margin: 0;
+		padding: 0 4px;
+		font-size: 0.85rem;
+		color: var(--muted);
+	}
+	@media (max-width: 760px) {
+		.page {
+			padding: 32px 26px 56px;
+			font-size: 0.98rem;
+			min-height: 480px;
+		}
+		.viewer.dual .pages {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.status .right #label + * {
+			display: none;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.pages {
+			transition: none;
+		}
+	}
+</style>
+
+<script>
+	const viewer = document.getElementById('viewer')!;
+	const viewport = document.getElementById('viewport')!;
+	const pagesEl = document.getElementById('pages')!;
+	const message = document.getElementById('message')!;
+	const prompt = document.getElementById('prompt')!;
+	const input = document.getElementById('query') as HTMLInputElement;
+	const counter = document.getElementById('counter')!;
+	const label = document.getElementById('label')!;
+	const pages = [...pagesEl.querySelectorAll<HTMLElement>('.page')];
+	const paras = [...pagesEl.querySelectorAll<HTMLElement>('p[data-text]')];
+
+	let y = 0;
+	let query = 'water';
+	let current = 0;
+	let pending = '';
+
+	const escape = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+	const maxY = () => Math.max(0, pagesEl.scrollHeight - viewport.clientHeight);
+
+	function scrollTo(next: number) {
+		y = Math.min(Math.max(0, next), maxY());
+		pagesEl.style.transform = `translateY(${-y}px)`;
+		// The page whose top half is in view is the current one, as in onon.
+		let at = pages[0];
+		for (const p of pages) if (p.offsetTop - 28 <= y + viewport.clientHeight / 3) at = p;
+		label.textContent = at.dataset.label!;
+	}
+
+	function render() {
+		let n = 0;
+		const re = query ? new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi') : null;
+		for (const p of paras) {
+			const text = p.dataset.text!;
+			if (!re) {
+				p.textContent = text;
+				continue;
+			}
+			let html = '';
+			let last = 0;
+			for (const m of text.matchAll(re)) {
+				html += escape(text.slice(last, m.index)) + `<mark data-n="${n}">${escape(m[0])}</mark>`;
+				last = m.index! + m[0].length;
+				n++;
+			}
+			p.innerHTML = html + escape(text.slice(last));
+		}
+		if (n === 0) current = 0;
+		else current = ((current % n) + n) % n;
+		const marks = pagesEl.querySelectorAll('mark');
+		marks.forEach((m, i) => m.classList.toggle('current', i === current));
+		counter.textContent = n ? `[${current + 1}/${n}]` : '';
+		return marks;
+	}
+
+	function showMatch(step: number) {
+		if (!query) return;
+		current += step;
+		const marks = render();
+		const m = marks[current] as HTMLElement | undefined;
+		if (!m) return;
+		const top = m.getBoundingClientRect().top - pagesEl.getBoundingClientRect().top;
+		if (top < y + 40 || top > y + viewport.clientHeight - 60) scrollTo(top - viewport.clientHeight / 3);
+	}
+
+	function say(text: string) {
+		message.textContent = text;
+	}
+
+	function openPrompt() {
+		prompt.hidden = false;
+		message.hidden = true;
+		input.value = '';
+		input.focus({ preventScroll: true });
+	}
+
+	function closePrompt(keep: boolean) {
+		prompt.hidden = true;
+		message.hidden = false;
+		if (keep) {
+			query = input.value;
+			current = 0;
+			render();
+			say(query ? `/${query}` : '');
+			showMatch(0);
+		}
+		viewer.focus({ preventScroll: true });
+	}
+
+	const step = () => viewport.clientHeight * 0.18;
+	function pageTop(i: number) {
+		return pages[Math.min(Math.max(i, 0), pages.length - 1)].offsetTop - 28;
+	}
+	function currentPage() {
+		return pages.findIndex((p) => p.dataset.label === label.textContent);
+	}
+
+	function press(key: string) {
+		const seq = pending + key;
+		pending = '';
+		switch (seq) {
+			case 'j': scrollTo(y + step()); break;
+			case 'k': scrollTo(y - step()); break;
+			case 'J': scrollTo(pageTop(currentPage() + 1)); break;
+			case 'K': scrollTo(pageTop(currentPage() - 1)); break;
+			case 'gg': scrollTo(0); break;
+			case 'G': scrollTo(maxY()); break;
+			case 'g': pending = 'g'; return true;
+			case '/': openPrompt(); break;
+			case 'n': showMatch(1); break;
+			case 'N': showMatch(-1); break;
+			case 'd':
+				viewer.classList.toggle('dual');
+				say(viewer.classList.contains('dual') ? 'dual' : 'single');
+				scrollTo(0);
+				break;
+			case 'Escape':
+				query = '';
+				render();
+				say('');
+				break;
+			default:
+				return false;
+		}
+		const button = document.querySelector<HTMLElement>(`.keys button[data-key="${CSS.escape(key)}"]`);
+		if (button) {
+			button.classList.add('pressed');
+			setTimeout(() => button.classList.remove('pressed'), 160);
+		}
+		return true;
+	}
+
+	// Keys reach the demo when it has focus, or when nothing else on the page does.
+	document.addEventListener('keydown', (e) => {
+		if (e.metaKey || e.ctrlKey || e.altKey) return;
+		if (!prompt.hidden) {
+			if (e.key === 'Enter') { e.preventDefault(); closePrompt(true); }
+			else if (e.key === 'Escape') { e.preventDefault(); closePrompt(false); }
+			return;
+		}
+		const target = e.target as HTMLElement;
+		const free = target === document.body || target === viewer || viewer.contains(target);
+		if (!free || target.closest('input, textarea, select')) return;
+		const r = viewer.getBoundingClientRect();
+		if (target !== viewer && (r.bottom < 0 || r.top > innerHeight)) return;
+		if (press(e.key)) e.preventDefault();
+	});
+	input.addEventListener('input', () => {
+		query = input.value;
+		current = 0;
+		render();
+	});
+	input.addEventListener('blur', () => {
+		if (!prompt.hidden) closePrompt(true);
+	});
+	document.querySelectorAll<HTMLButtonElement>('.keys button').forEach((b) =>
+		b.addEventListener('click', () => {
+			if (b.dataset.key !== '/') viewer.focus({ preventScroll: true });
+			press(b.dataset.key!);
+		}),
+	);
+	viewport.addEventListener('wheel', (e) => {
+		e.preventDefault();
+		scrollTo(y + e.deltaY);
+	}, { passive: false });
+	let touchY = 0;
+	viewport.addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
+	viewport.addEventListener('touchmove', (e) => {
+		const dy = touchY - e.touches[0].clientY;
+		touchY = e.touches[0].clientY;
+		if ((dy > 0 && y < maxY()) || (dy < 0 && y > 0)) e.preventDefault();
+		scrollTo(y + dy);
+	}, { passive: false });
+	addEventListener('resize', () => scrollTo(y));
+
+	render();
+</script>

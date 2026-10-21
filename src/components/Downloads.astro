@@ -1,0 +1,241 @@
+---
+// Download links for the latest release, from src/data/release.json,
+// which scripts/update-generated.sh writes from GitHub.
+interface Asset {
+	name: string;
+	url: string;
+	size: number;
+}
+interface Props {
+	release: { tag: string | null; url: string; date?: string; assets: Record<string, Asset | undefined> };
+}
+const { release } = Astro.props;
+const a = release.assets;
+const mb = (asset?: Asset) => (asset ? `${Math.round(asset.size / 1e6)} MB` : '');
+const link = (asset?: Asset) => asset?.url ?? release.url;
+
+const platforms = [
+	{
+		os: 'macos',
+		name: 'macOS',
+		note: 'macOS 12 or later',
+		files: [
+			{ label: 'Apple silicon', asset: a.macos_arm64, kind: 'Disk image' },
+			{ label: 'Intel', asset: a.macos_amd64, kind: 'Disk image' },
+		],
+		command: 'brew install aethar01/tap/onon',
+	},
+	{
+		os: 'windows',
+		name: 'Windows',
+		note: 'x86-64',
+		files: [
+			{ label: 'Installer', asset: a.windows_installer, kind: 'Sets up file associations' },
+			{ label: 'Portable', asset: a.windows_zip, kind: 'Zip, nothing installed' },
+		],
+	},
+	{
+		os: 'linux',
+		name: 'Linux',
+		note: 'x86-64',
+		files: [{ label: 'AppImage', asset: a.linux_appimage, kind: 'Runs on most distributions' }],
+		command: 'yay -S onon-git',
+	},
+];
+---
+
+<section class="downloads" id="download" aria-labelledby="download-title">
+	<div class="head">
+		<h2 id="download-title">Download</h2>
+		<p>
+			{release.tag ? <>Version {release.tag}{release.date && `, released ${release.date}`}. </> : null}
+			<a href={release.url}>Release notes</a> and <a href="https://github.com/Aethar01/onon/releases">every release</a>.
+		</p>
+	</div>
+	<div class="platforms">
+		{
+			platforms.map((p) => (
+				<div class="platform" data-os={p.os}>
+					<h3>{p.name}</h3>
+					<p class="note">
+						{p.note}
+						<span class="yours">Your system</span>
+					</p>
+					<ul>
+						{p.files.map((f) => (
+							<li>
+								<a class="file" href={link(f.asset)}>
+									<span class="label">{f.label}</span>
+									<span class="kind">
+										{f.kind}
+										{f.asset && <>, {mb(f.asset)}</>}
+									</span>
+								</a>
+							</li>
+						))}
+					</ul>
+					{p.command && (
+						<div class="command">
+							<code>{p.command}</code>
+							<button type="button" data-copy={p.command} aria-label={`Copy ${p.command}`}>
+								Copy
+							</button>
+						</div>
+					)}
+				</div>
+			))
+		}
+	</div>
+</section>
+
+<style>
+	.downloads {
+		display: grid;
+		gap: 28px;
+		scroll-margin-top: 24px;
+	}
+	.head {
+		display: grid;
+		gap: 8px;
+	}
+	.head h2 {
+		font-size: 2.2rem;
+	}
+	.head p {
+		margin: 0;
+		color: var(--muted);
+	}
+	.platforms {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 18px;
+	}
+	.platform {
+		display: grid;
+		gap: 12px;
+		align-content: start;
+		padding: 22px;
+		border: 1px solid var(--line);
+		border-radius: 14px;
+		background: var(--paper);
+	}
+	.platform.detected {
+		border-color: var(--accent);
+		box-shadow: inset 0 0 0 1px var(--accent);
+	}
+	.platform h3 {
+		font-size: 1.35rem;
+	}
+	.note {
+		margin: -6px 0 0;
+		color: var(--muted);
+		font-size: 0.9rem;
+		display: flex;
+		gap: 10px;
+		align-items: center;
+		flex-wrap: wrap;
+	}
+	.yours {
+		display: none;
+		font-size: 0.78rem;
+		font-weight: 700;
+		color: var(--accent);
+	}
+	.detected .yours {
+		display: inline;
+	}
+	ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 8px;
+	}
+	.file {
+		display: grid;
+		gap: 2px;
+		padding: 10px 12px;
+		border-radius: 9px;
+		border: 1px solid var(--line);
+		color: var(--ink);
+		text-decoration: none;
+	}
+	.file:hover {
+		border-color: var(--accent);
+	}
+	.detected li:first-child .file {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: var(--accent-ink);
+	}
+	.label {
+		font-weight: 700;
+	}
+	.kind {
+		font-size: 0.84rem;
+		opacity: 0.8;
+	}
+	.command {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 8px 8px 12px;
+		border-radius: 9px;
+		background: var(--code-bg);
+		min-width: 0;
+	}
+	.command code {
+		flex: 1;
+		min-width: 0;
+		overflow-wrap: anywhere;
+		font: 0.82rem var(--mono);
+	}
+	.command button {
+		border: 1px solid var(--line);
+		border-radius: 6px;
+		background: var(--paper);
+		color: var(--ink);
+		padding: 4px 10px;
+		font: 700 0.8rem var(--body);
+		cursor: pointer;
+	}
+	@media (max-width: 860px) {
+		.platforms {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+</style>
+
+<script>
+	// Put the visitor's own system first and point the hero button at it.
+	const ua = navigator.userAgent;
+	const os = /Mac/.test(ua) && !/iPhone|iPad/.test(ua) ? 'macos' : /Windows/.test(ua) ? 'windows' : /Linux|X11/.test(ua) && !/Android/.test(ua) ? 'linux' : null;
+	if (os) {
+		const card = document.querySelector<HTMLElement>(`.platform[data-os="${os}"]`);
+		if (card) {
+			card.classList.add('detected');
+			card.parentElement!.prepend(card);
+			const first = card.querySelector<HTMLAnchorElement>('.file');
+			const cta = document.querySelector<HTMLAnchorElement>('[data-download-cta]');
+			if (first && cta) {
+				cta.href = first.href;
+				cta.textContent = `Download for ${card.querySelector('h3')!.textContent}`;
+			}
+		}
+	}
+	document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((b) =>
+		b.addEventListener('click', async () => {
+			try {
+				await navigator.clipboard.writeText(b.dataset.copy!);
+				b.textContent = 'Copied';
+			} catch {
+				b.textContent = 'Press Ctrl-C';
+				const range = document.createRange();
+				range.selectNodeContents(b.previousElementSibling!);
+				getSelection()?.removeAllRanges();
+				getSelection()?.addRange(range);
+			}
+			setTimeout(() => (b.textContent = 'Copy'), 1600);
+		}),
+	);
+</script>

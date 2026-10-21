@@ -1,0 +1,32 @@
+{
+  "tag": "0.7.4",
+  "url": "https://github.com/Aethar01/onon/releases/tag/0.7.4",
+  "assets": {
+    "macos_amd64": {
+      "name": "gopdf-0.7.4-darwin-amd64.dmg",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.7.4/gopdf-0.7.4-darwin-amd64.dmg",
+      "size": 57020889
+    },
+    "macos_arm64": {
+      "name": "gopdf-0.7.4-darwin-arm64.dmg",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.7.4/gopdf-0.7.4-darwin-arm64.dmg",
+      "size": 55231466
+    },
+    "linux_appimage": {
+      "name": "gopdf-0.7.4-linux-x86_64.AppImage",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.7.4/gopdf-0.7.4-linux-x86_64.AppImage",
+      "size": 77429240
+    },
+    "windows_installer": {
+      "name": "gopdf-0.7.4-windows-amd64-installer.exe",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.7.4/gopdf-0.7.4-windows-amd64-installer.exe",
+      "size": 39375433
+    },
+    "windows_zip": {
+      "name": "gopdf-0.7.4-windows-amd64.zip",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.7.4/gopdf-0.7.4-windows-amd64.zip",
+      "size": 50700000
+    }
+  },
+  "date": "2026-10-19"
+}

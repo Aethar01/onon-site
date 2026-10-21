@@ -1,0 +1,63 @@
+/* The moss theme from onon itself: stone and moss green when light,
+   forest charcoal when dark. */
+:root {
+	--sl-font: 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+	--sl-font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+	--onon-display: 'Literata', Georgia, 'Times New Roman', serif;
+
+	--sl-color-accent-low: #26331f;
+	--sl-color-accent: #9dc48b;
+	--sl-color-accent-high: #d6ebc9;
+	--sl-color-white: #f1f4ee;
+	--sl-color-gray-1: #d9dfd4;
+	--sl-color-gray-2: #b8c0b3;
+	--sl-color-gray-3: #8b9487;
+	--sl-color-gray-4: #5d655a;
+	--sl-color-gray-5: #363c35;
+	--sl-color-gray-6: #1f2420;
+	--sl-color-black: #121412;
+}
+
+:root[data-theme='light'] {
+	--sl-color-accent-low: #d9e6cd;
+	--sl-color-accent: #4d7044;
+	--sl-color-accent-high: #2a4024;
+	--sl-color-white: #1c201b;
+	--sl-color-gray-1: #2a2e29;
+	--sl-color-gray-2: #474d45;
+	--sl-color-gray-3: #646b61;
+	--sl-color-gray-4: #9ea398;
+	--sl-color-gray-5: #d5d2c9;
+	--sl-color-gray-6: #eceae4;
+	--sl-color-gray-7: #f5f4f0;
+	--sl-color-black: #fbfaf7;
+}
+
+.sl-markdown-content :is(h1, h2, h3),
+h1#_top,
+.site-title {
+	font-family: var(--onon-display);
+	font-weight: 650;
+	letter-spacing: -0.01em;
+}
+
+.site-title {
+	font-size: 1.35rem;
+}
+
+/* Key names in prose, written <kbd>j</kbd>. */
+.sl-markdown-content kbd {
+	font-family: var(--sl-font-mono);
+	font-size: 0.85em;
+	padding: 0.05em 0.4em;
+	border: 1px solid var(--sl-color-gray-5);
+	border-bottom-width: 2px;
+	border-radius: 4px;
+	background: var(--sl-color-gray-6);
+}
+
+/* Generated reference tables are wide; let them scroll on their own. */
+.sl-markdown-content table {
+	display: block;
+	overflow-x: auto;
+}
