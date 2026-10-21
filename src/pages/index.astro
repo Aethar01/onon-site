@@ -124,6 +124,10 @@ onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
 				built on <a href="https://mupdf.com/">MuPDF</a>. It was called gopdf until 0.8.0:
 				<a href="/docs/upgrading/">see what changed</a>.
 			</p>
+			<p>
+				The name comes from Onon, an island in the West Reach of Ursula K. Le Guin's Earthsea, as it appears on her
+				map of the archipelago. Earthsea and its names are hers; onon is not affiliated with her estate.
+			</p>
 		</footer>
 	</body>
 </html>
@@ -399,6 +403,9 @@ onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
 	.foot p {
 		margin: 0;
 		max-width: 70ch;
+	}
+	.foot p + p {
+		margin-top: 10px;
 	}
 
 	@media (max-width: 760px) {

@@ -5,6 +5,8 @@ description: gopdf was renamed onon in 0.8.0. What carries over by itself and wh
 
 onon 0.8.0 is gopdf 0.7.4 under a new name, with a new icon. Your settings, history and plugins carry over, but anything that names gopdf needs changing.
 
+The new name comes from Onon, an island in the West Reach of Ursula K. Le Guin's Earthsea, as it appears on her map of the archipelago.
+
 ## What onon does for you
 
 The first time onon starts, it looks for gopdf's folders and copies each one to an `onon` folder beside it:
