@@ -70,8 +70,8 @@ const description =
 					<h2>Your hands stay on the keys</h2>
 					<p>
 						Scroll with <kbd>j</kbd> and <kbd>k</kbd>, turn pages with <kbd>J</kbd> and <kbd>K</kbd>,
-						search with <kbd>/</kbd>. Counts, marks and a jump list work as they do in Vim, and
-						<kbd>F</kbd> follows any link by its hint. The usual Cmd and Ctrl shortcuts work too, for
+						search with <kbd>/</kbd>. Counts, marks and a jump list work as they do in Vim, and <kbd>F</kbd>
+						follows any link by its hint. The usual Cmd and Ctrl shortcuts work too, for
 						the days your hands are on the mouse.
 					</p>
 				</article>
@@ -121,8 +121,8 @@ onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
 		<footer class="foot">
 			<p>
 				onon is free software under the <a href="https://github.com/Aethar01/onon/blob/main/LICENSE">AGPL</a>,
-				built on <a href="https://mupdf.com/">MuPDF</a>. It was called gopdf until 0.8.0:
-				<a href="/docs/upgrading/">see what changed</a>.
+				built on <a href="https://mupdf.com/">MuPDF</a>.
+				It was called gopdf until <span class="nowrap">0.8.0: <a href="/docs/upgrading/">see what changed</a>.</span>
 			</p>
 			<p>
 				The name comes from Onon, an island in the West Reach of Ursula K. Le Guin's Earthsea, as it appears on her
@@ -335,6 +335,9 @@ onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
 		margin: 0;
 		max-width: 60ch;
 	}
+	.nowrap {
+		white-space: nowrap;
+	}
 	.formats {
 		font: 400 1.05rem/1.7 var(--display);
 		font-style: italic;
@@ -402,7 +405,6 @@ onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
 	}
 	.foot p {
 		margin: 0;
-		max-width: 70ch;
 	}
 	.foot p + p {
 		margin-top: 10px;
