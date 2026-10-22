@@ -68,7 +68,7 @@ Keys in angle brackets use the names in the [reference](/docs/reference/#key-and
 
 ```text
 :page iv           go to the page labelled iv
-:search -i moss    search, ignoring case
+:search \Cmoss     search, matching case
 :fit width
 :open chapter2.pdf
 :theme birch
