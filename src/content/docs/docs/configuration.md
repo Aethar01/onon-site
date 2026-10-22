@@ -60,7 +60,7 @@ onon.bind_mouse("<C-wheel-up>", onon.zoom_in)
 
 Keys in angle brackets use the names in the [reference](/docs/reference/#key-and-mouse-names): `<CR>`, `<Esc>`, `<Space>`, `<PgDn>`, `<F1>`, `<C-a>` for Control, `<A-x>` for Alt, `<D-s>` for Cmd on macOS and `<S-Tab>` for Shift. `onon.unbind` and `onon.unbind_mouse` remove a binding. Sequences that start with a digit, `'` or `"` are taken by counts and marks.
 
-`:keybinds` edits bindings inside onon. Bindings changed there are kept in the session database and applied before `config.lua`, so your file has the last word.
+`:keybinds` edits bindings inside onon. Bindings changed there are kept in the session database and applied before `config.lua`, so where the two disagree, `config.lua` wins.
 
 ## Commands
 

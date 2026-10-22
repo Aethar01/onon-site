@@ -42,4 +42,4 @@ Drag to select text. <kbd>H</kbd> highlights the selection in a colour you pick.
 
 ## Help
 
-<kbd>F1</kbd>, <kbd>g</kbd><kbd>?</kbd> or `:help` lists every command, key binding, search modifier and option. Choosing a row runs it or fills in the prompt, so help doubles as a launcher.
+<kbd>F1</kbd>, <kbd>g</kbd><kbd>?</kbd> or `:help` lists every command, key binding, search modifier and option. Choosing a row runs it, or puts it in the prompt for you to finish.

@@ -3,9 +3,9 @@ import release from '../data/release.json';
 import Downloads from '../components/Downloads.astro';
 import mark from '../assets/onon.svg?raw';
 
-const title = 'onon, a keyboard-driven document viewer';
+const title = 'onon';
 const description =
-	'onon is a fast, keyboard-driven PDF viewer. Built on MuPDF, configured in Lua, for macOS, Windows and Linux.';
+	'onon is a PDF viewer you use from the keyboard. It is built on MuPDF, configured in Lua, and runs on macOS, Windows and Linux.';
 
 // The built-in themes, with the colours onon's own presets use
 // (internal/config/theme.go in onon), and what the site adds for code.
@@ -146,15 +146,15 @@ const themeCss = Object.entries(themes)
 				</header>
 
 				<div class="hero">
-					<h1>Read with the keyboard. Nothing else on the page.</h1>
+					<h1>A quiet reader for the keyboard</h1>
 					<p class="lede">
-						onon <span class="say">(said <i>oh-non</i>)</span> is a fast PDF viewer. It opens straight to
-						the page, remembers where you stopped, and does everything from a few keys. Built on MuPDF and
-						configured in Lua, for macOS, Windows and Linux.
+						onon <span class="say">(said <i>oh-non</i>)</span> is a small, fast PDF viewer. It opens at the
+						page you were reading and does what you ask of it from a few keys. It is built on MuPDF,
+						configured in Lua, and runs on macOS, Windows and Linux.
 					</p>
 					<p class="try">
-						This page reads like onon does. Press <kbd>j</kbd> and <kbd>k</kbd> to scroll, <kbd>J</kbd> for
-						the next page, <kbd>/</kbd> to search or <kbd>F</kbd> to follow a link.
+						This page behaves as onon would. <kbd>j</kbd> and <kbd>k</kbd> scroll it, <kbd>J</kbd> goes to the
+						next page, <kbd>/</kbd> searches and <kbd>F</kbd> follows a link.
 					</p>
 					<div class="actions">
 						<a class="button primary" href="#download" data-download-cta>Download onon</a>
@@ -163,20 +163,20 @@ const themeCss = Object.entries(themes)
 				</div>
 
 				<article class="feature">
-					<h2>Your hands stay on the keys</h2>
+					<h2>The keys</h2>
 					<p>
-						Scroll with <kbd>j</kbd> and <kbd>k</kbd>, turn pages with <kbd>J</kbd> and <kbd>K</kbd>,
-						search with <kbd>/</kbd>. Counts, marks and a jump list work as they do in Vim, and <kbd>F</kbd>
-						follows any link by its hint. The usual Cmd and Ctrl shortcuts work too, for
-						the days your hands are on the mouse.
+						<kbd>j</kbd> and <kbd>k</kbd> scroll, <kbd>J</kbd> and <kbd>K</kbd> turn the page,
+						and <kbd>/</kbd> searches. Counts, marks and the jump list work as they do in Vim. <kbd>F</kbd> puts
+						a short label on every link, and typing the label follows it. The ordinary Cmd and Ctrl shortcuts
+						work as well, for when your hand is already on the mouse.
 					</p>
 				</article>
 				<article class="feature">
-					<h2>Picks up where you stopped</h2>
+					<h2>Where you left off</h2>
 					<p>
-						One window shows one document, at its own place and zoom. Open it next week and you are on
-						the same line, with your marks and highlights where you left them. EPUB, comics and images
-						open too.
+						Each window holds one document, at its own place and zoom. Close it, come back a week later, and
+						it opens on the same line, with your marks and highlights where you put them. It reads EPUB, comic
+						book archives and images as well.
 					</p>
 				</article>
 				<span class="folio" aria-hidden="true">1</span>
@@ -184,10 +184,11 @@ const themeCss = Object.entries(themes)
 
 			<section class="sheet" data-sheet aria-label="Configuration">
 				<article class="feature">
-					<h2>Written in Lua, styled to the last pixel</h2>
+					<h2>Lua</h2>
 					<p>
-						Change an option, bind a key to a function, or write a plugin with commands, events, timers
-						and background jobs. Themes go from one accent colour to the shape of every panel.
+						Settings are a few lines of Lua. You can change an option, bind a key to a function of your own,
+						or write a plugin with its own commands, events, timers and background jobs. A theme can be one
+						accent colour, or it can redraw every panel.
 					</p>
 					<pre class="code"><code><span class="c">-- ~/.config/onon/config.lua</span>
 onon.o.dual_page = <span class="k">true</span>
@@ -216,15 +217,15 @@ onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
 						}
 					</div>
 					<p class="aside">
-						Pick one to restyle this page with it, or type <code>:theme birch</code>. <kbd>Ctrl</kbd>-<kbd>R</kbd>
-						switches to its dark colours, as it does in onon.
+						Pick one and this page takes its colours, or type <code>:theme birch</code>.
+						Pressing <kbd>Ctrl</kbd>-<kbd>R</kbd> switches to its dark colours, as it does in onon.
 					</p>
 				</article>
 				<article class="feature">
-					<h2>Works with your editor</h2>
+					<h2>Beside your editor</h2>
 					<p>
-						Each window answers for its document. Rebuild a paper and the open window reloads; send it
-						to a line from Neovim, VS Code or any editor that runs a command.
+						Each window answers for its own document. When you rebuild a paper, the open window reloads it,
+						and Neovim, VS Code or any editor that can run a command can send it to a line.
 					</p>
 					<pre class="code"><code>onon --unique --goto 42:100:250 paper.pdf</code></pre>
 				</article>
@@ -240,8 +241,8 @@ onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
 						It was called gopdf until <span class="nowrap">0.8.0: <a href="/docs/upgrading/">see what changed</a>.</span>
 					</p>
 					<p>
-						The name comes from Onon, an island in the West Reach of Ursula K. Le Guin's Earthsea, as it appears on her
-						map of the archipelago.
+						It takes its name from Onon, an island in the West Reach of Ursula K. Le Guin's Earthsea. You can find it on
+						her map of the archipelago.
 					</p>
 				</footer>
 				<span class="folio" aria-hidden="true">3</span>

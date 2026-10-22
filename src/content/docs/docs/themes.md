@@ -11,7 +11,7 @@ Colours, the interface font and the shape of panels all come from one table, `on
 | `birch` | Cream paper, bark-brown accent | Dark wood |
 | `classic` | The flat greys of earlier releases | Black |
 
-The quickest way to change theme is `:theme`. It lists the built-in themes and your theme files, and shows each one as you move to it. <kbd>Enter</kbd> keeps the selected theme and onon remembers it.
+`:theme` changes the theme. It lists the built-in themes and your theme files, and shows each one as you move to it. <kbd>Enter</kbd> keeps the selected theme and onon remembers it.
 
 ## Changing a few things
 
@@ -58,7 +58,7 @@ Theme files are found beside `config.lua` first, then in these directories:
 
 ## Elements
 
-To go further, restyle elements: each panel, menu row, status bar section and link hint has its own fill, border, shadows, padding and shape. A shape is SVG path data or a Lua function, and an element's `draw` function can draw its box however it likes:
+Past that, each element can be restyled. Each panel, menu row, status bar section and link hint has its own fill, border, shadows, padding and shape. A shape is SVG path data or a Lua function, and an element's `draw` function can draw its box however it likes:
 
 ```lua
 onon.theme.elements = {
