@@ -6,10 +6,101 @@ import mark from '../assets/onon.svg?raw';
 const title = 'onon, a keyboard-driven document viewer';
 const description =
 	'onon is a fast, keyboard-driven PDF viewer. Built on MuPDF, configured in Lua, for macOS, Windows and Linux.';
+
+// The built-in themes, with the colours onon's own presets use
+// (internal/config/theme.go in onon), and what the site adds for code.
+type Palette = Record<string, string>;
+const themes: Record<string, { light: Palette; dark: Palette; shape: Palette }> = {
+	moss: {
+		light: {
+			stone: '#e6e4dd', page: '#ffffff', paper: '#fbfaf7', ink: '#2a2e29', muted: '#646b61', line: '#d5d2c9',
+			accent: '#4d7044', 'accent-ink': '#fbfaf7', select: '#bfd9a9', search: '#f2dc8c',
+			'search-current': '#eaa660', 'code-bg': '#f1f0eb', 'code-s': '#9a6430', 'code-n': '#7a6a32',
+			'hint-bg': 'var(--accent)',
+		},
+		dark: {
+			stone: '#121412', page: '#1f2420', paper: '#232823', ink: '#d9dfd4', muted: '#8b9487', line: '#363c35',
+			accent: '#9dc48b', 'accent-ink': '#1c1f1c', select: '#4f6b45', search: '#7a6a32',
+			'search-current': '#9a6430', 'code-bg': '#1c1f1c', 'code-s': '#f2dc8c', 'code-n': '#f2dc8c',
+			'hint-bg': 'var(--accent)',
+		},
+		shape: { r: '10px', 'r-sm': '6px', 'sheet-r': '3px', 'sheet-shadow': '0 1px 2px #0000000f, 0 10px 30px #00000014' },
+	},
+	birch: {
+		light: {
+			stone: '#ebe5da', page: '#fffdf9', paper: '#fdfaf5', ink: '#34291f', muted: '#76675a', line: '#ddd3c3',
+			accent: '#8b5e34', 'accent-ink': '#fdfaf5', select: '#ecd3a4', search: '#f3dc8f',
+			'search-current': '#e59a5b', 'code-bg': '#f5f0e7', 'code-s': '#9a5f2c', 'code-n': '#7a6430',
+			'hint-bg': 'var(--accent)',
+		},
+		dark: {
+			stone: '#16130f', page: '#25211c', paper: '#29241e', ink: '#e6ddcf', muted: '#9a8d7e', line: '#3d362d',
+			accent: '#d6a670', 'accent-ink': '#211d18', select: '#6b5233', search: '#7a6430',
+			'search-current': '#9a5f2c', 'code-bg': '#211d18', 'code-s': '#f3dc8f', 'code-n': '#f3dc8f',
+			'hint-bg': 'var(--accent)',
+		},
+		shape: { r: '10px', 'r-sm': '6px', 'sheet-r': '3px', 'sheet-shadow': '0 1px 2px #0000000f, 0 10px 30px #00000014' },
+	},
+	classic: {
+		light: {
+			stone: '#dcdcdc', page: '#ffffff', paper: '#ffffff', ink: '#141414', muted: '#3c3c3c', line: '#c8c8c8',
+			accent: '#3c3c3c', 'accent-ink': '#ffffff', select: '#ffe066', search: '#ffe066',
+			'search-current': '#ff9632', 'code-bg': '#dcdcdc', 'code-s': '#141414', 'code-n': '#141414',
+			'hint-bg': 'var(--select)',
+		},
+		dark: {
+			stone: '#141414', page: '#111111', paper: '#141414', ink: '#ffffff', muted: '#c8c8c8', line: '#323232',
+			accent: '#c8c8c8', 'accent-ink': '#000000', select: '#ffe066', search: '#ffe066',
+			'search-current': '#ff9632', 'code-bg': '#141414', 'code-s': '#ffffff', 'code-n': '#ffffff',
+			'hint-bg': 'var(--select)',
+		},
+		shape: { r: '0px', 'r-sm': '0px', 'sheet-r': '0px', 'sheet-shadow': 'none' },
+	},
+};
+const names = Object.keys(themes).sort();
+
+// Highlights blend into the page as onon's drawTextHighlight does: on a
+// light page the colour multiplies the paper and ink, and on a dark one it
+// is added at alpha 0xa0. These are the colours that gives.
+const rgbOf = (c: string) => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
+const hexOf = (c: number[]) => '#' + c.map((v) => Math.round(Math.min(255, v)).toString(16).padStart(2, '0')).join('');
+const isLight = (c: number[]) => 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2] >= 128;
+function highlights(p: Palette) {
+	const page = rgbOf(p.page);
+	const blend = (under: string, over: string) => {
+		const u = rgbOf(under);
+		const o = rgbOf(over);
+		return hexOf(isLight(page) ? u.map((v, i) => (v * o[i]) / 255) : u.map((v, i) => v + (o[i] * 0xa0) / 255));
+	};
+	const out: Palette = {};
+	for (const k of ['select', 'search', 'search-current']) {
+		out[`hl-${k}`] = blend(p.page, p[k]);
+		out[`hl-${k}-ink`] = blend(p.ink, p[k]);
+	}
+	return out;
+}
+
+// Each theme's light colours, its dark ones when the system or the docs'
+// theme switch asks for dark, and its shape.
+const vars = (p: Palette) =>
+	Object.entries(p.page ? { ...p, ...highlights(p) } : p)
+		.map(([k, v]) => `--${k}:${v};`)
+		.join('');
+const themeCss = Object.entries(themes)
+	.map(([name, t]) => {
+		const sel = `:root[data-onon-theme='${name}']`;
+		const dark = vars(t.dark) + 'color-scheme:dark;';
+		return (
+			`${sel}{${vars(t.light)}${vars(t.shape)}color-scheme:light;}` +
+			`@media (prefers-color-scheme: dark){${sel}:not([data-theme='light']){${dark}}}` +
+			`${sel}[data-theme='dark']{${dark}}`
+		);
+	})
+	.join('\n');
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-onon-theme="moss">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -27,42 +118,50 @@ const description =
 			rel="stylesheet"
 			href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,650;1,7..72,400&display=swap"
 		/>
-		<script is:inline>
-			// Follow the theme chosen in the docs, if any.
+		<Fragment set:html={`<style>${themeCss}</style>`} />
+		<script is:inline define:vars={{ names }}>
+			// Follow the theme chosen in the docs, if any, and the onon theme
+			// picked here last time.
 			try {
 				const t = localStorage.getItem('starlight-theme');
 				if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+				const o = localStorage.getItem('onon-theme');
+				if (names.includes(o)) document.documentElement.dataset.ononTheme = o;
 			} catch {}
 		</script>
 	</head>
 	<body>
-		<header class="top">
-			<a class="brand" href="/" aria-label="onon home">
-				<span class="brand-mark" set:html={mark} />
-				<span>onon</span>
-			</a>
-			<nav aria-label="Main">
-				<a href="/docs/">Docs</a>
-				<a href="#download">Download</a>
-				<a href="https://github.com/Aethar01/onon">GitHub</a>
-			</nav>
-		</header>
+		<main class="canvas" data-canvas>
+			<section class="sheet" data-sheet aria-label="onon">
+				<header class="top">
+					<a class="brand" href="/" aria-label="onon home">
+						<span class="brand-mark" set:html={mark} />
+						<span>onon</span>
+					</a>
+					<nav aria-label="Main">
+						<a href="/docs/">Docs</a>
+						<a href="#download">Download</a>
+						<a href="https://github.com/Aethar01/onon">GitHub</a>
+					</nav>
+				</header>
 
-		<main>
-			<section class="hero">
-				<h1>Read with the keyboard. Nothing else on the page.</h1>
-				<p class="lede">
-					onon <span class="say">(said <i>oh-non</i>)</span> is a fast PDF viewer. It opens straight to
-					the page, remembers where you stopped, and does everything from a few keys. Built on MuPDF and
-					configured in Lua, for macOS, Windows and Linux.
-				</p>
-				<div class="actions">
-					<a class="button primary" href="#download" data-download-cta>Download onon</a>
-					<a class="button" href="/docs/">Get started</a>
+				<div class="hero">
+					<h1>Read with the keyboard. Nothing else on the page.</h1>
+					<p class="lede">
+						onon <span class="say">(said <i>oh-non</i>)</span> is a fast PDF viewer. It opens straight to
+						the page, remembers where you stopped, and does everything from a few keys. Built on MuPDF and
+						configured in Lua, for macOS, Windows and Linux.
+					</p>
+					<p class="try">
+						This page reads like onon does. Press <kbd>j</kbd> and <kbd>k</kbd> to scroll, <kbd>J</kbd> for
+						the next page, <kbd>/</kbd> to search or <kbd>F</kbd> to follow a link.
+					</p>
+					<div class="actions">
+						<a class="button primary" href="#download" data-download-cta>Download onon</a>
+						<a class="button" href="/docs/">Get started</a>
+					</div>
 				</div>
-			</section>
 
-			<section class="features" aria-label="What onon does">
 				<article class="feature">
 					<h2>Your hands stay on the keys</h2>
 					<p>
@@ -80,6 +179,10 @@ const description =
 						open too.
 					</p>
 				</article>
+				<span class="folio" aria-hidden="true">1</span>
+			</section>
+
+			<section class="sheet" data-sheet aria-label="Configuration">
 				<article class="feature">
 					<h2>Written in Lua, styled to the last pixel</h2>
 					<p>
@@ -88,16 +191,34 @@ const description =
 					</p>
 					<pre class="code"><code><span class="c">-- ~/.config/onon/config.lua</span>
 onon.o.dual_page = <span class="k">true</span>
+<span class="theme-line" data-theme-line>onon.theme = <span class="s" data-theme-name>"moss"</span></span>
 onon.theme.font = {'{'} family = <span class="s">"Iosevka"</span>, size = <span class="n">15</span> {'}'}
 onon.bind(<span class="s">"&lt;C-d&gt;"</span>, onon.next_page)
 onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
   onon.rotation(onon.rotation() + <span class="n">90</span>)
 <span class="k">end</span>)</code></pre>
-					<ul class="themes" aria-label="Built-in themes">
-						<li><span class="swatch" style="--a:#e6e4dd;--b:#4d7044;--c:#121412;--d:#9dc48b"></span>moss</li>
-						<li><span class="swatch" style="--a:#ebe5da;--b:#8b5e34;--c:#16130f;--d:#d6a670"></span>birch</li>
-						<li><span class="swatch" style="--a:#dcdcdc;--b:#3c3c3c;--c:#141414;--d:#c8c8c8"></span>classic</li>
-					</ul>
+					<div class="themes" role="group" aria-label="Built-in themes">
+						{
+							names.map((name) => {
+								const t = themes[name];
+								return (
+									<button
+										type="button"
+										data-set-theme={name}
+										aria-pressed={name === 'moss' ? 'true' : 'false'}
+										style={`--a:${t.light.stone};--b:${t.light.accent};--c:${t.dark.stone};--d:${t.dark.accent}`}
+									>
+										<span class="swatch" />
+										{name}
+									</button>
+								);
+							})
+						}
+					</div>
+					<p class="aside">
+						Pick one to restyle this page with it, or type <code>:theme birch</code>. <kbd>Ctrl</kbd>-<kbd>R</kbd>
+						switches to its dark colours, as it does in onon.
+					</p>
 				</article>
 				<article class="feature">
 					<h2>Works with your editor</h2>
@@ -107,73 +228,463 @@ onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
 					</p>
 					<pre class="code"><code>onon --unique --goto 42:100:250 paper.pdf</code></pre>
 				</article>
+				<span class="folio" aria-hidden="true">2</span>
 			</section>
 
-			<Downloads release={release} />
+			<section class="sheet" data-sheet aria-label="Download">
+				<Downloads release={release} />
+				<footer class="foot">
+					<p>
+						onon is free software under the <a href="https://github.com/Aethar01/onon/blob/main/LICENSE">AGPL</a>,
+						built on <a href="https://mupdf.com/">MuPDF</a>.
+						It was called gopdf until <span class="nowrap">0.8.0: <a href="/docs/upgrading/">see what changed</a>.</span>
+					</p>
+					<p>
+						The name comes from Onon, an island in the West Reach of Ursula K. Le Guin's Earthsea, as it appears on her
+						map of the archipelago.
+					</p>
+				</footer>
+				<span class="folio" aria-hidden="true">3</span>
+			</section>
 		</main>
 
-		<footer class="foot">
-			<p>
-				onon is free software under the <a href="https://github.com/Aethar01/onon/blob/main/LICENSE">AGPL</a>,
-				built on <a href="https://mupdf.com/">MuPDF</a>.
-				It was called gopdf until <span class="nowrap">0.8.0: <a href="/docs/upgrading/">see what changed</a>.</span>
-			</p>
-			<p>
-				The name comes from Onon, an island in the West Reach of Ursula K. Le Guin's Earthsea, as it appears on her
-				map of the archipelago.
-			</p>
-		</footer>
+		<div class="status">
+			<div class="status-left">
+				<span class="msg" data-msg aria-live="polite"></span>
+				<form class="prompt" data-prompt hidden>
+					<label><span data-prompt-char></span><input aria-label="Command" autocomplete="off" spellcheck="false" /></label>
+				</form>
+			</div>
+			<div class="status-right" aria-hidden="true">
+				<span>onon.pdf</span><span data-label>1/3</span><span data-zoom>100%</span>
+			</div>
+		</div>
+		<div class="hints" data-hints aria-hidden="true"></div>
 	</body>
 </html>
 
+<script>
+	// The page behaves as a document open in onon: its default keys move
+	// through the sheets, search them and follow links by hint, and :theme
+	// and the swatches restyle it with onon's built-in themes.
+	const root = document.documentElement;
+	const canvas = document.querySelector<HTMLElement>('[data-canvas]')!;
+	const sheets = [...document.querySelectorAll<HTMLElement>('[data-sheet]')];
+	const msg = document.querySelector<HTMLElement>('[data-msg]')!;
+	const form = document.querySelector<HTMLFormElement>('[data-prompt]')!;
+	const input = form.querySelector('input')!;
+	const promptChar = form.querySelector<HTMLElement>('[data-prompt-char]')!;
+	const labelEl = document.querySelector<HTMLElement>('[data-label]')!;
+	const zoomEl = document.querySelector<HTMLElement>('[data-zoom]')!;
+	const hintLayer = document.querySelector<HTMLElement>('[data-hints]')!;
+	const swatches = [...document.querySelectorAll<HTMLButtonElement>('[data-set-theme]')];
+	const names = swatches.map((b) => b.dataset.setTheme!);
+
+	const idle = 'j k scroll   J K page   / search   F follow link   :theme';
+	let msgTimer = 0;
+	function say(text: string) {
+		msg.textContent = text;
+		msg.classList.remove('idle');
+		clearTimeout(msgTimer);
+		msgTimer = window.setTimeout(() => {
+			msg.textContent = idle;
+			msg.classList.add('idle');
+		}, 4000);
+	}
+	msg.textContent = idle;
+	msg.classList.add('idle');
+
+	// Themes
+
+	function showTheme(name: string) {
+		document.querySelectorAll('[data-theme-name]').forEach((e) => (e.textContent = `"${name}"`));
+		swatches.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.setTheme === name)));
+	}
+	function setTheme(name: string) {
+		name = name.trim().toLowerCase();
+		if (!names.includes(name)) {
+			say(`unknown theme "${name}"; expected one of ${names.join(', ')}`);
+			return;
+		}
+		root.dataset.ononTheme = name;
+		showTheme(name);
+		try {
+			localStorage.setItem('onon-theme', name);
+		} catch {}
+		const line = document.querySelector<HTMLElement>('[data-theme-line]')!;
+		line.classList.remove('changed');
+		void line.offsetWidth;
+		line.classList.add('changed');
+		say(`theme ${name}`);
+	}
+	showTheme(root.dataset.ononTheme!);
+	swatches.forEach((b) => b.addEventListener('click', () => setTheme(b.dataset.setTheme!)));
+
+	function isDark() {
+		const t = root.dataset.theme;
+		return t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+	}
+	function setDark(dark: boolean) {
+		const t = dark ? 'dark' : 'light';
+		root.dataset.theme = t;
+		try {
+			localStorage.setItem('starlight-theme', t);
+		} catch {}
+		say(dark ? 'alternate colors on' : 'alternate colors off');
+	}
+
+	// Scrolling. j and k glide as onon's keyboard smooth_scroll does: each
+	// press, a held key's repeats included, moves a target scroll_step
+	// pixels on, and the view covers smooth_scroll_dampening of what is left
+	// every 16ms. Pages, ends and matches are jumped to at once, as in onon.
+
+	const step = 64;
+	const dampening = matchMedia('(prefers-reduced-motion: reduce)').matches ? 1 : 0.8;
+	const goal = { x: 0, y: 0 };
+	const pos = { x: 0, y: 0 };
+	let gliding = 0;
+	let last = 0;
+	function glide(dx: number, dy: number) {
+		if (!gliding) {
+			pos.x = goal.x = scrollX;
+			pos.y = goal.y = scrollY;
+		}
+		const el = document.documentElement;
+		goal.x = Math.max(0, Math.min(el.scrollWidth - innerWidth, goal.x + dx));
+		goal.y = Math.max(0, Math.min(el.scrollHeight - innerHeight, goal.y + dy));
+		if (!gliding) {
+			last = performance.now();
+			gliding = requestAnimationFrame(frameGlide);
+		}
+	}
+	function frameGlide(now: number) {
+		// Something else scrolled the page, such as the wheel: let it.
+		if (Math.abs(scrollY - pos.y) > 2 || Math.abs(scrollX - pos.x) > 2) {
+			gliding = 0;
+			return;
+		}
+		const f = 1 - Math.pow(1 - dampening, Math.max(0, now - last) / 16);
+		last = Math.max(last, now);
+		pos.x += (goal.x - pos.x) * f;
+		pos.y += (goal.y - pos.y) * f;
+		if (Math.abs(goal.x - pos.x) < 0.25 && Math.abs(goal.y - pos.y) < 0.25) {
+			pos.x = goal.x;
+			pos.y = goal.y;
+		}
+		scrollTo(pos.x, pos.y);
+		gliding = pos.x === goal.x && pos.y === goal.y ? 0 : requestAnimationFrame(frameGlide);
+	}
+
+	// Pages and zoom
+
+	const zooms = [50, 67, 75, 80, 90, 100, 110, 125, 150, 175, 200];
+	let zoom = 100;
+	function setZoom(z: number) {
+		zoom = z;
+		canvas.style.zoom = String(z / 100);
+		zoomEl.textContent = `${z}%`;
+	}
+	function stepZoom(by: number) {
+		const i = zooms.indexOf(zoom) + by;
+		setZoom(zooms[Math.max(0, Math.min(zooms.length - 1, i))]);
+	}
+
+	const tops = () => sheets.map((s) => s.getBoundingClientRect().top + scrollY - 16);
+	function current() {
+		const mid = innerHeight * 0.4;
+		const i = sheets.findIndex((s) => s.getBoundingClientRect().bottom > mid);
+		return i === -1 ? sheets.length - 1 : i;
+	}
+	function turn(by: number) {
+		const t = tops();
+		let i = by > 0 ? t.findIndex((top) => top > scrollY + 20) : t.findLastIndex((top) => top < scrollY - 20);
+		if (i === -1) i = by > 0 ? t.length - 1 : 0;
+		i = Math.max(0, Math.min(t.length - 1, i + (by > 0 ? by - 1 : by + 1)));
+		scrollTo(0, t[i]);
+	}
+	let frame = 0;
+	const showPage = () => (labelEl.textContent = `${current() + 1}/${sheets.length}`);
+	addEventListener(
+		'scroll',
+		() => {
+			cancelAnimationFrame(frame);
+			frame = requestAnimationFrame(showPage);
+			if (hints.length) endHints();
+		},
+		{ passive: true },
+	);
+	addEventListener('load', showPage);
+
+	// Search, with the CSS highlight API where the browser has it
+
+	const canHighlight = 'highlights' in CSS;
+	let matches: Range[] = [];
+	let at = -1;
+	let query = '';
+	function findAll(q: string) {
+		const needle = q.toLowerCase();
+		const found: Range[] = [];
+		const walker = document.createTreeWalker(canvas, NodeFilter.SHOW_TEXT);
+		for (let n = walker.nextNode() as Text | null; n; n = walker.nextNode() as Text | null) {
+			const text = n.data.toLowerCase();
+			for (let i = text.indexOf(needle); i !== -1; i = text.indexOf(needle, i + needle.length)) {
+				const r = new Range();
+				r.setStart(n, i);
+				r.setEnd(n, i + needle.length);
+				if (r.getClientRects().length) found.push(r);
+			}
+		}
+		return found;
+	}
+	function showMatch() {
+		if (canHighlight) CSS.highlights.set('search-current', new Highlight(matches[at]));
+		const rect = matches[at].getBoundingClientRect();
+		if (rect.top < 60 || rect.bottom > innerHeight - 80) scrollBy(0, rect.top - innerHeight / 3);
+		say(`/${query}  [${at + 1}/${matches.length}]`);
+	}
+	function search(q: string, dir: number) {
+		clearSearch();
+		if (!q) return;
+		if (!canHighlight) {
+			say('search needs a newer browser');
+			return;
+		}
+		query = q;
+		matches = findAll(q);
+		if (!matches.length) {
+			say(`no matches for "${q}"`);
+			return;
+		}
+		CSS.highlights.set('search', new Highlight(...matches));
+		const below = matches.findIndex((r) => r.getBoundingClientRect().top >= 0);
+		at = dir > 0 ? (below === -1 ? 0 : below) : (below <= 0 ? matches.length : below) - 1;
+		showMatch();
+	}
+	function nextMatch(by: number) {
+		if (!matches.length) {
+			say('no search');
+			return;
+		}
+		at = (((at + by) % matches.length) + matches.length) % matches.length;
+		showMatch();
+	}
+	function clearSearch() {
+		matches = [];
+		at = -1;
+		if (canHighlight) CSS.highlights.clear();
+	}
+
+	// Link hints
+
+	const hintChars = 'asdfghjkl';
+	let hints: { label: string; el: HTMLElement; tag: HTMLElement }[] = [];
+	let typed = '';
+	function startHints() {
+		const targets = [...document.querySelectorAll<HTMLElement>('a[href], button')].filter((el) => {
+			const r = el.getBoundingClientRect();
+			return r.width > 0 && r.bottom > 0 && r.top < innerHeight - 30 && r.right > 0 && r.left < innerWidth;
+		});
+		if (!targets.length) {
+			say('no links on screen');
+			return;
+		}
+		const labels =
+			targets.length <= hintChars.length
+				? [...hintChars]
+				: [...hintChars].flatMap((a) => [...hintChars].map((b) => a + b));
+		typed = '';
+		hints = targets.map((el, i) => {
+			const r = el.getBoundingClientRect();
+			const tag = document.createElement('span');
+			tag.className = 'hint';
+			tag.textContent = labels[i];
+			tag.style.left = `${Math.max(2, r.left - 4)}px`;
+			tag.style.top = `${Math.max(2, r.top - 8)}px`;
+			hintLayer.append(tag);
+			return { label: labels[i], el, tag };
+		});
+		say('follow link');
+	}
+	function typeHint(key: string) {
+		typed += key;
+		const left = hints.filter((h) => h.label.startsWith(typed));
+		if (!left.length) {
+			endHints();
+			say(`no hint "${typed}"`);
+			return;
+		}
+		if (left.length === 1 && left[0].label === typed) {
+			const el = left[0].el;
+			endHints();
+			el.focus({ preventScroll: true });
+			el.click();
+			return;
+		}
+		for (const h of hints) {
+			const on = h.label.startsWith(typed);
+			h.tag.hidden = !on;
+			if (on) h.tag.innerHTML = `<b>${typed}</b>${h.label.slice(typed.length)}`;
+		}
+	}
+	function endHints() {
+		hints = [];
+		hintLayer.replaceChildren();
+	}
+
+	// The prompt for :, / and ?
+
+	let mode = '';
+	function openPrompt(ch: string) {
+		mode = ch;
+		promptChar.textContent = ch;
+		input.setAttribute('aria-label', ch === ':' ? 'Command' : 'Search');
+		msg.hidden = true;
+		form.hidden = false;
+		input.value = '';
+		input.focus({ preventScroll: true });
+	}
+	function closePrompt() {
+		form.hidden = true;
+		msg.hidden = false;
+		input.blur();
+	}
+	form.addEventListener('submit', (e) => {
+		e.preventDefault();
+		const v = input.value.trim();
+		closePrompt();
+		if (mode === ':') run(v);
+		else search(v, mode === '?' ? -1 : 1);
+	});
+	input.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape' || (e.key === 'Backspace' && !input.value)) {
+			e.preventDefault();
+			closePrompt();
+		}
+	});
+	input.addEventListener('blur', () => !form.hidden && closePrompt());
+
+	function run(line: string) {
+		const [cmd, ...rest] = line.split(/\s+/);
+		const arg = rest.join(' ');
+		if (!cmd) return;
+		if (cmd === 'theme') {
+			if (arg) setTheme(arg);
+			else say(`themes: ${names.join(', ')}; this page uses ${root.dataset.ononTheme}`);
+		} else if (cmd === 'set' && arg.startsWith('theme=')) {
+			setTheme(arg.slice('theme='.length));
+		} else if (cmd === 'set' && /^alt_colors(=(true|false))?$/.test(arg)) {
+			setDark(!arg.endsWith('=false'));
+		} else if (cmd === 'help' || cmd === 'h') {
+			location.href = '/docs/';
+		} else if (cmd === 'q' || cmd === 'quit') {
+			say('this window stays open; close the tab instead');
+		} else {
+			say(`unknown command: ${cmd}`);
+		}
+	}
+
+	// Keys
+
+	let count = '';
+	let pending = '';
+	addEventListener('keydown', (e) => {
+		if (e.defaultPrevented || e.isComposing) return;
+		if ((e.target as HTMLElement).closest('input, textarea, select, [contenteditable]')) return;
+		if (e.ctrlKey && !e.metaKey && !e.altKey && e.key.toLowerCase() === 'r' && !e.shiftKey) {
+			e.preventDefault();
+			setDark(!isDark());
+			return;
+		}
+		if (e.metaKey || e.ctrlKey || e.altKey) return;
+		const k = e.key;
+
+		if (hints.length) {
+			e.preventDefault();
+			if (k === 'Escape') endHints();
+			else if (hintChars.includes(k)) typeHint(k);
+			return;
+		}
+		if (/^[1-9]$/.test(k) || (k === '0' && count)) {
+			count += k;
+			return;
+		}
+		const n = Math.max(1, Number(count) || 1);
+		count = '';
+
+		if (pending === 'g') {
+			pending = '';
+			if (k === 'g') scrollTo(0, 0);
+			else if (k === '?') say(idle + '   n N next match   gg G ends   + - 0 zoom   Ctrl-R dark');
+			else return;
+			e.preventDefault();
+			return;
+		}
+
+		switch (k) {
+			case 'j':
+			case 'k':
+				glide(0, (k === 'j' ? 1 : -1) * step * n);
+				break;
+			case 'h':
+			case 'l':
+				glide((k === 'l' ? 1 : -1) * step * n, 0);
+				break;
+			case 'J':
+				turn(n);
+				break;
+			case 'K':
+				turn(-n);
+				break;
+			case 'G':
+				scrollTo(0, document.body.scrollHeight);
+				break;
+			case 'g':
+				pending = 'g';
+				break;
+			case '/':
+			case '?':
+			case ':':
+				openPrompt(k);
+				break;
+			case 'n':
+				nextMatch(n);
+				break;
+			case 'N':
+				nextMatch(-n);
+				break;
+			case 'F':
+				startHints();
+				break;
+			case '+':
+			case '=':
+				stepZoom(n);
+				break;
+			case '-':
+				stepZoom(-n);
+				break;
+			case '0':
+				setZoom(100);
+				break;
+			case 'Escape':
+				if (!matches.length) return;
+				clearSearch();
+				say('');
+				break;
+			default:
+				return;
+		}
+		e.preventDefault();
+	});
+</script>
+
 <style is:global>
-	/* Layout: a single reading column above the wider feature grid and downloads. */
+	/* The page is a document open in onon: sheets on the theme's canvas, with
+	   its status bar along the bottom. Colours come from the theme above. */
 	:root {
-		--stone: #e6e4dd;
-		--paper: #fbfaf7;
-		--ink: #2a2e29;
-		--muted: #646b61;
-		--line: #d5d2c9;
-		--accent: #4d7044;
-		--accent-ink: #fbfaf7;
-		--select: #bfd9a9;
-		--search: #f2dc8c;
-		--search-current: #eaa660;
-		--code-bg: #f1f0eb;
 		--display: 'Literata', Georgia, 'Times New Roman', serif;
 		--body: 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
 		--mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-		color-scheme: light;
-	}
-	@media (prefers-color-scheme: dark) {
-		:root:not([data-theme='light']) {
-			--stone: #121412;
-			--paper: #1f2420;
-			--ink: #d9dfd4;
-			--muted: #8b9487;
-			--line: #363c35;
-			--accent: #9dc48b;
-			--accent-ink: #121412;
-			--select: #4f6b45;
-			--search: #f2dc8c;
-			--search-current: #eaa660;
-			--code-bg: #1c1f1c;
-			color-scheme: dark;
-		}
-	}
-	:root[data-theme='dark'] {
-		--stone: #121412;
-		--paper: #1f2420;
-		--ink: #d9dfd4;
-		--muted: #8b9487;
-		--line: #363c35;
-		--accent: #9dc48b;
-		--accent-ink: #121412;
-		--select: #4f6b45;
-		--search: #f2dc8c;
-		--search-current: #eaa660;
-		--code-bg: #1c1f1c;
-		color-scheme: dark;
+		--status-h: 34px;
 	}
 	*,
 	*::before,
@@ -182,6 +693,8 @@ onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
 	}
 	html {
 		background: var(--stone);
+		scroll-padding-top: 16px;
+		scroll-padding-bottom: var(--status-h);
 	}
 	body {
 		margin: 0;
@@ -199,6 +712,18 @@ onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
 	[tabindex]:focus-visible {
 		outline: 2px solid var(--accent);
 		outline-offset: 3px;
+	}
+	::selection {
+		background: var(--hl-select);
+		color: var(--hl-select-ink);
+	}
+	::highlight(search) {
+		background: var(--hl-search);
+		color: var(--hl-search-ink);
+	}
+	::highlight(search-current) {
+		background: var(--hl-search-current);
+		color: var(--hl-search-current-ink);
 	}
 	kbd {
 		font: 600 0.82em/1 var(--mono);
@@ -220,14 +745,37 @@ onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
 		margin: 0;
 		line-height: 1.15;
 	}
-	main,
-	.top,
-	.foot {
+
+	.canvas {
+		display: grid;
+		gap: 24px;
+		justify-items: center;
+		padding: 24px max(12px, env(safe-area-inset-left, 0px)) calc(var(--status-h) + 24px);
+	}
+	.sheet {
+		position: relative;
 		width: 100%;
-		max-width: 1120px;
-		margin: 0 auto;
-		padding-left: max(20px, env(safe-area-inset-left, 0px));
-		padding-right: max(20px, env(safe-area-inset-right, 0px));
+		max-width: 860px;
+		min-width: 0;
+		aspect-ratio: 8.5 / 11;
+		display: flex;
+		flex-direction: column;
+		gap: 56px;
+		padding: clamp(28px, 8vw, 76px) clamp(20px, 8vw, 80px) 72px;
+		background: var(--page);
+		border-radius: var(--sheet-r);
+		box-shadow: var(--sheet-shadow);
+		outline: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+		scroll-margin-top: 16px;
+	}
+	.folio {
+		position: absolute;
+		bottom: 28px;
+		left: 0;
+		right: 0;
+		text-align: center;
+		font: 0.8rem var(--mono);
+		color: var(--muted);
 	}
 
 	.top {
@@ -235,19 +783,22 @@ onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
 		align-items: center;
 		justify-content: space-between;
 		gap: 16px;
-		padding-block: 20px;
+		flex-wrap: wrap;
+		padding-bottom: 18px;
+		border-bottom: 1px solid var(--line);
+		margin-bottom: -16px;
 	}
 	.brand {
 		display: inline-flex;
 		align-items: center;
 		gap: 10px;
-		font: 650 1.45rem/1 var(--display);
+		font: 650 1.35rem/1 var(--display);
 		color: var(--ink);
 		text-decoration: none;
 	}
 	.brand-mark svg {
-		width: 34px;
-		height: 34px;
+		width: 30px;
+		height: 30px;
 		display: block;
 	}
 	.top nav {
@@ -265,37 +816,36 @@ onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
 		color: var(--accent);
 	}
 
-	main {
-		display: grid;
-		gap: 88px;
-		padding-block: 40px 96px;
-	}
 	.hero {
 		display: grid;
-		gap: 22px;
-		max-width: 760px;
+		gap: 20px;
 	}
 	.hero h1 {
-		font-size: clamp(2.3rem, 5.6vw, 4rem);
+		font-size: clamp(2.1rem, 5vw, 3.3rem);
 	}
 	.lede {
 		margin: 0;
 		font-size: 1.15rem;
 		color: var(--muted);
-		max-width: 62ch;
+		max-width: 60ch;
+	}
+	.try {
+		margin: 0;
+		font-size: 0.95rem;
+		color: var(--muted);
 	}
 	.actions {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 12px;
-		margin-top: 6px;
+		margin-top: 4px;
 	}
 	.button {
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
 		padding: 12px 20px;
-		border-radius: 10px;
+		border-radius: var(--r);
 		border: 1px solid var(--line);
 		background: var(--paper);
 		color: var(--ink);
@@ -311,11 +861,6 @@ onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
 		color: var(--accent-ink);
 	}
 
-	.features {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 56px 64px;
-	}
 	.feature {
 		display: grid;
 		gap: 14px;
@@ -327,7 +872,14 @@ onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
 	}
 	.feature p {
 		margin: 0;
-		max-width: 60ch;
+		max-width: 62ch;
+	}
+	.feature p.aside {
+		color: var(--muted);
+		font-size: 0.92rem;
+	}
+	.aside code {
+		font: 0.88em var(--mono);
 	}
 	.say,
 	.nowrap {
@@ -338,7 +890,7 @@ onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
 		padding: 16px 18px;
 		background: var(--code-bg);
 		border: 1px solid var(--line);
-		border-radius: 10px;
+		border-radius: var(--r);
 		overflow-x: auto;
 		font: 0.86rem/1.6 var(--mono);
 	}
@@ -350,45 +902,57 @@ onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
 		font-weight: 600;
 	}
 	.code .s {
-		color: #9a6430;
+		color: var(--code-s);
 	}
 	.code .n {
-		color: #7a6a32;
+		color: var(--code-n);
 	}
-	:root[data-theme='dark'] .code .s,
-	:root[data-theme='dark'] .code .n {
-		color: var(--search);
+	.theme-line.changed {
+		animation: changed 1.2s ease-out;
 	}
-	@media (prefers-color-scheme: dark) {
-		:root:not([data-theme='light']) .code .s,
-		:root:not([data-theme='light']) .code .n {
-			color: var(--search);
+	:root[data-onon-theme='classic'] .theme-line.changed {
+		animation-timing-function: steps(1, end);
+	}
+	@keyframes changed {
+		from {
+			background: var(--select);
 		}
 	}
 	.themes {
-		list-style: none;
-		padding: 0;
-		margin: 0;
 		display: flex;
 		flex-wrap: wrap;
-		gap: 18px;
-		font: 0.85rem var(--mono);
+		gap: 10px;
 	}
-	.themes li {
+	.themes button {
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
+		padding: 6px 12px 6px 6px;
+		border: 1px solid var(--line);
+		border-radius: var(--r);
+		background: var(--paper);
+		color: var(--ink);
+		font: 0.85rem var(--mono);
+		cursor: pointer;
+	}
+	.themes button:hover {
+		border-color: var(--accent);
+	}
+	.themes button[aria-pressed='true'] {
+		border-color: var(--accent);
+		box-shadow: inset 0 0 0 1px var(--accent);
 	}
 	.swatch {
 		width: 44px;
 		height: 22px;
-		border-radius: 6px;
+		border-radius: var(--r-sm);
 		border: 1px solid var(--line);
 		background: linear-gradient(90deg, var(--a) 0 25%, var(--b) 25% 50%, var(--c) 50% 75%, var(--d) 75%);
 	}
 
 	.foot {
-		padding-block: 32px 48px;
+		margin-top: auto;
+		padding-top: 28px;
 		border-top: 1px solid var(--line);
 		color: var(--muted);
 		font-size: 0.92rem;
@@ -400,20 +964,100 @@ onon.bind(<span class="s">"r"</span>, <span class="k">function</span>()
 		margin-top: 10px;
 	}
 
+	.status {
+		position: fixed;
+		inset: auto 0 0;
+		height: var(--status-h);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		padding: 0 max(12px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px);
+		background: var(--code-bg);
+		border-top: 1px solid var(--line);
+		font: 0.8rem/1 var(--mono);
+		z-index: 10;
+	}
+	.status-left {
+		flex: 1;
+		min-width: 0;
+	}
+	.msg {
+		display: block;
+		white-space: pre;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.msg.idle {
+		color: var(--muted);
+	}
+	.prompt label {
+		display: flex;
+		align-items: center;
+	}
+	.prompt [data-prompt-char] {
+		color: var(--accent);
+		font-weight: 600;
+	}
+	.prompt input {
+		flex: 1;
+		min-width: 0;
+		border: 0;
+		padding: 0 0 0 1px;
+		background: transparent;
+		color: var(--ink);
+		font: inherit;
+		outline: none;
+	}
+	.status-right {
+		display: flex;
+		gap: 2ch;
+		color: var(--muted);
+		white-space: pre;
+	}
+
+	.hint {
+		position: fixed;
+		z-index: 20;
+		padding: 2px 5px;
+		border-radius: 1.5px;
+		background: var(--hint-bg);
+		color: var(--accent-ink);
+		font: 700 0.75rem/1.2 var(--mono);
+		pointer-events: none;
+	}
+	:root[data-onon-theme='classic'] .hint {
+		color: #000;
+	}
+	.hint b {
+		opacity: 0.55;
+	}
+
 	@media (max-width: 760px) {
 		body {
 			font-size: 16px;
 		}
-		main {
-			gap: 64px;
-			padding-block: 16px 64px;
+		.canvas {
+			gap: 14px;
+			padding-top: 12px;
 		}
-		.features {
-			grid-template-columns: minmax(0, 1fr);
+		.sheet {
 			gap: 44px;
 		}
 		.top nav {
 			gap: 16px;
+		}
+		.try,
+		.status-left {
+			display: none;
+		}
+		.status {
+			justify-content: flex-end;
+		}
+	}
+	@media (hover: none) {
+		.try {
+			display: none;
 		}
 	}
 </style>
