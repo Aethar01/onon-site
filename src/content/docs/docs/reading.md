@@ -13,13 +13,13 @@ Every jump is remembered: <kbd>Ctrl</kbd>-<kbd>o</kbd> goes back to where you we
 
 ## Finding things
 
-<kbd>/</kbd> searches forward and <kbd>?</kbd> backward. <kbd>n</kbd> and <kbd>N</kbd> move between matches, and <kbd>g</kbd><kbd>m</kbd> lists them all. Search flags go before the query:
+<kbd>/</kbd> searches forward and <kbd>?</kbd> backward. <kbd>n</kbd> and <kbd>N</kbd> move between matches, and <kbd>g</kbd><kbd>m</kbd> lists them all. Search ignores case. Modifiers, as in Vim, can go anywhere in the query:
 
 ```text
-/-i stone        ignore case
-/-w moss         whole words only
-/-r colou?r      a Go regular expression
-/-p ripple       this page only
+/\Cstone         match case
+/\<moss\>        whole words only
+/\vcolou?r       a Go regular expression from here on
+/\%.pripple      this page only
 ```
 
 <kbd>o</kbd> opens the outline, where you can type to filter it. <kbd>O</kbd> shows every page as a grid.
@@ -42,4 +42,4 @@ Drag to select text. <kbd>H</kbd> highlights the selection in a colour you pick.
 
 ## Help
 
-<kbd>F1</kbd>, <kbd>g</kbd><kbd>?</kbd> or `:help` lists every command, key binding, search flag and option. Choosing a row runs it or fills in the prompt, so help doubles as a launcher.
+<kbd>F1</kbd>, <kbd>g</kbd><kbd>?</kbd> or `:help` lists every command, key binding, search modifier and option. Choosing a row runs it or fills in the prompt, so help doubles as a launcher.

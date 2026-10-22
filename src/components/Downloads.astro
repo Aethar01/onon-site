@@ -56,11 +56,13 @@ const platforms = [
 		{
 			platforms.map((p) => (
 				<div class="platform" data-os={p.os}>
-					<h3>{p.name}</h3>
-					<p class="note">
-						{p.note}
-						<span class="yours">Your system</span>
-					</p>
+					<div class="os">
+						<h3>{p.name}</h3>
+						<p class="note">
+							{p.note}
+							<span class="yours">Your system</span>
+						</p>
+					</div>
 					<ul>
 						{p.files.map((f) => (
 							<li>
@@ -107,16 +109,16 @@ const platforms = [
 	}
 	.platforms {
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 18px;
+		gap: 14px;
 	}
 	.platform {
 		display: grid;
-		gap: 12px;
+		grid-template-columns: 9rem minmax(0, 1fr);
+		gap: 12px 20px;
 		align-content: start;
-		padding: 22px;
+		padding: 20px;
 		border: 1px solid var(--line);
-		border-radius: 14px;
+		border-radius: var(--r);
 		background: var(--paper);
 	}
 	.platform.detected {
@@ -126,8 +128,14 @@ const platforms = [
 	.platform h3 {
 		font-size: 1.35rem;
 	}
+	.os {
+		grid-row: span 2;
+		display: grid;
+		gap: 6px;
+		align-content: start;
+	}
 	.note {
-		margin: -6px 0 0;
+		margin: 0;
 		color: var(--muted);
 		font-size: 0.9rem;
 		display: flex;
@@ -149,13 +157,14 @@ const platforms = [
 		margin: 0;
 		padding: 0;
 		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 		gap: 8px;
 	}
 	.file {
 		display: grid;
 		gap: 2px;
 		padding: 10px 12px;
-		border-radius: 9px;
+		border-radius: var(--r-sm);
 		border: 1px solid var(--line);
 		color: var(--ink);
 		text-decoration: none;
@@ -180,7 +189,7 @@ const platforms = [
 		align-items: center;
 		gap: 8px;
 		padding: 8px 8px 8px 12px;
-		border-radius: 9px;
+		border-radius: var(--r-sm);
 		background: var(--code-bg);
 		min-width: 0;
 	}
@@ -192,16 +201,19 @@ const platforms = [
 	}
 	.command button {
 		border: 1px solid var(--line);
-		border-radius: 6px;
+		border-radius: var(--r-sm);
 		background: var(--paper);
 		color: var(--ink);
 		padding: 4px 10px;
 		font: 700 0.8rem var(--body);
 		cursor: pointer;
 	}
-	@media (max-width: 860px) {
-		.platforms {
+	@media (max-width: 640px) {
+		.platform {
 			grid-template-columns: minmax(0, 1fr);
+		}
+		.os {
+			grid-row: auto;
 		}
 	}
 </style>
