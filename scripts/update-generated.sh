@@ -103,6 +103,9 @@ if latest:
         "windows_installer": r"-windows-amd64-installer\.exe$",
         "windows_zip": r"-windows-amd64\.zip$",
         "linux_appimage": r"-linux-x86_64\.AppImage$",
+        "linux_deb": r"-linux-x86_64\.deb$",
+        "linux_rpm": r"-linux-x86_64\.rpm$",
+        "linux_tarball": r"-linux-x86_64\.tar\.gz$",
     }
     for asset in latest["assets"]:
         for kind, pattern in kinds.items():

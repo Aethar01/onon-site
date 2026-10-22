@@ -13,6 +13,9 @@ const { release } = Astro.props;
 const a = release.assets;
 const mb = (asset?: Asset) => (asset ? `${Math.round(asset.size / 1e6)} MB` : '');
 const link = (asset?: Asset) => asset?.url ?? release.url;
+// With no release data every file links to the release page; with it,
+// files the release does not have are left out.
+const offered = <T extends { asset?: Asset }>(files: T[]) => (release.tag ? files.filter((f) => f.asset) : files);
 
 const platforms = [
 	{
@@ -37,8 +40,13 @@ const platforms = [
 	{
 		os: 'linux',
 		name: 'Linux',
-		note: 'x86-64',
-		files: [{ label: 'AppImage', asset: a.linux_appimage, kind: 'Runs on most distributions' }],
+		note: 'x86-64, Ubuntu 22.04, Debian 12, Fedora 36 or newer',
+		files: [
+			{ label: 'AppImage', asset: a.linux_appimage, kind: 'Any distribution, nothing installed' },
+			{ label: 'Debian, Ubuntu', asset: a.linux_deb, kind: 'Deb package' },
+			{ label: 'Fedora, openSUSE', asset: a.linux_rpm, kind: 'RPM package' },
+			{ label: 'Tarball', asset: a.linux_tarball, kind: 'Unpacks into ~/.local' },
+		],
 		command: 'yay -S onon-git',
 	},
 ];
@@ -64,7 +72,7 @@ const platforms = [
 						</p>
 					</div>
 					<ul>
-						{p.files.map((f) => (
+						{offered(p.files).map((f) => (
 							<li>
 								<a class="file" href={link(f.asset)}>
 									<span class="label">{f.label}</span>
