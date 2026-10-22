@@ -54,6 +54,8 @@ while IFS= read -r tag; do
 	dest=$ref/versions/$tag.md
 	if [ -z "$latest" ]; then latest=$tag; fi
 	if [ -f "$dest" ] && [ "${FORCE:-}" != 1 ] && [ "$tag" != "$latest" ]; then
+		# Each new release moves the older ones down the sidebar.
+		perl -pi -e "s/^  order: \d+\$/  order: $order/ if \$. < 10" "$dest"
 		continue
 	fi
 	tree=$(mktemp -d)
