@@ -16,6 +16,9 @@
 	--sl-color-gray-5: #363c35;
 	--sl-color-gray-6: #1f2420;
 	--sl-color-black: #121412;
+
+	--onon-link-line: #9dc48b66;
+	--onon-select: #4f6b45;
 }
 
 :root[data-theme='light'] {
@@ -31,6 +34,9 @@
 	--sl-color-gray-6: #eceae4;
 	--sl-color-gray-7: #f5f4f0;
 	--sl-color-black: #fbfaf7;
+
+	--onon-link-line: #4d704466;
+	--onon-select: #bfd9a9;
 }
 
 .sl-markdown-content :is(h1, h2, h3),
@@ -60,4 +66,24 @@ h1#_top,
 .sl-markdown-content table {
 	display: block;
 	overflow-x: auto;
+}
+
+/* Links in prose: moss text over a faint underline that fills in on hover. */
+.sl-markdown-content a:not(:where(.not-content *)) {
+	color: var(--sl-color-text-accent);
+	text-decoration-line: underline;
+	text-decoration-color: var(--onon-link-line);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.22em;
+	transition: text-decoration-color 0.15s, text-decoration-thickness 0.15s;
+}
+.sl-markdown-content a:not(:where(.not-content *)):hover {
+	text-decoration-color: currentColor;
+	text-decoration-thickness: 2px;
+}
+
+/* Selected text, in the colour onon selects with. */
+::selection {
+	background-color: var(--onon-select);
+	color: var(--sl-color-white);
 }
