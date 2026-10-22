@@ -15,13 +15,14 @@ Colours, the interface font and the shape of panels all come from one table, `on
 
 ## More themes
 
-[onon-themes](https://github.com/Aethar01/onon-themes) holds seven more: `brutalist`, `gameboy`, `glass`, `manuscript`, `phosphor`, `synthwave` and `vampire`. Each one shows off a different part of the theme system. Clone it as your theme directory and they appear in `:theme`:
+[onon-themes](https://github.com/Aethar01/onon-themes) holds seven more: `brutalist`, `gameboy`, `glass`, `manuscript`, `phosphor`, `synthwave` and `vampire`. Each one shows off a different part of the theme system. Clone it into your onon directory and link its `themes` directory beside it, and they appear in `:theme`:
 
 ```bash
-git clone https://github.com/Aethar01/onon-themes ~/.config/onon/themes
+git clone https://github.com/Aethar01/onon-themes ~/.config/onon/onon-themes
+ln -s onon-themes/themes ~/.config/onon/themes
 ```
 
-On Windows, clone it to `%APPDATA%\onon\themes`.
+On Windows, or with a `themes` directory of your own, copy in the `.lua` files you want instead.
 
 ## Changing a few things
 
