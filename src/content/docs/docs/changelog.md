@@ -6,6 +6,17 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.9.0
+
+Released 2026-10-22. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.9.0)
+
+### What's Changed
+* Credit Le Guin for the name; drop the tap notify job by @Aethar01 in [#28](https://github.com/Aethar01/onon/pull/28)
+* Say how onon is pronounced by @Aethar01 in [#29](https://github.com/Aethar01/onon/pull/29)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.8.2...0.9.0
+
 ## 0.8.2
 
 Released 2026-10-21. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.8.2)

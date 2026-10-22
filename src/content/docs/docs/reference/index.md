@@ -1,6 +1,6 @@
 ---
 title: "Reference"
-description: "Every option, command, Lua function, key and action in onon 0.8.2."
+description: "Every option, command, Lua function, key and action in onon 0.9.0."
 editUrl: false
 tableOfContents:
   maxHeadingLevel: 2
@@ -268,7 +268,7 @@ end
 | <code>:fit width&#124;height&#124;page&#124;manual</code> | Set fit mode |
 | <code>:forward</code> | Jump forward again after :back |
 | <code>:fullscreen [on&#124;off]</code> | Toggle or set fullscreen |
-| <code>:help</code> | Show commands, key bindings, search flags and options |
+| <code>:help</code> | Show commands, key bindings, search modifiers and options |
 | <code>:highlight</code> | Highlight the selection in the last colour used |
 | <code>:hints</code> | Label links on screen to follow one by typing its hint |
 | <code>:keybinds</code> | Toggle the keybinds menu |
@@ -290,7 +290,7 @@ end
 | <code>:redo</code> | Reapply the last undone edit |
 | <code>:reload-config</code> | Reload the config file |
 | <code>:rotate [cw&#124;ccw&#124;DEGREES]</code> | Rotate by a quarter turn, or to 0, 90, 180 or 270 |
-| <code>:search [-r] [-i] [-w] [-p] &lt;text&gt;</code> | Search document text |
+| <code>:search &lt;text&gt;</code> | Search document text |
 | <code>:set [option[?]&#124;option!&#124;option=value]</code> | Inspect or change options |
 | <code>:statusbar [on&#124;off]</code> | Show or hide the status bar |
 | <code>:theme [name]</code> | Pick a theme, seeing each as it is selected, or switch to one |
@@ -300,7 +300,7 @@ end
 | <code>:write [path], :w</code> | Save edits, or a copy to path; :wq saves and exits |
 | <code>:zoom in&#124;out&#124;reset&#124;PERCENT</code> | Zoom a step, reset, or set e.g. :zoom 150 |
 
-Search flags: `-r` regular expression, `-i` ignore case, `-w` whole word, `-p` current page only. Flags can be combined.
+Search modifiers, which work as in Vim and may appear anywhere in the query: `\v` regular expression from here on, `\V` literal text from here on (the default), `\c` ignore case (the default), `\C` match case, `\<` start of a word, `\>` end of a word, `\%.p` current page only, `\%3p` page 3 only, `\%<3p` pages before page 3, `\%>3p` pages after page 3. Regular expressions use [Go syntax](https://pkg.go.dev/regexp/syntax), and `\\` searches for a backslash in literal text.
 
 ## Lua functions
 
@@ -888,7 +888,7 @@ starts an asynchronous document search.
 
 #### Parameters
 
-  - query: Search text, optionally prefixed with -r, -i, -w, or -p flags.
+  - query: Search text, which may contain search modifiers such as `\v` or `\<`.
   - backward: Optional boolean selecting backward search.
 
 #### Returns
@@ -932,7 +932,7 @@ returns the active search query.
 
 #### Returns
 
-The active query without search flags, or an empty string when search is inactive.
+The active query as typed, modifiers included, or an empty string when search is inactive.
 
 #### Example
 
