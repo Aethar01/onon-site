@@ -1,31 +1,31 @@
 {
-  "tag": "0.9.3",
-  "url": "https://github.com/Aethar01/onon/releases/tag/0.9.3",
+  "tag": "0.9.4",
+  "url": "https://github.com/Aethar01/onon/releases/tag/0.9.4",
   "assets": {
     "macos_amd64": {
-      "name": "onon-0.9.3-darwin-amd64.dmg",
-      "url": "https://github.com/Aethar01/onon/releases/download/0.9.3/onon-0.9.3-darwin-amd64.dmg",
-      "size": 58975188
+      "name": "onon-0.9.4-darwin-amd64.dmg",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.9.4/onon-0.9.4-darwin-amd64.dmg",
+      "size": 58975191
     },
     "macos_arm64": {
-      "name": "onon-0.9.3-darwin-arm64.dmg",
-      "url": "https://github.com/Aethar01/onon/releases/download/0.9.3/onon-0.9.3-darwin-arm64.dmg",
-      "size": 57651607
+      "name": "onon-0.9.4-darwin-arm64.dmg",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.9.4/onon-0.9.4-darwin-arm64.dmg",
+      "size": 57206894
     },
     "linux_appimage": {
-      "name": "onon-0.9.3-linux-x86_64.AppImage",
-      "url": "https://github.com/Aethar01/onon/releases/download/0.9.3/onon-0.9.3-linux-x86_64.AppImage",
-      "size": 77437432
+      "name": "onon-0.9.4-linux-x86_64.AppImage",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.9.4/onon-0.9.4-linux-x86_64.AppImage",
+      "size": 46852600
     },
     "windows_installer": {
-      "name": "onon-0.9.3-windows-amd64-installer.exe",
-      "url": "https://github.com/Aethar01/onon/releases/download/0.9.3/onon-0.9.3-windows-amd64-installer.exe",
-      "size": 39384280
+      "name": "onon-0.9.4-windows-amd64-installer.exe",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.9.4/onon-0.9.4-windows-amd64-installer.exe",
+      "size": 39385196
     },
     "windows_zip": {
-      "name": "onon-0.9.3-windows-amd64.zip",
-      "url": "https://github.com/Aethar01/onon/releases/download/0.9.3/onon-0.9.3-windows-amd64.zip",
-      "size": 50797411
+      "name": "onon-0.9.4-windows-amd64.zip",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.9.4/onon-0.9.4-windows-amd64.zip",
+      "size": 50797407
     }
   },
   "date": "2026-10-22"
