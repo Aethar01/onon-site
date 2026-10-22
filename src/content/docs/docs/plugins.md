@@ -26,6 +26,16 @@ Put the plugin's directory in one of these:
 
 `:reload-config` finds new ones. Where two directories hold a plugin with the same id, the first wins. `--no-plugins` starts onon without any.
 
+### Example plugins
+
+[onon-plugins](https://github.com/Aethar01/onon-plugins) holds two plugins: `file-browser`, which browses directories and opens documents, and `synctex`, which jumps between LaTeX source and PDF. Clone it as your plugin directory:
+
+```bash
+git clone https://github.com/Aethar01/onon-plugins ~/.config/onon/plugins
+```
+
+On Windows, clone it to `%APPDATA%\onon\plugins`. Each plugin's README lists the lines to add to `config.lua`. The plugins also make good starting points for your own.
+
 ## Writing one
 
 ```text

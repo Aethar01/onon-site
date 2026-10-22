@@ -13,6 +13,16 @@ Colours, the interface font and the shape of panels all come from one table, `on
 
 `:theme` changes the theme. It lists the built-in themes and your theme files, and shows each one as you move to it. <kbd>Enter</kbd> keeps the selected theme and onon remembers it.
 
+## More themes
+
+[onon-themes](https://github.com/Aethar01/onon-themes) holds seven more: `brutalist`, `gameboy`, `glass`, `manuscript`, `phosphor`, `synthwave` and `vampire`. Each one shows off a different part of the theme system. Clone it as your theme directory and they appear in `:theme`:
+
+```bash
+git clone https://github.com/Aethar01/onon-themes ~/.config/onon/themes
+```
+
+On Windows, clone it to `%APPDATA%\onon\themes`.
+
 ## Changing a few things
 
 Set single fields, and the rest stay as they are:
