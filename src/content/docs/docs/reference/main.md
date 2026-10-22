@@ -42,6 +42,7 @@ Assign options with `onon.options.<name> = <value>` in Lua or `:set <name>=<valu
 | <code>min_zoom</code> | number | <code>0.5</code> | Minimum manual zoom scale. |
 | <code>mouse_text_select</code> | boolean | <code>true</code> | Enable text selection with the left mouse button. |
 | <code>mupdf_store_mb</code> | integer | <code>256</code> | MuPDF cache for fonts and decoded images in MiB; applies to newly opened documents. |
+| <code>open_in_new_window</code> | boolean | <code>true</code> | On macOS, open a document Finder or `open` sends to a running onon in a new window rather than the current one. |
 | <code>outline_height_percent</code> | integer | <code>80</code> | Outline overlay height as a percentage of the window. |
 | <code>outline_initial_depth</code> | integer | <code>1</code> | Outline levels expanded when the outline opens. |
 | <code>outline_width_percent</code> | integer | <code>70</code> | Outline overlay width as a percentage of the window. |
