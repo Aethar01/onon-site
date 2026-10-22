@@ -28,13 +28,14 @@ Put the plugin's directory in one of these:
 
 ### Example plugins
 
-[onon-plugins](https://github.com/Aethar01/onon-plugins) holds two plugins: `file-browser`, which browses directories and opens documents, and `synctex`, which jumps between LaTeX source and PDF. Clone it as your plugin directory:
+[onon-plugins](https://github.com/Aethar01/onon-plugins) holds two plugins: `file-browser`, which browses directories and opens documents, and `synctex`, which jumps between LaTeX source and PDF. Clone it into your onon directory and link its `plugins` directory beside it:
 
 ```bash
-git clone https://github.com/Aethar01/onon-plugins ~/.config/onon/plugins
+git clone https://github.com/Aethar01/onon-plugins ~/.config/onon/onon-plugins
+ln -s onon-plugins/plugins ~/.config/onon/plugins
 ```
 
-On Windows, clone it to `%APPDATA%\onon\plugins`. Each plugin's README lists the lines to add to `config.lua`. The plugins also make good starting points for your own.
+On Windows, or with a `plugins` directory of your own, copy in the plugins you want instead. Each plugin's README lists the lines to add to `config.lua`. The plugins also make good starting points for your own.
 
 ## Writing one
 
