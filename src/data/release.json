@@ -17,6 +17,21 @@
       "url": "https://github.com/Aethar01/onon/releases/download/0.9.4/onon-0.9.4-linux-x86_64.AppImage",
       "size": 46852600
     },
+    "linux_deb": {
+      "name": "onon-0.9.4-linux-x86_64.deb",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.9.4/onon-0.9.4-linux-x86_64.deb",
+      "size": 39376508
+    },
+    "linux_rpm": {
+      "name": "onon-0.9.4-linux-x86_64.rpm",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.9.4/onon-0.9.4-linux-x86_64.rpm",
+      "size": 40309725
+    },
+    "linux_tarball": {
+      "name": "onon-0.9.4-linux-x86_64.tar.gz",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.9.4/onon-0.9.4-linux-x86_64.tar.gz",
+      "size": 39021538
+    },
     "windows_installer": {
       "name": "onon-0.9.4-windows-amd64-installer.exe",
       "url": "https://github.com/Aethar01/onon/releases/download/0.9.4/onon-0.9.4-windows-amd64-installer.exe",
