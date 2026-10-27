@@ -1,6 +1,6 @@
 ---
 title: "Reference"
-description: "Every option, command, Lua function, key and action in onon 0.9.5."
+description: "Every option, command, Lua function, key and action in onon 0.9.6."
 editUrl: false
 tableOfContents:
   maxHeadingLevel: 2
@@ -32,6 +32,7 @@ Assign options with `onon.options.<name> = <value>` in Lua or `:set <name>=<valu
 | <code>first_page_offset</code> | boolean | <code>true</code> | Treat the first page as a standalone cover in dual-page mode. |
 | <code>fit_mode</code> | string | <code>&#34;page&#34;</code> | Initial fit mode: page, width, height, or manual. |
 | <code>hint_chars</code> | string | <code>&#34;asdfghjkl&#34;</code> | Characters used for link hint labels, in order of preference. |
+| <code>http_headers</code> | table | <code>{}</code> | Headers sent when fetching remote documents, by host, host:port or *.domain, such as an API token; :set shows only their names. |
 | <code>invert_scroll</code> | table | <code>{ mouse = false, trackpad = false }</code> | Invert horizontal and vertical wheel scrolling for selected inputs; true or false sets both, and a table updates only the mouse and trackpad fields it names. |
 | <code>link_preview</code> | boolean | <code>true</code> | Preview the destination of an internal link after hovering it briefly. |
 | <code>link_preview_delay_ms</code> | integer | <code>400</code> | Milliseconds to hover an internal link before its preview appears. |
@@ -277,7 +278,7 @@ end
 | <code>:mode continuous&#124;single</code> | Set render mode |
 | <code>:next</code> | Go to the next search match |
 | <code>:noh</code> | Clear the search highlights |
-| <code>:open &lt;filename&gt;</code> | Open another PDF relative to the current document |
+| <code>:open &lt;filename&gt;</code> | Open another document relative to the current one, or a URL or ssh host:path |
 | <code>:open_file_picker</code> | Open the PDF file picker |
 | <code>:outline</code> | Open the document outline |
 | <code>:overview</code> | Toggle the page overview grid |
@@ -297,7 +298,7 @@ end
 | <code>:trim [on&#124;off]</code> | Lay pages out by their content, trimming margins |
 | <code>:undo</code> | Undo the last edit |
 | <code>:version</code> | Show the onon version |
-| <code>:write [path], :w</code> | Save edits, or a copy to path; :wq saves and exits |
+| <code>:write [path], :w</code> | Save edits, or a copy to path; :wq saves and exits; :w! saves over a remote file that changed |
 | <code>:zoom in&#124;out&#124;reset&#124;PERCENT</code> | Zoom a step, reset, or set e.g. :zoom 150 |
 
 Search modifiers, which work as in Vim and may appear anywhere in the query: `\v` regular expression from here on, `\V` literal text from here on (the default), `\c` ignore case (the default), `\C` match case, `\<` start of a word, `\>` end of a word, `\%.p` current page only, `\%3p` page 3 only, `\%<3p` pages before page 3, `\%>3p` pages after page 3. Regular expressions use [Go syntax](https://pkg.go.dev/regexp/syntax), and `\\` searches for a backslash in literal text.
@@ -338,6 +339,7 @@ The index below is followed by a detailed entry for every function. Lua errors a
 | <code>onon.pick_file(callback)</code> | opens the native document picker, filtered to the formats this build can open, and invokes a callback with its result. |
 | <code>onon.plugin.register(id[, spec])</code> | registers and returns a lazily loaded plugin module. |
 | <code>onon.recent_files([limit])</code> | returns recent document paths. |
+| <code>onon.register_scheme(name, resolve)</code> | makes name: a scheme that :open, onon.open and the command line accept, resolved by a function to the URL or path to open. |
 | <code>onon.render_mode([mode])</code> | reads or changes the render mode. Valid modes are continuous and single. |
 | <code>onon.rotation([degrees])</code> | reads or changes clockwise rotation in degrees. |
 | <code>onon.schedule(callback)</code> | queues a callback on the main Lua thread after the current dispatch. |
@@ -825,6 +827,31 @@ returns recent document paths.
 #### Returns
 
 An array of document paths, or an empty array when session storage is disabled.
+
+
+### <code>onon.register_scheme(name, resolve)</code>
+
+makes name: a scheme that :open, onon.open and the
+command line accept, resolved by a function to the URL or path to open.
+
+#### Parameters
+
+  - name: The scheme, two or more letters, digits, +, - or ., starting with a letter, as in "arxiv". Built-in schemes such as https and sftp cannot be taken.
+  - resolve: A function given the text after name: (and any //) and the whole argument, returning the URL or path to open. It may return another registered scheme.
+
+#### Returns
+
+Nothing. A later registration of the same name replaces it.
+
+#### Errors
+
+Raises an error when name is not a valid scheme or is built in. When resolve raises an error or returns nothing, opening fails with that error.
+
+#### Example
+
+	onon.register_scheme("arxiv", function(id)
+	  return "https://arxiv.org/pdf/" .. id
+	end)
 
 
 ### <code>onon.render_mode([mode])</code>
