@@ -32,8 +32,7 @@ Assign options with `onon.options.<name> = <value>` in Lua or `:set <name>=<valu
 | <code>first_page_offset</code> | boolean | <code>true</code> | Treat the first page as a standalone cover in dual-page mode. |
 | <code>fit_mode</code> | string | <code>&#34;page&#34;</code> | Initial fit mode: page, width, height, or manual. |
 | <code>hint_chars</code> | string | <code>&#34;asdfghjkl&#34;</code> | Characters used for link hint labels, in order of preference. |
-| <code>invert_scroll</code> | boolean | <code>false</code> | Invert horizontal and vertical discrete mouse-wheel scrolling. |
-| <code>invert_smooth_scroll</code> | boolean | <code>false</code> | Invert horizontal and vertical smooth wheel or trackpad scrolling. |
+| <code>invert_scroll</code> | table | <code>{ mouse = false, trackpad = false }</code> | Invert horizontal and vertical wheel scrolling for selected inputs; true or false sets both, and a table updates only the mouse and trackpad fields it names. |
 | <code>link_preview</code> | boolean | <code>true</code> | Preview the destination of an internal link after hovering it briefly. |
 | <code>link_preview_delay_ms</code> | integer | <code>400</code> | Milliseconds to hover an internal link before its preview appears. |
 | <code>link_schemes</code> | table | <code>{&#34;http&#34;, &#34;https&#34;, &#34;mailto&#34;}</code> | URI schemes that document links may open externally; other links only show their target. |
