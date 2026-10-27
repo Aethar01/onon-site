@@ -1,6 +1,6 @@
 ---
 title: "Reference"
-description: "Every option, command, Lua function, key and action in onon 0.9.6."
+description: "Every option, command, Lua function, key and action in onon 0.9.7."
 editUrl: false
 tableOfContents:
   maxHeadingLevel: 2
