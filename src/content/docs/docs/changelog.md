@@ -6,6 +6,16 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.9.6
+
+Released 2026-10-27. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.9.6)
+
+### What's Changed
+* Open documents from http(s) and SSH URIs by @Aethar01 in [#30](https://github.com/Aethar01/onon/pull/30)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.9.5...0.9.6
+
 ## 0.9.5
 
 Released 2026-10-27. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.9.5)
