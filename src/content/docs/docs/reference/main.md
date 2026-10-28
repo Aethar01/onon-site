@@ -57,6 +57,7 @@ Assign options with `onon.options.<name> = <value>` in Lua or `:set <name>=<valu
 | <code>page_gap_vertical</code> | integer | <code>0</code> | Vertical gap between page rows. |
 | <code>pinch_sensitivity</code> | number | <code>1</code> | Trackpad pinch zoom sensitivity; 1 preserves the gesture scale. |
 | <code>prompt_history_max</code> | integer | <code>100</code> | Maximum entries kept in each of the command and search prompt histories; 0 keeps none. |
+| <code>prompts</code> | table | <code>{}</code> | Where prompts sit, by name, such as { command = { anchor = "center", width = "50%" } }: each is "bar", in the status bar as by default, or a box of its own with an anchor, as views take, centred if not given, and a width in logical pixels or a percentage, half the window if not given. Prompts: command, go_to, password, prompt, search. |
 | <code>recent_files_max</code> | integer | <code>20</code> | Maximum recent files retained and displayed. |
 | <code>render_mode</code> | string | <code>&#34;continuous&#34;</code> | Initial render mode: continuous or single. |
 | <code>render_oversample</code> | number | <code>1</code> | Render scale multiplier; values above 1 supersample. |
@@ -202,6 +203,7 @@ Every element starts from `shape = "rect", radius = 0, fill = "none", border = {
 | <code>status_left</code> | The left of the status bar, holding messages and prompts. Its padding above and below sets the bar's height. | shape, radius, fill, border, shadow, opacity, draw, text, padding | <code>padding = { 4, 10 }</code> |
 | <code>status_right</code> | The right of the status bar; the sides of its padding set its text in. Starts from <code>status_left</code>. | shape, radius, fill, border, shadow, opacity, draw, text, padding | <code>text = &#34;muted&#34;, padding = { 4, 10 }</code> |
 | <code>prompt</code> | A prompt's prefix, such as : or /. | text | <code>text = &#34;accent&#34;</code> |
+| <code>prompt_box</code> | A prompt in a box of its own, where the prompts option places it away from the status bar. Its padding surrounds its line of text. Starts from <code>panel</code>. | shape, radius, fill, border, shadow, opacity, draw, text, padding | <code>radius = 3, fill = &#34;panel&#34;, border = { width = 1 }, shadow = &#34;0 2 1 0 shadow&#34;, padding = { 6, 14 }</code> |
 | <code>cursor</code> | The text cursor in a prompt. | shape, radius, fill, border, shadow, opacity, draw, width | <code>fill = &#34;accent&#34;</code> |
 | <code>input_selection</code> | Selected text in a prompt. | shape, radius, fill, border, shadow, opacity, draw | <code>fill = &#34;accent/30&#34;</code> |
 | <code>input</code> | A text field a plugin's view draws. Its secondary colour is for the placeholder. Starts from <code>row</code>. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding | <code>radius = 1.5, fill = &#34;background&#34;, border = { width = 1 }, padding = { 4, 6 }</code> |
