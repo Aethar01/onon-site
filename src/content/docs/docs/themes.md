@@ -69,7 +69,7 @@ Theme files are found beside `config.lua` first, then in these directories:
 
 ## Elements
 
-Past that, each element can be restyled. Each panel, menu row, status bar section and link hint has its own fill, border, shadows, padding and shape. A shape is SVG path data or a Lua function, and an element's `draw` function can draw its box however it likes:
+Past that, each element can be restyled. Each panel, menu row, status bar section and link hint, and the text fields, buttons and check boxes plugins draw, has its own fill, border, shadows, padding and shape. A shape is SVG path data or a Lua function, and an element's `draw` function can draw its box however it likes:
 
 ```lua
 onon.theme.elements = {
