@@ -1,6 +1,6 @@
 ---
 title: "Reference"
-description: "Every option, command, Lua function, key and action in onon 0.9.7."
+description: "Every option, command, Lua function, key and action in onon 0.10.0."
 editUrl: false
 tableOfContents:
   maxHeadingLevel: 2
@@ -39,13 +39,14 @@ Assign options with `onon.options.<name> = <value>` in Lua or `:set <name>=<valu
 | <code>link_schemes</code> | table | <code>{&#34;http&#34;, &#34;https&#34;, &#34;mailto&#34;}</code> | URI schemes that document links may open externally; other links only show their target. |
 | <code>loading_indicator</code> | boolean | <code>true</code> | Animate a loading indicator on pages still rendering for the first time. |
 | <code>max_zoom</code> | number | <code>8</code> | Maximum manual zoom scale. |
+| <code>menus</code> | table | <code>{}</code> | Where onon's own menus sit, by name, such as { outline = { anchor = "left", width = "40%" } }: each takes width and height, the most of the window it takes, in logical pixels or a percentage, and anchor, as views do. Menus: annotation, choice, colors, help, keybind_keys, keybinds, matches, options, outline, print, printers, recent, themes. |
 | <code>min_zoom</code> | number | <code>0.5</code> | Minimum manual zoom scale. |
 | <code>mouse_text_select</code> | boolean | <code>true</code> | Enable text selection with the left mouse button. |
 | <code>mupdf_store_mb</code> | integer | <code>256</code> | MuPDF cache for fonts and decoded images in MiB; applies to newly opened documents. |
 | <code>open_in_new_window</code> | boolean | <code>true</code> | On macOS, open a document Finder or `open` sends to a running onon in a new window rather than the current one. |
 | <code>outline_height_percent</code> | integer | <code>80</code> | Outline overlay height as a percentage of the window. |
 | <code>outline_initial_depth</code> | integer | <code>1</code> | Outline levels expanded when the outline opens. |
-| <code>outline_width_percent</code> | integer | <code>70</code> | Outline overlay width as a percentage of the window. |
+| <code>outline_width_percent</code> | integer | <code>70</code> | Most of the window the outline overlay takes, as a percentage of its width; the outline is narrower when its entries are. |
 | <code>overview_gap</code> | integer | <code>16</code> | Gap in pixels between the page overview's cells. |
 | <code>overview_max_columns</code> | integer | <code>12</code> | Most columns the page overview shows, whether fitted to the window or set with zoom_out. |
 | <code>overview_thumb_width</code> | integer | <code>220</code> | Width in pixels the page overview aims to show each page at, which sets how many columns fit. |
@@ -56,6 +57,7 @@ Assign options with `onon.options.<name> = <value>` in Lua or `:set <name>=<valu
 | <code>page_gap_vertical</code> | integer | <code>0</code> | Vertical gap between page rows. |
 | <code>pinch_sensitivity</code> | number | <code>1</code> | Trackpad pinch zoom sensitivity; 1 preserves the gesture scale. |
 | <code>prompt_history_max</code> | integer | <code>100</code> | Maximum entries kept in each of the command and search prompt histories; 0 keeps none. |
+| <code>prompts</code> | table | <code>{}</code> | Where prompts sit, by name, such as { command = { anchor = "center", width = "50%" } }: each is "bar", in the status bar as by default, or a box of its own with an anchor, as views take, centred if not given, and a width in logical pixels or a percentage, half the window if not given. Prompts: command, go_to, password, prompt, search. |
 | <code>recent_files_max</code> | integer | <code>20</code> | Maximum recent files retained and displayed. |
 | <code>render_mode</code> | string | <code>&#34;continuous&#34;</code> | Initial render mode: continuous or single. |
 | <code>render_oversample</code> | number | <code>1</code> | Render scale multiplier; values above 1 supersample. |
@@ -194,15 +196,20 @@ Every element starts from `shape = "rect", radius = 0, fill = "none", border = {
 | <code>row_selected</code> | The selected row. Starts from <code>row</code>. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding | <code>fill = &#34;accent/10&#34;, border = { width = 3, color = &#34;accent&#34;, sides = &#34;left&#34; }, padding = { 4, 14 }</code> |
 | <code>row_disabled</code> | A row that cannot be chosen. Starts from <code>row</code>. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding | <code>text = &#34;muted&#34;, padding = { 4, 14 }</code> |
 | <code>heading</code> | A section title among a menu's rows. Starts from <code>row</code>. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding | <code>text = &#34;accent&#34;, bold = true, padding = { 4, 14 }</code> |
-| <code>button</code> | A button in a menu, such as the keybind menu's new keybind. Starts from <code>row</code>. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding | <code>radius = 3, border = { width = 1 }, text = &#34;accent&#34;, padding = { 4, 14 }</code> |
+| <code>button</code> | A button in a menu, such as the keybind menu's Add a key…. Starts from <code>row</code>. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding | <code>radius = 3, text = &#34;accent&#34;, bold = true, padding = { 4, 14 }</code> |
 | <code>scrollbar</code> | The thumb of a menu's scrollbar; margin.right sets it off the panel's edge. | shape, radius, fill, border, shadow, opacity, draw, width, margin | <code>shape = &#34;pill&#34;, fill = &#34;muted/56&#34;, margin = { 0, 5, 0, 0 }, width = 4</code> |
 | <code>swatch</code> | A colour sample before a row's text, gap before the text. | shape, radius, fill, border, shadow, opacity, draw, gap | <code>radius = 1.5, border = { width = 1 }, gap = 8</code> |
 | <code>status</code> | The status bar as a whole: margin sets it off the window's edges, gap between its sides, and floating draws it over the page instead of below it. | shape, radius, fill, border, shadow, opacity, draw, margin, gap, floating | <code>fill = &#34;status_bar&#34;, border = { width = 1, sides = &#34;top&#34; }</code> |
 | <code>status_left</code> | The left of the status bar, holding messages and prompts. Its padding above and below sets the bar's height. | shape, radius, fill, border, shadow, opacity, draw, text, padding | <code>padding = { 4, 10 }</code> |
 | <code>status_right</code> | The right of the status bar; the sides of its padding set its text in. Starts from <code>status_left</code>. | shape, radius, fill, border, shadow, opacity, draw, text, padding | <code>text = &#34;muted&#34;, padding = { 4, 10 }</code> |
 | <code>prompt</code> | A prompt's prefix, such as : or /. | text | <code>text = &#34;accent&#34;</code> |
+| <code>prompt_box</code> | A prompt in a box of its own, where the prompts option places it away from the status bar. Its padding surrounds its line of text. Starts from <code>panel</code>. | shape, radius, fill, border, shadow, opacity, draw, text, padding | <code>radius = 3, fill = &#34;panel&#34;, border = { width = 1 }, shadow = &#34;0 2 1 0 shadow&#34;, padding = { 6, 14 }</code> |
 | <code>cursor</code> | The text cursor in a prompt. | shape, radius, fill, border, shadow, opacity, draw, width | <code>fill = &#34;accent&#34;</code> |
 | <code>input_selection</code> | Selected text in a prompt. | shape, radius, fill, border, shadow, opacity, draw | <code>fill = &#34;accent/30&#34;</code> |
+| <code>input</code> | A text field a plugin's view draws. Its secondary colour is for the placeholder. Starts from <code>row</code>. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding | <code>radius = 1.5, fill = &#34;background&#34;, border = { width = 1 }, padding = { 4, 6 }</code> |
+| <code>input_focused</code> | The text field typing goes to. Starts from <code>input</code>. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding | <code>radius = 1.5, fill = &#34;background&#34;, border = { width = 1, color = &#34;accent&#34; }, padding = { 4, 6 }</code> |
+| <code>button_focused</code> | A button a plugin's view draws, under the pointer or with the keys, which Space or Enter clicks. Starts from <code>button</code>. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding | <code>radius = 3, fill = &#34;accent/10&#34;, text = &#34;accent&#34;, bold = true, padding = { 4, 14 }</code> |
+| <code>check</code> | The mark in a checked check box, drawn in the box; a check box's box is an input. | shape, radius, fill, border, shadow, opacity, draw | <code>radius = 0.75, fill = &#34;accent&#34;</code> |
 | <code>hint</code> | A link hint label. Its secondary colour is for the letters already typed. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding | <code>radius = 1.5, fill = &#34;accent&#34;, text = &#34;hint_foreground&#34;, secondary = &#34;hint_foreground/55&#34;, bold = true, padding = { 2, 5 }</code> |
 | <code>overview_selection</code> | The outline around the overview's selected page; padding is its distance from the page. | shape, radius, fill, border, shadow, opacity, draw, padding | <code>radius = 3, border = { width = 2.5, color = &#34;accent&#34; }, padding = 3</code> |
 | <code>link_preview</code> | The popup previewing a link's target, a rect with corners rounded by its radius. Its fill shows while the page renders. | radius, fill, border, shadow, opacity, draw | <code>radius = 3, fill = &#34;page&#34;, border = { width = 1 }, shadow = &#34;0 2 1 0 shadow&#34;</code> |
@@ -347,7 +354,7 @@ The index below is followed by a detailed entry for every function. Lua errors a
 | <code>onon.search_match_count()</code> | returns the number of discovered search matches. |
 | <code>onon.search_match_index()</code> | returns the current search match index. |
 | <code>onon.search_query()</code> | returns the active search query. |
-| <code>onon.ui.create(spec)</code> | creates a searchable list view. |
+| <code>onon.ui.create(spec)</code> | creates a view: a menu or panel of rows, or a body a plugin draws, with text fields, buttons and check boxes, placed in the window, pinned to a point or page, or docked. |
 | <code>onon.unbind(key)</code> | removes a key binding. |
 | <code>onon.unbind_mouse(event)</code> | removes a mouse binding. |
 | <code>onon.version()</code> | returns onon's version. |
@@ -968,15 +975,21 @@ The active query as typed, modifiers included, or an empty string when search is
 
 ### <code>onon.ui.create(spec)</code>
 
-creates a searchable list view.
+creates a view: a menu or panel of rows, or a body a plugin
+draws, with text fields, buttons and check boxes, placed in the window,
+pinned to a point or page, or docked.
 
 The spec may contain id, title, rows, selected, scroll, query, searchable,
-on_select, and on_close. Rows may be strings or row tables with text, value,
-id, secondary, depth, and disabled fields.
+filter, empty, columns, prompt, modal, stack, width, height, anchor, at,
+dock, resizable, draw, and the callbacks on_select, on_selection_changed,
+on_query_changed, on_input, on_submit, on_click, on_key, on_action,
+on_mouse, and on_close. Rows may be strings or row tables with text,
+value, id, secondary, depth, disabled, key, marker, heading, swatch,
+checked, button, and cells fields. See UI views below.
 
 #### Returns
 
-A view object with show, close, visible, row/query setters, and state accessors.
+A view object with show, close, visible, redraw, size, focus, row, query and field setters, and state accessors.
 
 #### Example
 
@@ -1067,9 +1080,140 @@ Raises an error when the scale is invalid or cannot be set.
 
 ### UI views
 
-Create views with `local view = onon.ui.create(spec)`, then call `view:show()`. The specification supports `id`, `title`, `rows`, `selected`, `scroll`, `query`, `searchable`, `on_select`, and `on_close`. A row may be a string or a table with `text`, `value`, `id`, `secondary`, `depth`, and `disabled`.
+Create views with `local view = onon.ui.create(spec)`, then call `view:show()`. A view is a menu or a panel: a list of rows, or a body its `draw` function draws, with text fields, buttons and check boxes. onon's own menus are views made the same way, so they and plugins' look and behave alike, and the theme styles both.
 
-View methods are `show()`, `close()`, `visible()`, `set_rows(rows)`, `set_selected(index)`, `set_scroll(scroll)`, `set_query(query)`, `selected()`, `scroll()`, and `query()`. Selection indices are 1-based, with 0 meaning no selection. `on_select` receives `(index, value, text, id)`, preserving the original row index and ID when the list is filtered. `on_close` runs for user, programmatic, replacement, and document-close paths.
+#### Placing a view
+
+| Field | Meaning |
+|---|---|
+| `id`, `title` | The view's name and the title in its header. A view with a `draw` function and no title has no header. |
+| `modal` | True unless set false. A modal view is a menu: it takes the keys, closes on a click outside it, and replaces any other menu. A view that is not modal is a panel: it stays open over the document, under any menu, until closed, and takes the pointer over it, and the keys when it has them (see [Typing](#typing)). |
+| `stack` | For a menu: opens it over the menu open, which closing it returns to, instead of replacing it. |
+| `width`, `height` | Its size: logical pixels, or a percentage of the window such as `"30%"`; `"70%"` unless set, and at most the document's part of the window. A list fits its height to its rows. |
+| `anchor` | Where it sits in the document's part of the window: `center` (the default), `top`, `bottom`, `left`, `right`, `top_left`, `top_right`, `bottom_left` or `bottom_right`, a little in from the edges. With `at`, the part of the view that sits at that point instead, `top_left` unless given: `bottom_left` for a popup above a point, `center` for one centred on it. |
+| `at` | A point the view is pinned to: `{ x = 10, y = 40 }` in the window, in logical pixels, kept in the window, or `{ page = 3, x = 72, y = 100 }` on a page, in its points from its top left as the document events give them, moving with the page and hidden while it is not shown. |
+| `dock` | `left`, `right`, `top` or `bottom`: a panel against that side of the window, its `width` or `height` taken from the document, which lays itself out beside it. Panels docked to the same side stack inwards in the order they open. |
+| `resizable` | For a docked view: its inner edge can be dragged to resize it. `view:size()` gives a view's width and height. |
+
+#### Lists
+
+| Field | Meaning |
+|---|---|
+| `rows` | The rows, each a string or a table; see below. |
+| `selected`, `scroll`, `query` | The selected row (1-based), the first row shown, and the search query to start with. |
+| `searchable` | Whether / searches the rows; true unless set false. |
+| `filter` | Whether the query filters the rows; true unless set false, as for a view that sets its own rows for each query in `on_query_changed`. |
+| `empty` | What the list says when it has no rows. |
+| `columns` | Lays out rows' `cells` as a table: a list of columns, each with a `title`, a `width` (logical pixels, a percentage of the row, or `"*"`, the default, for a share of what the others leave) and an `align` (`left`, `center` or `right`). Titles show above the rows. |
+
+A row table has `text`, `value` (the text unless set), `id`, `secondary` (drawn on the right), `depth` (setting it in a step for each level), `disabled`, `key` (a key binding, drawn in a column before the text), `marker` (drawn before the text in the secondary colour, in a column as wide as the widest row's marker, so the text of rows with and without one lines up), `heading` (a section title, which cannot be chosen), `swatch` (a colour drawn before the text, written as in the elements table), `checked` (a check box before the text, checked or not), `button` (drawn as a button, as the keybind menu's Add a key… is) and `cells` (its text in the view's `columns`, searched as its text is). Other fields are the plugin's own, and come back with the row.
+
+#### Drawing a view
+
+`draw = function(canvas, box, state)` draws the view's body, below its header, in place of its rows; `canvas:default()` draws the rows. The canvas has the methods element draw functions have (see [Drawing](#drawing)), and those below. `box` is the body, and `state.scroll` how far it is scrolled.
+
+- What the function draws below the body scrolls into it, by the wheel, the keys that move a list, the scrollbar, and `view:set_scroll(pixels)`.
+- A function that returns true is drawn again on the next frame, for drawing that moves. Otherwise the view is drawn again after its callbacks and as the pointer moves between its regions; call `view:redraw()` when what it draws changes otherwise, as from a timer.
+- If it fails, the error is reported once and the rows are drawn instead.
+
+| Method | Draws |
+|---|---|
+| <code>canvas:text(x, y, text [, color] [, options])</code> | Text in `color`, the foreground unless given, its options `true` for bold, or a table of `color`, `bold`, `mono` (a monospaced font), `size` (logical pixels), `width` (to truncate to, or with `wrap = true` wrap to) and `align` (`left`, `center` or `right`, within the width, or about x without one). Lines break at newlines. Returns its width and height. |
+| <code>canvas:measure(text [, options])</code> | Nothing; returns the width and height text would take. |
+| <code>canvas:clip(x, y, w, h)</code> | Nothing; limits what is drawn after to the rect, until `canvas:clip()`. |
+| <code>canvas:image(path, x, y [, w [, h]])</code> | A PNG, JPEG, GIF, WebP or BMP file, a path not absolute being from the configuration's directory, at its size in logical pixels, or a width or height given, keeping its proportions if only one is. It reloads when the file changes. Returns its width and height. |
+| <code>canvas:page(page, x, y, w [, h [, area]])</code> | The page, turned as the document's are: its thumbnail fitted to the width, or within the width and height, rendering as it is first drawn. With `area`, `{ x =, y = [, zoom =] }`, the part of the page from that point, in its points, at the box's top left, at `zoom` times the document's zoom (1 unless set), drawn sharp from the page's tiles; it needs a height. Returns its width and height. |
+| <code>canvas:region(id, x, y, w, h)</code> | Nothing; names the rect for the pointer events over it, which carry the id. Returns whether the pointer is over it, for drawing it hovered. |
+| <code>canvas:input(id, x, y, w [, options])</code> | The text field `id`, `w` wide, with options `placeholder`, `secret` (bullets for a password) and `lines` (more than one wraps and takes newlines). Returns its width and height. See [Typing](#typing). |
+| <code>canvas:button(id, x, y, w, label)</code> | A button, `w` wide, clicked with the pointer, or with Space or Enter when Tab reaches it; `on_click(id)` hears of it. Returns its width and height. |
+| <code>canvas:column([options])</code> | Nothing; returns a column that lays out what it draws down the canvas: see [Columns](#columns). |
+| <code>canvas:checkbox(id, x, y, label, checked)</code> | A check box with its label, clicked as a button is; the plugin keeps whether it is checked, as `on_click` tells it. Returns its width and height. |
+
+The fields, buttons and check boxes take the theme's `input`, `input_focused`, `button`, `button_focused` and `check` elements. The cursor shows an I-beam over a field and a hand over a button or check box.
+
+#### Columns
+
+`canvas:column({ x =, y =, width =, gap = })` lays out a form, or anything drawn down a body, without working out where each thing goes: each method draws at the column's left, below what it drew last, `gap` (8 unless given) apart, and returns its width and height. The column starts at `x`, `y` (0, 0 unless given), `width` wide, as far in from the right as from the left unless given.
+
+| Method | Draws |
+|---|---|
+| <code>col:text(text [, color] [, options])</code> | Text, as `canvas:text` draws it, wrapped to the column unless `wrap = false`. |
+| <code>col:input(id [, options])</code> | A text field the column's width. |
+| <code>col:button(id, label [, width])</code> | A button, the column's width unless given. |
+| <code>col:checkbox(id, label, checked)</code> | A check box. |
+| <code>col:page(page [, height [, area]])</code> | A page, or part of one, the column's width. |
+| <code>col:image(path [, w [, h]])</code> | An image. |
+| <code>col:space(height)</code> | Nothing; moves down. |
+| <code>col:y()</code> | Nothing; returns where the next thing goes. |
+
+Everything a canvas draws out of sight, below or above what shows of the body, is neither drawn nor, for a page, rendered, so a view can draw all it holds, as every page of a long document, and costs only what shows.
+
+#### Typing
+
+- `prompt = "Open"` puts a text field in the header, labelled with it, whose text is the query: typing filters a list without /, and Enter chooses the selected row, or runs `on_submit` if the view has one.
+- `canvas:input` draws a text field. The first drawn has the typing until Tab, Shift-Tab or a click moves it; Tab and Shift-Tab move through the prompt, fields, buttons and check boxes in the order they are drawn. `view:field(id)` and `view:set_field(id, text)` read and write a field's text, before the view opens too, and `view:fields()` gives them all, as an `on_submit` reading a form wants.
+- Fields and prompts edit as onon's own prompt does, with the same keys, a press placing the cursor, a drag selecting, and copy, cut and paste with the clipboard actions. Text an input method is composing shows underlined at the cursor. In a field of more than one line, Enter starts a new line, Ctrl- or Cmd-Enter submits, and the arrows, Home and End move by line.
+- A menu has the keys while it is open. A panel takes them when clicked, if it has fields, buttons, check boxes, a prompt or `on_key`, or from `view:focus()`, until Escape, a click elsewhere, or `view:blur()`; `view:focused()` says whether it has them.
+
+#### Callbacks
+
+| Callback | Runs |
+|---|---|
+| `on_select(index, value, text, id, row)` | When a row is chosen. `index` and `id` are the row's in the rows as set, however filtered, and `row` is the row as given, string or table. |
+| `on_selection_changed(index, value, text, id, row)` | When a key, the pointer or the query moves the selection, not when the view opens or `set_selected` moves it, as for a live preview. |
+| `on_query_changed(query)` | When the user changes the search query or prompt, not when `set_query` does. |
+| `on_input(text, id)` | When the user changes a field's text. |
+| `on_submit(text, id)` | On Enter in a field, or in the prompt, whose `id` is nil. |
+| `on_click(id)` | When a button or check box is clicked. |
+| `on_key(key)` | For each key pressed while the view has the keys and is not being typed in, named as `bind` names it, before the view's own keys; returning true takes the key. |
+| `on_action(action)` | For the action bound to a key pressed while the view has the keys, before the view runs it; returning true takes the action. |
+| `on_mouse(event)` | For the pointer over the view, and after a press on it until the release; returning true keeps the view from handling it. `event.type` is `press`, `release`, `move`, `leave` or `wheel`; `event.x` and `event.y` are logical pixels from the top left of what the body draws, scrolled; `event.region` is the id of the region there; a press or release has `button` (`left`, `middle`, `right`, `x1` or `x2`) and a press `clicks`; a wheel has `dx` and `dy`, positive to the right and down. A press on a text field, button or check box goes to it instead. |
+| `on_close()` | When the view closes: by `view:close()` or, for a menu, the user, another menu replacing it, or the document closing. |
+
+View methods are `show()`, `close()`, `visible()`, `redraw()`, `size()`, `focus()`, `blur()`, `focused()`, `set_title(title)`, `set_rows(rows)`, `set_selected(index)`, `set_scroll(scroll)`, `set_query(query)`, `field(id)`, `fields()`, `set_field(id, text)`, `selected()`, `scroll()`, and `query()`. Selection indices are 1-based, with 0 meaning no selection. A drawn body's scroll is in logical pixels, a list's in rows. Once a view closes, its methods read the state it closed with, as `on_close` does, until it is shown again from its spec.
+
+```lua
+-- A sidebar of page thumbnails, docked left and resizable; clicking one
+-- goes to it.
+local sidebar = onon.ui.create({
+  dock = "left", width = 144, resizable = true,
+  draw = function(canvas, box)
+    local size, y = box.w - 24, 8
+    for page = 1, onon.page_count() do
+      local _, h = canvas:page(page, 12, y, size)
+      if canvas:region(page, 12, y, size, h) or page == onon.page() then
+        canvas:stroke(canvas:path():rect(11, y - 1, size + 2, h + 2), "accent", 2)
+      end
+      y = y + h + 12
+    end
+  end,
+  on_mouse = function(ev)
+    if ev.type == "press" and ev.region then onon.page(ev.region) return true end
+  end,
+})
+sidebar:show()
+
+-- A form over the document, laid out by a column.
+local form
+form = onon.ui.create({
+  title = "New bookmark", width = 360, height = 260,
+  draw = function(canvas, box)
+    local col = canvas:column({ x = 12, y = 8 })
+    col:text("Name", "muted")
+    col:input("name", { placeholder = "Chapter 1" })
+    col:input("note", { placeholder = "Note", lines = 3 })
+    col:button("save", "Save")
+  end,
+  on_click = function(id)
+    if id == "save" then
+      local fields = form:fields()
+      onon.message("saved " .. fields.name)
+      form:close()
+    end
+  end,
+})
+form:show()
+```
 
 ### Portable API
 

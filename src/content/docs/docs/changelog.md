@@ -6,6 +6,18 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.10.0
+
+Released 2026-10-28. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.10.0)
+
+### What's Changed
+* One view system for every menu and panel, and a full UI toolkit for plugins by @Aethar01 in [#31](https://github.com/Aethar01/onon/pull/31)
+* Redesign onon's own menus: fitted, previewing and placeable by @Aethar01 in [#32](https://github.com/Aethar01/onon/pull/32)
+* Place each prompt in the status bar or a box of its own by @Aethar01 in [#33](https://github.com/Aethar01/onon/pull/33)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.9.7...0.10.0
+
 ## 0.9.7
 
 Released 2026-10-27. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.9.7)
