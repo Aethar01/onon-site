@@ -5,6 +5,7 @@ description: onon's options, one window per document, and forward search from La
 
 ```sh
 onon paper.pdf               # open a document
+onon me@host:paper.pdf       # or one on another machine
 onon --goto 20 paper.pdf     # start on page 20
 onon --config my.lua paper.pdf
 onon --no-config paper.pdf   # built-in defaults only
@@ -12,6 +13,8 @@ onon --no-plugins paper.pdf  # skip plugins
 onon -v                      # print the version
 onon -V                      # verbose logs, for bug reports
 ```
+
+[Remote documents](/docs/remote/) covers web, SSH and WebDAV addresses, and `#page=N`.
 
 ## One window per document
 
@@ -24,7 +27,7 @@ onon --unique --goto 42:100:250 paper.pdf   # to a point on page 42
 onon --unique --command "reload-config" paper.pdf
 ```
 
-With no window showing the document, `--unique` opens one and applies `--goto` and `--command` as it starts. Without `--unique`, onon always opens a new window. A window that opens another file becomes reachable under the new one.
+With no window showing the document, `--unique` opens one and applies `--goto` and `--command` as it starts. Without `--unique`, onon always opens a new window. A window that opens another file becomes reachable under the new one. On macOS, a document Finder or `open` sends to onon while it is running also opens in a new window; set `open_in_new_window = false` to open it in the current one.
 
 `X` and `Y` in `--goto PAGE:X:Y` are points from the page's top-left corner, which is the convention SyncTeX uses. `--command` takes anything you could type after <kbd>:</kbd>, including commands from plugins. It exits non-zero if onon does not recognise the command.
 

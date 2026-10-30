@@ -84,5 +84,6 @@ This plugin adds the command `:word-count-show`. Commands are named `:plugin-id-
 - **Timers**, **file system** reads and **HTTP** requests, all asynchronous.
 - **Background jobs**, which run a program without a shell and call back with its output.
 - **Document text and links**, read in the background.
+- **Menus and panels** of their own, as [scripting](/docs/scripting/#your-own-menus-and-panels) describes.
 
 Every asynchronous call returns a handle with `cancel()`, and callbacks run one at a time on the main Lua thread. `:reload-config` cancels a plugin's work along with its old state. The [plugin reference](/docs/reference/#plugins) covers the API, results and limits in full.

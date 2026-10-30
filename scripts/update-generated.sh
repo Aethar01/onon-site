@@ -23,11 +23,12 @@ generate() {
 
 # page TITLE DESCRIPTION ORDER SOURCE DEST [SLUG] writes SOURCE as a
 # Starlight page, dropping its own heading, which the title replaces.
-# Versions give a SLUG, since Astro drops the dots from file names.
+# Versions give a SLUG, since Astro drops the dots from file names, and
+# are left out of search, so it finds only the latest release's reference.
 page() {
 	{
 		printf -- '---\ntitle: "%s"\ndescription: "%s"\neditUrl: false\n' "$1" "$2"
-		if [ -n "${6:-}" ]; then printf 'slug: %s\n' "$6"; fi
+		if [ -n "${6:-}" ]; then printf 'slug: %s\npagefind: false\n' "$6"; fi
 		if [ -n "$3" ]; then printf 'sidebar:\n  order: %s\n' "$3"; fi
 		printf 'tableOfContents:\n  maxHeadingLevel: 2\n---\n\n'
 		awk '/^<!-- Code generated/ { next } !done && /^# / { done = 1; next } { print }' "$4"

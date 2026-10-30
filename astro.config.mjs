@@ -38,6 +38,7 @@ export default defineConfig({
 					label: 'Guides',
 					items: [
 						{ label: 'Reading', slug: 'docs/reading' },
+						{ label: 'Remote documents', slug: 'docs/remote' },
 						{ label: 'Configuration', slug: 'docs/configuration' },
 						{ label: 'Themes', slug: 'docs/themes' },
 						{ label: 'Scripting with Lua', slug: 'docs/scripting' },
