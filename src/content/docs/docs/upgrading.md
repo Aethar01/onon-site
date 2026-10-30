@@ -33,5 +33,5 @@ onon copies nothing if an `onon` folder already exists, and leaves alone a gopdf
 ## Packages
 
 - **Homebrew:** `brew upgrade` replaces the `gopdf` cask with `onon`.
-- **Windows installer:** installs over gopdf in place. The new shortcut and file associations are named onon.
+- **Windows installer:** installs onon to `Program Files\onon` and uninstalls gopdf, with its shortcut and file associations. The new ones are named onon.
 - **AUR:** `onon-git` replaces `gopdf-git`.

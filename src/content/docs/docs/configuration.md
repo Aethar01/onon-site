@@ -42,7 +42,30 @@ onon.o.scroll_off = 8
 onon.o.smooth_scroll_dampening = 0.3
 ```
 
-At runtime, `:set` inspects and changes them: `:set scroll_step?` shows a value, `:set dual_page!` toggles a boolean, and `:set scroll_step=80` sets one. The [reference](/docs/reference/#configuration-options) lists every option with its type and default.
+At runtime, `:set` inspects and changes them: `:set scroll_step?` shows a value, `:set dual_page!` toggles a boolean, and `:set scroll_step=80` sets one. `:set` on its own lists every option with its value: <kbd>Enter</kbd> on a boolean switches it, and on any other puts `:set name=value` in the prompt to change. The [reference](/docs/reference/#configuration-options) lists every option with its type and default.
+
+## Menus and prompts
+
+`onon.o.menus` places onon's own menus, by name. Each takes an `anchor`, such as `left`, `top_right` or `center`, and a `width` and `height`, the most of the window it may take, in logical pixels or a percentage:
+
+```lua
+onon.o.menus = {
+  outline = { anchor = "left", width = "40%" },
+  recent = { anchor = "top", height = 300 },
+}
+```
+
+Prompts sit in the status bar unless `onon.o.prompts` gives one a box of its own, centred and half the window wide unless an `anchor` or `width` says otherwise:
+
+```lua
+onon.o.prompts = {
+  command = { anchor = "top", width = "60%" },
+  search = { anchor = "top" },
+  go_to = "bar", -- in the status bar, as by default
+}
+```
+
+The [reference](/docs/reference/#configuration-options) names every menu and prompt. The theme's `prompt_box` element styles a prompt in its own box.
 
 ## Key and mouse bindings
 
@@ -60,7 +83,7 @@ onon.bind_mouse("<C-wheel-up>", onon.zoom_in)
 
 Keys in angle brackets use the names in the [reference](/docs/reference/#key-and-mouse-names): `<CR>`, `<Esc>`, `<Space>`, `<PgDn>`, `<F1>`, `<C-a>` for Control, `<A-x>` for Alt, `<D-s>` for Cmd on macOS and `<S-Tab>` for Shift. `onon.unbind` and `onon.unbind_mouse` remove a binding. Sequences that start with a digit, `'` or `"` are taken by counts and marks.
 
-`:keybinds` edits bindings inside onon. Bindings changed there are kept in the session database and applied before `config.lua`, so where the two disagree, `config.lua` wins.
+`:keybinds` edits bindings inside onon. It lists every action with its keys. <kbd>Enter</kbd> on an action lists its keys: <kbd>Enter</kbd> on a key captures a new one in its place, <kbd>Delete</kbd> unbinds it, and Add a key… binds another. Bindings changed there are kept in the session database and applied before `config.lua`, so where the two disagree, `config.lua` wins.
 
 ## Commands
 

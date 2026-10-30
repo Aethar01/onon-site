@@ -74,6 +74,13 @@ onon paper.pdf
 
 With no file, onon reopens the document you read last, at the place you left it. Every document keeps its own place, zoom and marks between sessions.
 
+onon also opens [documents on a web server, an SSH host or a WebDAV server](/docs/remote/):
+
+```sh
+onon https://example.com/paper.pdf
+onon me@host:papers/paper.pdf
+```
+
 ## The first keys
 
 | Key | Does |
@@ -96,5 +103,6 @@ Counts work the way they do in Vim: <kbd>1</kbd><kbd>0</kbd><kbd>j</kbd> scrolls
 ## Further
 
 - [Reading](/docs/reading/) covers search, links, marks, highlights and presentation mode.
+- [Remote documents](/docs/remote/) opens documents over the web, SSH and WebDAV.
 - [Configuration](/docs/configuration/) shows where `config.lua` lives and how to change keys and options.
 - [Themes](/docs/themes/) changes how onon looks, from one colour to every panel's shape.
