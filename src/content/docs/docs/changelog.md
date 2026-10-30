@@ -6,6 +6,18 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.10.2
+
+Released 2026-10-30. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.10.2)
+
+### What's Changed
+* Scroll a list in step with its selected row's box by @Aethar01 in [#34](https://github.com/Aethar01/onon/pull/34)
+* Give every Lua table in the reference a table of its fields and types by @Aethar01 in [#35](https://github.com/Aethar01/onon/pull/35)
+* Keep the page at 0 with no document, so the overview opens without crashing by @Aethar01 in [#36](https://github.com/Aethar01/onon/pull/36)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.10.1...0.10.2
+
 ## 0.10.1
 
 Released 2026-10-29. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.10.1)
