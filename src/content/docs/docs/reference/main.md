@@ -1106,7 +1106,23 @@ Create views with `local view = onon.ui.create(spec)`, then call `view:show()`. 
 | `empty` | What the list says when it has no rows. |
 | `columns` | Lays out rows' `cells` as a table: a list of columns, each with a `title`, a `width` (logical pixels, a percentage of the row, or `"*"`, the default, for a share of what the others leave) and an `align` (`left`, `center` or `right`). Titles show above the rows. |
 
-A row table has `text`, `value` (the text unless set), `id`, `secondary` (drawn on the right), `depth` (setting it in a step for each level), `disabled`, `key` (a key binding, drawn in a column before the text), `marker` (drawn before the text in the secondary colour, in a column as wide as the widest row's marker, so the text of rows with and without one lines up), `heading` (a section title, which cannot be chosen), `swatch` (a colour drawn before the text, written as in the elements table), `checked` (a check box before the text, checked or not), `button` (drawn as a button, as the keybind menu's Add a key… is) and `cells` (its text in the view's `columns`, searched as its text is). Other fields are the plugin's own, and come back with the row.
+A row is a string, its text, or a table of these fields. Other fields are the plugin's own, and come back with the row.
+
+| Field | Type | Meaning |
+|---|---|---|
+| `text` | string | The row's text; with `cells` and no text, the cells joined by spaces. |
+| `value` | string | What `on_select` is given as the value: the text unless set, or with `cells` the first cell. |
+| `id` | string | The row's own name, given to its callbacks. |
+| `secondary` | string | Drawn on the right. |
+| `depth` | integer | Sets the row in a step for each level. |
+| `disabled` | boolean | Disables the row. |
+| `key` | string | A key binding, drawn in a column before the text. |
+| `marker` | string | Drawn before the text in the secondary colour, in a column as wide as the widest row's marker, so the text of rows with and without one lines up. |
+| `heading` | boolean | Makes the row a section title, which cannot be chosen. |
+| `swatch` | colour | A colour drawn before the text, written as in the elements table. |
+| `checked` | boolean | A check box before the text, checked or not; no check box unless set. |
+| `button` | boolean | Draws the row as a button, as the keybind menu's Add a key… is. |
+| `cells` | string[] | Its text in the view's `columns`, searched as its text is. |
 
 #### Drawing a view
 
@@ -1221,53 +1237,45 @@ The `onon` tables below are available to configuration and plugin Lua code.
 
 | Module | Returns / fields | Description |
 |---|---|---|
-| <code>onon.platform</code> | table | Also available from `require("onon.platform")`. Fields: `os` (`linux`, `macos`, or `windows`), `arch`, `home_dir`, `config_dir`, `data_dir`, `cache_dir`, and `temp_dir`. Directory fields are absolute when the platform supplies a location and may be empty when it does not. |
+| <code>onon.platform</code> | [Platform](#platform) | Also available from `require("onon.platform")`. The system onon runs on and its directories. |
 | <code>onon.path</code> | table | Also available from `require("onon.path")`. Fields: `separator`, `list_separator`; functions: `join(...)`, `clean(path)`, `basename(path)`, `dirname(path)`, `extension(path)`, `is_absolute(path)`, `absolute(path)`, `relative(base, target)`, and `expand_home(path)`. Operations use native platform path rules; `expand_home` expands only `~`, `~/...`, and `~\...`. |
 | <code>onon.json</code> | table | Also available from `require("onon.json")`. `encode(value)` returns compact JSON and `decode(text)` returns a Lua value. `null` is the stable module-local JSON null sentinel. Arrays require contiguous positive integer keys; objects require string keys. Cycles, sparse or mixed tables, non-finite numbers, unsupported Lua values, and trailing input are errors. Decoded empty arrays and objects retain their shape when re-encoded. |
 
 #### Document inspection
 
-These read the open document. The `onon.document` fields `path`, `name`, `extension`, `exists`, `size_bytes`, and `page_count` remain available and are refreshed when the document changes. The functions below raise an error when no document is open. Rectangles are `x0`, `y0`, `x1`, `y1` in unrotated PDF points.
+These read the open document. The [Document](#document) table's fields are refreshed when the document changes. The functions below raise an error when no document is open. Rectangles are `x0`, `y0`, `x1`, `y1` in unrotated PDF points. [Lua tables](#lua-tables) lists the fields of each table they return.
 
 | Function | Returns / fields | Description |
 |---|---|---|
-| <code>onon.document.metadata()</code> | table | Return document metadata: `format`, `encryption`, `title`, `author`, `subject`, `keywords`, `creator`, `producer`, `creation_date`, and `modification_date`. Absent fields are empty strings. |
-| <code>onon.document.outline()</code> | table[] | Return the outline as a tree. Each entry has `title`, `uri`, `external`, `page`, `children`, and optional `x` and `y` destination coordinates. `page` is 1-based, or 0 when the entry has no page destination. |
-| <code>onon.document.page_info(page)</code> | table | Return `page`, `label`, `width`, `height`, and `bounds` for a 1-based page. Sizes are unrotated PDF points; an out-of-range page raises an error. |
-| <code>onon.document.selection()</code> | table | Return the current selection: `active`, `text`, and `pages`, a list in page order of `{ page = n, quads = { ... } }` with quads as bounding rectangles. `pages` is empty when nothing is selected. |
-| <code>plugin.document:page_text(page, callback)</code> | handle | Extract a page's text asynchronously. The result adds `page` and `text`. |
-| <code>plugin.document:page_links(page, callback)</code> | handle | Read a page's links asynchronously. The result adds `page` and `links`; each link has `bounds`, `uri`, `external`, `page`, and optional `x` and `y`. |
+| <code>onon.document.metadata()</code> | [Document metadata](#document-metadata) | Return the document's metadata. Absent fields are empty strings. |
+| <code>onon.document.outline()</code> | [Outline entry](#outline-entry)[] | Return the outline as a tree, each entry holding the entries under it in `children`. |
+| <code>onon.document.page_info(page)</code> | [Page info](#page-info) | Return a 1-based page's label and size. Sizes are unrotated PDF points; an out-of-range page raises an error. |
+| <code>onon.document.selection()</code> | [Selection](#selection) | Return the current selection: its text and where it is on each page. `pages` is empty when nothing is selected. |
+| <code>plugin.document:page_text(page, callback)</code> | [Handle](#handle) | Extract a page's text asynchronously, calling `callback` with a [Page text result](#page-text-result). |
+| <code>plugin.document:page_links(page, callback)</code> | [Handle](#handle) | Read a page's links asynchronously, calling `callback` with a [Page links result](#page-links-result). |
 
 ### Plugins
 
 Plugins are discovered without being executed. Enable one explicitly with `local plugin = require("plugin-id")`; only the required plugin and its declared dependencies execute. The entrypoint must call `onon.plugin.register("plugin-id"[, spec])`; `require` returns the registered module.
 
-A plugin manifest is `onon-plugin.json` with `id`, `version`, `module`, and `dependencies`; only `id` is required, and unrecognised fields are ignored. `module` selects `lua/<module>.lua` or `lua/<module>/init.lua`. Plugin modules contain `id`, `version`, `actions`, `fs`, `timer`, `storage`, `http`, and `document`, plus `register_action`, `register_command`, `on`, `off`, and `job`. Registered actions use `plugin-id.action`; commands use `:plugin-id-command`, where the command name cannot contain `-`; options use `plugin-id.option`.
+A plugin may describe itself in a [Plugin manifest](#plugin-manifest), `onon-plugin.json`, and declares its options in a [Plugin spec](#plugin-spec). The [Plugin module](#plugin-module) `register` returns has the functions below, and those that register actions, commands and event callbacks. Registered actions use `plugin-id.action`; commands use `:plugin-id-command`, where the command name cannot contain `-`; options use `plugin-id.option`.
 
 | Function | Returns / fields | Description |
 |---|---|---|
-| <code>plugin.fs:read_dir(path[, options], callback)</code> | handle | Read one directory asynchronously. `options.follow_symlinks` defaults to false. Without following, a symlink supplied as `path` is rejected; entries themselves are reported as symlinks. |
-| <code>plugin.fs:stat(path[, options], callback)</code> | handle | Stat a path asynchronously. `options.follow_symlinks` defaults to false. |
-| <code>plugin.timer:after(ms, callback)</code> | handle | Call `callback()` once after `ms` milliseconds. `ms` may be zero. |
-| <code>plugin.timer:every(ms, callback)</code> | handle | Call `callback()` repeatedly, waiting `ms` milliseconds between dispatches. `ms` must be greater than zero. |
+| <code>plugin.fs:read_dir(path[, options], callback)</code> | [Handle](#handle) | Read one directory asynchronously, calling `callback` with a [Directory result](#directory-result). `options` are [Filesystem options](#filesystem-options). Without following, a symlink supplied as `path` is rejected; entries themselves are reported as symlinks. |
+| <code>plugin.fs:stat(path[, options], callback)</code> | [Handle](#handle) | Stat a path asynchronously, calling `callback` with its [File info](#file-info). `options` are [Filesystem options](#filesystem-options). |
+| <code>plugin.timer:after(ms, callback)</code> | [Handle](#handle) | Call `callback()` once after `ms` milliseconds. `ms` may be zero. |
+| <code>plugin.timer:every(ms, callback)</code> | [Handle](#handle) | Call `callback()` repeatedly, waiting `ms` milliseconds between dispatches. `ms` must be greater than zero. |
 | <code>plugin.storage:get(key)</code> | value or nil | Synchronously return the value stored for this plugin ID, or nil when absent or when no session database is available. |
 | <code>plugin.storage:set(key, value)</code> | none | Synchronously persist a plugin-scoped value. Supports nil, booleans, finite numbers, strings, contiguous arrays, and string-keyed objects; tables cannot be cyclic or mix array and object keys. Raises an error when no session database is available; the value is not silently discarded. |
 | <code>plugin.storage:delete(key)</code> | none | Synchronously delete a plugin-scoped value. |
 | <code>plugin.storage:keys()</code> | string[] | Synchronously return this plugin's keys in lexical order. |
-| <code>plugin.http:request(spec, callback)</code> | handle | Make an asynchronous HTTP request. `spec` has required `url` (`http` or `https`) and optional `method` (default `GET`), string-to-string `headers`, `body`, and positive `timeout_ms`. |
-| <code>plugin:job(spec, callback)</code> | handle | Start a subprocess without invoking a shell. `spec.command` is required; optional fields are string-array `args`, `cwd`, positive `timeout_ms`, string-to-string `env` additions, and `stdin`. |
+| <code>plugin.http:request(spec, callback)</code> | [Handle](#handle) | Make an asynchronous [HTTP request](#http-request), calling `callback` with its [HTTP response](#http-response). |
+| <code>plugin:job(spec, callback)</code> | [Handle](#handle) | Start a subprocess from a [Job spec](#job-spec) without invoking a shell, calling `callback` with its [Job result](#job-result). |
 
 #### Handles and results
 
-Every `schedule`, filesystem, timer, HTTP, document-extraction, and job call returns a handle with numeric `id`, `cancel()`, and `active()`. `active()` becomes false before a one-shot completion callback runs. Repeating timers remain active between callbacks until cancelled. `cancel()` is idempotent, removes the operation, and does not invoke its callback, so delivered result tables always have `cancelled=false`. Callbacks run serially on the main Lua thread, never on worker goroutines.
-
-| Result | Returns / fields | Description |
-|---|---|---|
-| <code>picker result</code> | `success`, `path`, `cancelled`, `error` | Cancellation is a normal result: `cancelled=true`, `success=false`, empty `path`, and empty `error`. |
-| <code>fs.stat result</code> | `success`, `error`, `cancelled`, `timed_out`; on success: `name`, `path`, `type`, `size_bytes`, `modified_unix` | `type` is `file`, `directory`, `symlink`, or `other`. `modified_unix` is whole seconds since the Unix epoch. |
-| <code>fs.read_dir result</code> | `success`, `error`, `cancelled`, `timed_out`, `entries` | On success, `entries` is an array of the same file-information fields returned by `stat`. |
-| <code>http result</code> | `success`, `status`, `headers`, `body`, `error`, `timed_out`, `cancelled` | On transport failure, status is 0 and body and headers are empty. Response header values are arrays of strings. HTTP error status codes are completed responses and do not by themselves set `success=false`. |
-| <code>job result</code> | `id`, `success`, `code`, `stdout`, `stderr`, `error`, `timed_out`, `cancelled` | `success` requires exit code 0, no launch/wait error, and no timeout. `code` is -1 when no process exit code is available. |
+Every `schedule`, filesystem, timer, HTTP, document-extraction, and job call returns a handle with numeric `id`, `cancel()`, and `active()`. `active()` becomes false before a one-shot completion callback runs. Repeating timers remain active between callbacks until cancelled. `cancel()` is idempotent, removes the operation, and does not invoke its callback, so delivered result tables always have `cancelled=false`. Callbacks run serially on the main Lua thread, never on worker goroutines. [Results](#results) lists each result's fields.
 
 #### Limits
 
@@ -1285,7 +1293,7 @@ Each plugin has an isolated local-module cache and search root. It may require a
 
 A successful `:reload-config` replaces the Lua state and cancels all handles and jobs from the old generation without invoking their callbacks. If reload fails, the previous state and its operations remain active. A failed plugin load rolls back that plugin and cancels work it started. Viewer shutdown emits `shutdown` before runtime close; close then cancels remaining operations and jobs. Storage is keyed by plugin ID in the session database and survives reloads and application restarts.
 
-Supported events are `app_ready`, `document_open_pre`, `document_opened`, `document_close_pre`, `document_closed`, `document_reloaded`, `config_reloaded`, `mouse_button_pre`, `mouse_button`, `selection_changed`, `page_changed`, `zoom_changed`, `option_changed`, and `shutdown`. `page_changed` carries `page`, `label`, `previous_page`, and `page_count`; `zoom_changed` carries `scale`, `previous_scale`, and `percent`. Both are emitted once per frame with the settled value, so a continuous gesture reports where it came to rest. Event callbacks run in subscription order within each plugin; returning true marks an event consumed where the host supports consumption but does not stop later callbacks.
+Supported events are `app_ready`, `document_open_pre`, `document_opened`, `document_close_pre`, `document_closed`, `document_reloaded`, `config_reloaded`, `mouse_button_pre`, `mouse_button`, `selection_changed`, `page_changed`, `zoom_changed`, `option_changed`, and `shutdown`. Each callback is given a table, listed in [Events](#events). `page_changed` and `zoom_changed` are emitted once per frame with the settled value, so a continuous gesture reports where it came to rest. Event callbacks run in subscription order within each plugin; returning true marks an event consumed where the host supports consumption but does not stop later callbacks.
 
 Plugins are found in every one of the platform plugin directories, and rescanned by `:reload-config`: on Linux `/usr/lib/onon/plugins`, `$XDG_DATA_HOME/onon/plugins` (or `~/.local/share/onon/plugins`), `$XDG_CONFIG_HOME/onon/plugins`, `~/.config/onon/plugins` and each `$XDG_CONFIG_DIRS/onon/plugins`; on macOS `~/Library/Application Support/onon/plugins` and `~/.config/onon/plugins`; on Windows `%LOCALAPPDATA%\onon\plugins` and `%APPDATA%\onon\plugins`. Where two have a plugin with the same id, the first wins. Disable plugin discovery with `--no-plugins`, or start from built-in defaults with `--no-config`, which also skips the generated settings file.
 
@@ -1433,11 +1441,406 @@ Keys in a system's own column are bound there as well as the default keys.
 
 ## Lua tables
 
-- `onon.document`: `path`, `name`, `extension`, `exists`, `size_bytes`, and `page_count`.
+Every table onon gives Lua code or takes from it, with its fields. A type such as `string[]` is a list, and `{ [string]: string }` a table keyed by strings. The fields of a table onon takes may be left out unless they say they are required.
+
+- `onon.document`: see [Document](#document).
+- `onon.platform`: see [Platform](#platform).
 - `onon.options` (alias `onon.o`): all entries from the configuration-options table.
 - `onon.theme`: the theme; see [Theme](#theme). Read or assign whole, or one field at a time.
 - `onon.themes`: each built-in theme as a fresh table, such as `onon.themes.birch`.
+- `onon.ui.create`'s spec and rows: see [UI views](#ui-views).
 - `onon.cache`, `onon.ui`, and `onon.plugin`: functions are listed above.
+
+### Document and platform
+
+`onon.platform`, `onon.document` and its functions, and a plugin's `document`, give these. Coordinates are in unrotated PDF points from the page's top left.
+
+#### Platform
+
+`onon.platform`, also `require("onon.platform")`. Directories are absolute when the system gives one, and empty when it does not.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>os</code> | string | `linux`, `macos` or `windows`. |
+| <code>arch</code> | string | The processor architecture, as Go names it: `amd64`, `arm64` and so on. |
+| <code>home_dir</code> | string | The user's home directory. |
+| <code>config_dir</code> | string | The directory onon reads `config.lua` from. |
+| <code>data_dir</code> | string | onon's data directory. |
+| <code>cache_dir</code> | string | onon's cache directory. |
+| <code>temp_dir</code> | string | The system's temporary directory. |
+
+#### Document
+
+`onon.document`, refreshed when the document changes. Its functions raise an error when no document is open.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>path</code> | string | The document's path or URL; empty when none is open. |
+| <code>name</code> | string | Its file name. |
+| <code>extension</code> | string | Its extension, lower case, without the dot. |
+| <code>exists</code> | boolean | Whether the file exists. |
+| <code>size_bytes</code> | integer | The file's size; only set when it exists. |
+| <code>page_count</code> | integer | Its number of pages; only set once the document is open. |
+| <code>metadata()</code> | function | Returns its [Document metadata](#document-metadata). |
+| <code>outline()</code> | function | Returns its outline: a list of [Outline entry](#outline-entry) tables, empty when it has none. |
+| <code>page_info(page)</code> | function | Returns [Page info](#page-info) for a 1-based page; an out-of-range page raises an error. |
+| <code>selection()</code> | function | Returns the current [Selection](#selection). |
+
+#### Rectangle
+
+An area of a page.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>x0</code> | number | Left edge. |
+| <code>y0</code> | number | Top edge. |
+| <code>x1</code> | number | Right edge. |
+| <code>y1</code> | number | Bottom edge. |
+
+#### Document metadata
+
+Every field is a string, empty when the document does not give it.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>format</code> | string | The document's format, as MuPDF names it. |
+| <code>encryption</code> | string | How it is encrypted, as MuPDF describes it. |
+| <code>title</code> | string | The document's title. |
+| <code>author</code> | string | Its author. |
+| <code>subject</code> | string | Its subject. |
+| <code>keywords</code> | string | Its keywords, as one string. |
+| <code>creator</code> | string | The application that made the original. |
+| <code>producer</code> | string | The application that wrote the file. |
+| <code>creation_date</code> | string | When it was made, as the document writes it. |
+| <code>modification_date</code> | string | When it last changed, as the document writes it. |
+
+#### Outline entry
+
+| Field | Type | Description |
+|---|---|---|
+| <code>title</code> | string | The entry's text. |
+| <code>uri</code> | string | Its link target, or empty. |
+| <code>external</code> | boolean | Whether `uri` leads out of the document. |
+| <code>page</code> | integer | The 1-based page it goes to, or 0 when it goes to none. |
+| <code>x</code> | number or nil | Where on the page it goes, when it says. |
+| <code>y</code> | number or nil | Where on the page it goes, when it says. |
+| <code>children</code> | [Outline entry](#outline-entry)[] | The entries under it; empty when it has none. |
+
+#### Page info
+
+| Field | Type | Description |
+|---|---|---|
+| <code>page</code> | integer | The 1-based page. |
+| <code>label</code> | string | Its page label, such as `iv`, or empty when it has none. |
+| <code>width</code> | number | Its width. |
+| <code>height</code> | number | Its height. |
+| <code>bounds</code> | [Rectangle](#rectangle) | Its box. |
+
+#### Selection
+
+| Field | Type | Description |
+|---|---|---|
+| <code>active</code> | boolean | Whether text is selected. |
+| <code>text</code> | string | The selected text. |
+| <code>pages</code> | [Selection page](#selection-page)[] | Each page the selection covers, in page order; empty when nothing is selected. |
+
+#### Selection page
+
+| Field | Type | Description |
+|---|---|---|
+| <code>page</code> | integer | The 1-based page. |
+| <code>quads</code> | [Rectangle](#rectangle)[] | The bounding rectangle of each piece of the selection on it. |
+
+#### Page link
+
+Each of a [Page links result](#page-links-result)'s `links`.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>bounds</code> | [Rectangle](#rectangle) | The link's area on the page. |
+| <code>uri</code> | string | Its target, or empty. |
+| <code>external</code> | boolean | Whether `uri` leads out of the document. |
+| <code>page</code> | integer | The 1-based page it goes to, or 0 when it goes to none. |
+| <code>x</code> | number or nil | Where on the page it goes, when it says. |
+| <code>y</code> | number or nil | Where on the page it goes, when it says. |
+
+### Plugin tables
+
+A plugin describes itself with these, and its module has the functions that take the rest.
+
+#### Plugin manifest
+
+`onon-plugin.json` in the plugin's directory, which may be left out. Unrecognised fields are ignored.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>id</code> | string | The plugin's ID, which `require` loads it by; the directory's name unless given. |
+| <code>version</code> | string | Its version, shown as the module's `version`. |
+| <code>module</code> | string | The module to load: `lua/<module>.lua` or `lua/<module>/init.lua`; the ID unless given. |
+| <code>dependencies</code> | string[] | IDs of plugins it may `require`, loaded before it. |
+
+#### Plugin spec
+
+The second argument of `onon.plugin.register(id[, spec])`.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>options</code> | table | The plugin's options, by name: each an [Option declaration](#option-declaration). They are set as `plugin-id.name`, with `onon.options` or `:set`, and read and assigned on the module as `plugin.name`. |
+
+#### Option declaration
+
+| Field | Type | Description |
+|---|---|---|
+| <code>type</code> | string | `boolean`, `integer`, `number`, `string`, `path`, `command` or `list`; assigned values must be of it. Unless given, `boolean`, `number` or `list` for a default of that type, else `string`. |
+| <code>default</code> | any | Its value until set; `false`, `0`, `""` or `{}`, by its type, unless given. |
+| <code>description</code> | string | What it does. |
+
+#### Plugin module
+
+What `onon.plugin.register` and `require("plugin-id")` return. Its functions are methods, called with `:` as `plugin:on("page_changed", callback)`; the `register_*` functions and `on` work only while the plugin is loading. Fields assigned on it are kept as the plugin's own.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>id</code> | string | The plugin's ID. |
+| <code>version</code> | string | The manifest's version, or empty. |
+| <code>actions</code> | table | The plugin's actions by name, as `register_action` returned them. |
+| <code>fs</code> | table | `read_dir` and `stat`; see [Plugins](#plugins). |
+| <code>timer</code> | table | `after` and `every`. |
+| <code>storage</code> | table | `get`, `set`, `delete` and `keys`. |
+| <code>http</code> | table | `request`. |
+| <code>document</code> | table | `page_text` and `page_links`. |
+| <code>register_action(name[, spec], callback)</code> | function | Adds the action `plugin-id.name`, run by `callback()`, with an [Action spec](#action-spec). Returns the action, to pass to `onon.bind`. |
+| <code>register_command(name[, spec], callback)</code> | function | Adds the command `:plugin-id-name`; `name` cannot contain `-`. `callback` is given a [Command context](#command-context). Takes a [Command spec](#command-spec), and returns the command's full name. |
+| <code>on(event, callback)</code> | function | Calls `callback(payload)` for each event; see [Events](#events). Returns the subscription's ID, an integer. |
+| <code>off(id)</code> | function | Removes the subscription `on` returned `id` for. |
+| <code>job(spec, callback)</code> | function | Starts a [Job spec](#job-spec)'s process, calling `callback` with its [Job result](#job-result). Returns a [Handle](#handle). |
+
+#### Action spec
+
+| Field | Type | Description |
+|---|---|---|
+| <code>description</code> | string | What it does; its full name unless given. |
+| <code>countable</code> | boolean | Whether a count can be typed before its keys; false unless set. |
+
+#### Command spec
+
+| Field | Type | Description |
+|---|---|---|
+| <code>description</code> | string | Shown in the help menu; `:plugin-id-name` unless given. |
+| <code>arg_completions</code> | string[] | Arguments offered as the command is typed. |
+
+#### Command context
+
+What a command's callback is given.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>name</code> | string | The command's full name, as `plugin-id-name`. |
+| <code>raw</code> | string | Everything typed after the command. |
+| <code>args</code> | string[] | `raw` split at whitespace. |
+
+#### Filesystem options
+
+The optional `options` of `plugin.fs:read_dir` and `plugin.fs:stat`.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>follow_symlinks</code> | boolean | Follow a symlink given as `path` instead of describing the link itself; false unless set. |
+
+#### HTTP request
+
+The `spec` of `plugin.http:request`.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>url</code> | string | Required; `http://` or `https://`. |
+| <code>method</code> | string | `GET` unless given. |
+| <code>headers</code> | { [string]: string } | Request headers by name. |
+| <code>body</code> | string | The request body. |
+| <code>timeout_ms</code> | integer | Milliseconds before the request is given up; no limit unless greater than 0. |
+
+#### Job spec
+
+The `spec` of `plugin:job`. The command runs without a shell.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>command</code> | string | Required; the program, a path or a name found on `PATH`. |
+| <code>args</code> | string[] | Its arguments. |
+| <code>cwd</code> | string | The directory it runs in; onon's own unless given. |
+| <code>env</code> | { [string]: string } | Environment variables added to onon's. |
+| <code>stdin</code> | string | Written to its standard input. |
+| <code>timeout_ms</code> | integer | Milliseconds before it is killed; no limit unless greater than 0. |
+
+### Results
+
+Callbacks are given these. The results of a plugin's filesystem, HTTP, document and job calls have the [Operation result](#operation-result)'s fields as well as their own; timers and `onon.schedule` call their callbacks with nothing.
+
+#### Handle
+
+Returned by `onon.schedule` and every asynchronous plugin call.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>id</code> | integer | The operation's ID, which its result carries too. |
+| <code>cancel()</code> | function | Stops the operation without calling its callback. Calling it again does nothing. |
+| <code>active()</code> | function | Returns true until the operation completes or is cancelled; a repeating timer stays active until cancelled. |
+
+#### Operation result
+
+| Field | Type | Description |
+|---|---|---|
+| <code>id</code> | integer | The [Handle](#handle)'s ID. |
+| <code>success</code> | boolean | Whether the operation did what it was asked. |
+| <code>error</code> | string | Why it failed, or empty. |
+| <code>timed_out</code> | boolean | Whether its `timeout_ms` ran out. |
+| <code>cancelled</code> | boolean | Always false: a cancelled operation calls nothing. |
+
+#### Picker result
+
+What `onon.pick_file` and `onon.pick_directory` give their callbacks.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>success</code> | boolean | Whether a path was picked. |
+| <code>path</code> | string | The path picked, or empty. |
+| <code>cancelled</code> | boolean | Whether the picker was closed without picking, which is not an error. |
+| <code>error</code> | string | Why the picker failed, or empty. |
+
+#### File info
+
+A `plugin.fs:stat` result, and each of a `read_dir` result's `entries`.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>name</code> | string | The file's name. |
+| <code>path</code> | string | Its path. |
+| <code>type</code> | string | `file`, `directory`, `symlink` or `other`. |
+| <code>size_bytes</code> | integer | Its size. |
+| <code>modified_unix</code> | integer | When it last changed, in whole seconds since the Unix epoch. |
+| <code>error</code> | string | In `entries`: why the entry could not be read, its `size_bytes` and `modified_unix` then 0; else empty. |
+
+#### Directory result
+
+A `plugin.fs:read_dir` result.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>entries</code> | [File info](#file-info)[] | The directory's entries. |
+
+#### HTTP response
+
+A `plugin.http:request` result. An HTTP error status is still a response, and `success` is true.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>status</code> | integer | The HTTP status code, or 0 when no response came. |
+| <code>headers</code> | { [string]: string[] } | Response headers by name, each a list of its values. |
+| <code>body</code> | string | The response body. |
+
+#### Job result
+
+A `plugin:job` result. `success` needs the process to exit with 0, in time.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>code</code> | integer | The exit code, or -1 when there is none. |
+| <code>stdout</code> | string | Its standard output. |
+| <code>stderr</code> | string | Its standard error. |
+
+#### Page text result
+
+A `plugin.document:page_text` result.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>page</code> | integer | The 1-based page. |
+| <code>text</code> | string | Its text. |
+
+#### Page links result
+
+A `plugin.document:page_links` result.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>page</code> | integer | The 1-based page. |
+| <code>links</code> | [Page link](#page-link)[] | Its links. |
+
+### Events
+
+What `plugin:on(event, callback)` gives its callback. `shutdown` gives an empty table.
+
+#### Document event
+
+`app_ready`, `document_opened`, `document_reloaded`, `config_reloaded`, `document_close_pre` and `document_closed`.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>document</code> | table | `path`, `name`, and `page_count`, an integer, of the document concerned; `path` is empty when none is open. |
+| <code>generation</code> | integer | A number that changes whenever a document is opened or reloaded. |
+
+#### Opening event
+
+`document_open_pre`, before a document opens.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>document</code> | table | The `path` and `name` of the document opening. |
+
+#### Mouse button event
+
+`mouse_button_pre`, before onon handles a press or release, and `mouse_button`, after. A `mouse_button_pre` callback returning true keeps onon from handling it.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>phase</code> | string | `down` or `up`. |
+| <code>button</code> | string | `left`, `middle`, `right`, `x1` or `x2`. |
+| <code>x</code> | number | Where the pointer is, from the window's left. |
+| <code>y</code> | number | Where the pointer is, from the window's top. |
+| <code>modifiers</code> | table | Booleans `ctrl`, `shift`, `alt` and `gui`, the last Cmd on macOS and the Super or Windows key elsewhere. |
+| <code>inside_document</code> | boolean | Whether the pointer is over a page. |
+| <code>page</code> | integer | Over a page: the 1-based page. |
+| <code>page_x</code> | number | Over a page: where on it, in points from its left. |
+| <code>page_y</code> | number | Over a page: where on it, in points from its top. |
+
+#### Selection event
+
+`selection_changed`.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>active</code> | boolean | Whether text is selected. |
+| <code>text</code> | string | The selected text. |
+| <code>pages</code> | integer[] | The 1-based pages the selection covers, in order. [`onon.document.selection()`](#selection) gives where on them. |
+
+#### Page event
+
+`page_changed`.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>page</code> | integer | The 1-based page now current. |
+| <code>label</code> | string | Its page label, or its number when it has none. |
+| <code>previous_page</code> | integer | The 1-based page current before. |
+| <code>page_count</code> | integer | The document's number of pages. |
+
+#### Zoom event
+
+`zoom_changed`.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>scale</code> | number | The zoom now, 1 being 100%. |
+| <code>previous_scale</code> | number | The zoom before. |
+| <code>percent</code> | number | The zoom now as a percentage. |
+
+#### Option event
+
+`option_changed`, after Lua code changes options.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>source</code> | string | What ran the code that changed them: the event's name for an event callback, `ui_select`, `ui_click` and so on for a view's callback, or `action`, `command`, `set`, `theme` or `plugin operation`. |
 
 ### Status bar
 
