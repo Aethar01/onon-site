@@ -1455,7 +1455,9 @@ Every table onon gives Lua code or takes from it, with its fields. A type such a
 
 `onon.platform`, `onon.document` and its functions, and a plugin's `document`, give these. Coordinates are in unrotated PDF points from the page's top left.
 
-#### Platform
+<a id="platform"></a>
+
+#### Platform `onon.platform`
 
 `onon.platform`, also `require("onon.platform")`. Directories are absolute when the system gives one, and empty when it does not.
 
@@ -1469,7 +1471,9 @@ Every table onon gives Lua code or takes from it, with its fields. A type such a
 | <code>cache_dir</code> | string | onon's cache directory. |
 | <code>temp_dir</code> | string | The system's temporary directory. |
 
-#### Document
+<a id="document"></a>
+
+#### Document `onon.document`
 
 `onon.document`, refreshed when the document changes. Its functions raise an error when no document is open.
 
@@ -1486,7 +1490,9 @@ Every table onon gives Lua code or takes from it, with its fields. A type such a
 | <code>page_info(page)</code> | function | Returns [Page info](#page-info) for a 1-based page; an out-of-range page raises an error. |
 | <code>selection()</code> | function | Returns the current [Selection](#selection). |
 
-#### Rectangle
+<a id="rectangle"></a>
+
+#### Rectangle page bounds and selection geometry
 
 An area of a page.
 
@@ -1497,7 +1503,9 @@ An area of a page.
 | <code>x1</code> | number | Right edge. |
 | <code>y1</code> | number | Bottom edge. |
 
-#### Document metadata
+<a id="document-metadata"></a>
+
+#### Document metadata `onon.document.metadata()`
 
 Every field is a string, empty when the document does not give it.
 
@@ -1514,7 +1522,9 @@ Every field is a string, empty when the document does not give it.
 | <code>creation_date</code> | string | When it was made, as the document writes it. |
 | <code>modification_date</code> | string | When it last changed, as the document writes it. |
 
-#### Outline entry
+<a id="outline-entry"></a>
+
+#### Outline entry `onon.document.outline()`
 
 | Field | Type | Description |
 |---|---|---|
@@ -1526,7 +1536,9 @@ Every field is a string, empty when the document does not give it.
 | <code>y</code> | number or nil | Where on the page it goes, when it says. |
 | <code>children</code> | [Outline entry](#outline-entry)[] | The entries under it; empty when it has none. |
 
-#### Page info
+<a id="page-info"></a>
+
+#### Page info `onon.document.page_info(page)`
 
 | Field | Type | Description |
 |---|---|---|
@@ -1536,7 +1548,9 @@ Every field is a string, empty when the document does not give it.
 | <code>height</code> | number | Its height. |
 | <code>bounds</code> | [Rectangle](#rectangle) | Its box. |
 
-#### Selection
+<a id="selection"></a>
+
+#### Selection `onon.document.selection()`
 
 | Field | Type | Description |
 |---|---|---|
@@ -1544,14 +1558,18 @@ Every field is a string, empty when the document does not give it.
 | <code>text</code> | string | The selected text. |
 | <code>pages</code> | [Selection page](#selection-page)[] | Each page the selection covers, in page order; empty when nothing is selected. |
 
-#### Selection page
+<a id="selection-page"></a>
+
+#### Selection page `onon.document.selection()` → `pages`
 
 | Field | Type | Description |
 |---|---|---|
 | <code>page</code> | integer | The 1-based page. |
 | <code>quads</code> | [Rectangle](#rectangle)[] | The bounding rectangle of each piece of the selection on it. |
 
-#### Page link
+<a id="page-link"></a>
+
+#### Page link `plugin.document:page_links()` → `links`
 
 Each of a [Page links result](#page-links-result)'s `links`.
 
@@ -1568,7 +1586,9 @@ Each of a [Page links result](#page-links-result)'s `links`.
 
 A plugin describes itself with these, and its module has the functions that take the rest.
 
-#### Plugin manifest
+<a id="plugin-manifest"></a>
+
+#### Plugin manifest `onon-plugin.json`
 
 `onon-plugin.json` in the plugin's directory, which may be left out. Unrecognised fields are ignored.
 
@@ -1579,7 +1599,9 @@ A plugin describes itself with these, and its module has the functions that take
 | <code>module</code> | string | The module to load: `lua/<module>.lua` or `lua/<module>/init.lua`; the ID unless given. |
 | <code>dependencies</code> | string[] | IDs of plugins it may `require`, loaded before it. |
 
-#### Plugin spec
+<a id="plugin-spec"></a>
+
+#### Plugin spec `onon.plugin.register(id[, spec])`
 
 The second argument of `onon.plugin.register(id[, spec])`.
 
@@ -1587,7 +1609,9 @@ The second argument of `onon.plugin.register(id[, spec])`.
 |---|---|---|
 | <code>options</code> | table | The plugin's options, by name: each an [Option declaration](#option-declaration). They are set as `plugin-id.name`, with `onon.options` or `:set`, and read and assigned on the module as `plugin.name`. |
 
-#### Option declaration
+<a id="option-declaration"></a>
+
+#### Option declaration plugin spec `options`
 
 | Field | Type | Description |
 |---|---|---|
@@ -1595,7 +1619,9 @@ The second argument of `onon.plugin.register(id[, spec])`.
 | <code>default</code> | any | Its value until set; `false`, `0`, `""` or `{}`, by its type, unless given. |
 | <code>description</code> | string | What it does. |
 
-#### Plugin module
+<a id="plugin-module"></a>
+
+#### Plugin module `onon.plugin.register()` / `require()` result
 
 What `onon.plugin.register` and `require("plugin-id")` return. Its functions are methods, called with `:` as `plugin:on("page_changed", callback)`; the `register_*` functions and `on` work only while the plugin is loading. Fields assigned on it are kept as the plugin's own.
 
@@ -1615,21 +1641,27 @@ What `onon.plugin.register` and `require("plugin-id")` return. Its functions are
 | <code>off(id)</code> | function | Removes the subscription `on` returned `id` for. |
 | <code>job(spec, callback)</code> | function | Starts a [Job spec](#job-spec)'s process, calling `callback` with its [Job result](#job-result). Returns a [Handle](#handle). |
 
-#### Action spec
+<a id="action-spec"></a>
+
+#### Action spec `plugin:register_action()`
 
 | Field | Type | Description |
 |---|---|---|
 | <code>description</code> | string | What it does; its full name unless given. |
 | <code>countable</code> | boolean | Whether a count can be typed before its keys; false unless set. |
 
-#### Command spec
+<a id="command-spec"></a>
+
+#### Command spec `plugin:register_command()`
 
 | Field | Type | Description |
 |---|---|---|
 | <code>description</code> | string | Shown in the help menu; `:plugin-id-name` unless given. |
 | <code>arg_completions</code> | string[] | Arguments offered as the command is typed. |
 
-#### Command context
+<a id="command-context"></a>
+
+#### Command context plugin command callback
 
 What a command's callback is given.
 
@@ -1639,7 +1671,9 @@ What a command's callback is given.
 | <code>raw</code> | string | Everything typed after the command. |
 | <code>args</code> | string[] | `raw` split at whitespace. |
 
-#### Filesystem options
+<a id="filesystem-options"></a>
+
+#### Filesystem options `plugin.fs:read_dir()` / `stat()`
 
 The optional `options` of `plugin.fs:read_dir` and `plugin.fs:stat`.
 
@@ -1647,7 +1681,9 @@ The optional `options` of `plugin.fs:read_dir` and `plugin.fs:stat`.
 |---|---|---|
 | <code>follow_symlinks</code> | boolean | Follow a symlink given as `path` instead of describing the link itself; false unless set. |
 
-#### HTTP request
+<a id="http-request"></a>
+
+#### HTTP request `plugin.http:request()`
 
 The `spec` of `plugin.http:request`.
 
@@ -1659,7 +1695,9 @@ The `spec` of `plugin.http:request`.
 | <code>body</code> | string | The request body. |
 | <code>timeout_ms</code> | integer | Milliseconds before the request is given up; no limit unless greater than 0. |
 
-#### Job spec
+<a id="job-spec"></a>
+
+#### Job spec `plugin:job()`
 
 The `spec` of `plugin:job`. The command runs without a shell.
 
@@ -1676,7 +1714,9 @@ The `spec` of `plugin:job`. The command runs without a shell.
 
 Callbacks are given these. The results of a plugin's filesystem, HTTP, document and job calls have the [Operation result](#operation-result)'s fields as well as their own; timers and `onon.schedule` call their callbacks with nothing.
 
-#### Handle
+<a id="handle"></a>
+
+#### Handle `onon.schedule()` and async plugin calls
 
 Returned by `onon.schedule` and every asynchronous plugin call.
 
@@ -1686,7 +1726,9 @@ Returned by `onon.schedule` and every asynchronous plugin call.
 | <code>cancel()</code> | function | Stops the operation without calling its callback. Calling it again does nothing. |
 | <code>active()</code> | function | Returns true until the operation completes or is cancelled; a repeating timer stays active until cancelled. |
 
-#### Operation result
+<a id="operation-result"></a>
+
+#### Operation result async operation callback
 
 | Field | Type | Description |
 |---|---|---|
@@ -1696,7 +1738,9 @@ Returned by `onon.schedule` and every asynchronous plugin call.
 | <code>timed_out</code> | boolean | Whether its `timeout_ms` ran out. |
 | <code>cancelled</code> | boolean | Always false: a cancelled operation calls nothing. |
 
-#### Picker result
+<a id="picker-result"></a>
+
+#### Picker result `onon.pick_file()` / `onon.pick_directory()` callback
 
 What `onon.pick_file` and `onon.pick_directory` give their callbacks.
 
@@ -1707,7 +1751,9 @@ What `onon.pick_file` and `onon.pick_directory` give their callbacks.
 | <code>cancelled</code> | boolean | Whether the picker was closed without picking, which is not an error. |
 | <code>error</code> | string | Why the picker failed, or empty. |
 
-#### File info
+<a id="file-info"></a>
+
+#### File info `plugin.fs:stat()` result / `read_dir()` entries
 
 A `plugin.fs:stat` result, and each of a `read_dir` result's `entries`.
 
@@ -1720,7 +1766,9 @@ A `plugin.fs:stat` result, and each of a `read_dir` result's `entries`.
 | <code>modified_unix</code> | integer | When it last changed, in whole seconds since the Unix epoch. |
 | <code>error</code> | string | In `entries`: why the entry could not be read, its `size_bytes` and `modified_unix` then 0; else empty. |
 
-#### Directory result
+<a id="directory-result"></a>
+
+#### Directory result `plugin.fs:read_dir()` result
 
 A `plugin.fs:read_dir` result.
 
@@ -1728,7 +1776,9 @@ A `plugin.fs:read_dir` result.
 |---|---|---|
 | <code>entries</code> | [File info](#file-info)[] | The directory's entries. |
 
-#### HTTP response
+<a id="http-response"></a>
+
+#### HTTP response `plugin.http:request()` callback
 
 A `plugin.http:request` result. An HTTP error status is still a response, and `success` is true.
 
@@ -1738,7 +1788,9 @@ A `plugin.http:request` result. An HTTP error status is still a response, and `s
 | <code>headers</code> | { [string]: string[] } | Response headers by name, each a list of its values. |
 | <code>body</code> | string | The response body. |
 
-#### Job result
+<a id="job-result"></a>
+
+#### Job result `plugin:job()` callback
 
 A `plugin:job` result. `success` needs the process to exit with 0, in time.
 
@@ -1748,7 +1800,9 @@ A `plugin:job` result. `success` needs the process to exit with 0, in time.
 | <code>stdout</code> | string | Its standard output. |
 | <code>stderr</code> | string | Its standard error. |
 
-#### Page text result
+<a id="page-text-result"></a>
+
+#### Page text result `plugin.document:page_text()` callback
 
 A `plugin.document:page_text` result.
 
@@ -1757,7 +1811,9 @@ A `plugin.document:page_text` result.
 | <code>page</code> | integer | The 1-based page. |
 | <code>text</code> | string | Its text. |
 
-#### Page links result
+<a id="page-links-result"></a>
+
+#### Page links result `plugin.document:page_links()` callback
 
 A `plugin.document:page_links` result.
 
@@ -1770,7 +1826,9 @@ A `plugin.document:page_links` result.
 
 What `plugin:on(event, callback)` gives its callback. `shutdown` gives an empty table.
 
-#### Document event
+<a id="document-event"></a>
+
+#### Document event document event callbacks
 
 `app_ready`, `document_opened`, `document_reloaded`, `config_reloaded`, `document_close_pre` and `document_closed`.
 
@@ -1779,7 +1837,9 @@ What `plugin:on(event, callback)` gives its callback. `shutdown` gives an empty 
 | <code>document</code> | table | `path`, `name`, and `page_count`, an integer, of the document concerned; `path` is empty when none is open. |
 | <code>generation</code> | integer | A number that changes whenever a document is opened or reloaded. |
 
-#### Opening event
+<a id="opening-event"></a>
+
+#### Opening event `document_open_pre` callback
 
 `document_open_pre`, before a document opens.
 
@@ -1787,7 +1847,9 @@ What `plugin:on(event, callback)` gives its callback. `shutdown` gives an empty 
 |---|---|---|
 | <code>document</code> | table | The `path` and `name` of the document opening. |
 
-#### Mouse button event
+<a id="mouse-button-event"></a>
+
+#### Mouse button event `mouse_button_pre` / `mouse_button` callbacks
 
 `mouse_button_pre`, before onon handles a press or release, and `mouse_button`, after. A `mouse_button_pre` callback returning true keeps onon from handling it.
 
@@ -1803,7 +1865,9 @@ What `plugin:on(event, callback)` gives its callback. `shutdown` gives an empty 
 | <code>page_x</code> | number | Over a page: where on it, in points from its left. |
 | <code>page_y</code> | number | Over a page: where on it, in points from its top. |
 
-#### Selection event
+<a id="selection-event"></a>
+
+#### Selection event `selection_changed` callback
 
 `selection_changed`.
 
@@ -1813,7 +1877,9 @@ What `plugin:on(event, callback)` gives its callback. `shutdown` gives an empty 
 | <code>text</code> | string | The selected text. |
 | <code>pages</code> | integer[] | The 1-based pages the selection covers, in order. [`onon.document.selection()`](#selection) gives where on them. |
 
-#### Page event
+<a id="page-event"></a>
+
+#### Page event `page_changed` callback
 
 `page_changed`.
 
@@ -1824,7 +1890,9 @@ What `plugin:on(event, callback)` gives its callback. `shutdown` gives an empty 
 | <code>previous_page</code> | integer | The 1-based page current before. |
 | <code>page_count</code> | integer | The document's number of pages. |
 
-#### Zoom event
+<a id="zoom-event"></a>
+
+#### Zoom event `zoom_changed` callback
 
 `zoom_changed`.
 
@@ -1834,7 +1902,9 @@ What `plugin:on(event, callback)` gives its callback. `shutdown` gives an empty 
 | <code>previous_scale</code> | number | The zoom before. |
 | <code>percent</code> | number | The zoom now as a percentage. |
 
-#### Option event
+<a id="option-event"></a>
+
+#### Option event `option_changed` callback
 
 `option_changed`, after Lua code changes options.
 
