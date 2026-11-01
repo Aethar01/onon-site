@@ -6,6 +6,16 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.11.1
+
+Released 2026-11-01. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.11.1)
+
+### What's Changed
+* Give appimagetool the PNG icon it now needs for .DirIcon by @Aethar01 in [#39](https://github.com/Aethar01/onon/pull/39)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.11.0...0.11.1
+
 ## 0.10.2
 
 Released 2026-10-30. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.10.2)
