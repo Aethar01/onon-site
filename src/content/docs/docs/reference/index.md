@@ -1,6 +1,6 @@
 ---
 title: "Reference"
-description: "Every option, command, Lua function, key and action in onon 0.11.2."
+description: "Every option, command, Lua function, key and action in onon 0.11.3."
 editUrl: false
 tableOfContents:
   maxHeadingLevel: 2
@@ -467,8 +467,10 @@ found.
 #### Parameters
 
   - callback: Receives an [Update info](#update-info) table once the check
-    finishes. Builds that are not a release, such as dev builds, are not
-    checked: success is false and error says why.
+    finishes. A git build, whose version names its commit, is checked for
+    newer commits on main instead. Other builds that are not a release,
+    such as dev builds, are not checked: success is false and error says
+    why.
 
 #### Returns
 
@@ -1787,10 +1789,11 @@ What `onon.check_updates` gives its callback, with the [Operation result](#opera
 | Field | Type | Description |
 |---|---|---|
 | <code>current</code> | string | The running version. |
-| <code>latest</code> | string | The latest release's version, or empty if the check failed. |
+| <code>latest</code> | string | The latest release's version, or for a git build main's latest commit; empty if the check failed. |
 | <code>available</code> | boolean | Whether `latest` is newer than `current`. |
+| <code>behind</code> | integer | For a git build, how many commits main has that it does not; else 0. |
 | <code>method</code> | string | The package manager onon was installed with, or empty for a download. |
-| <code>url</code> | string | The releases page. |
+| <code>url</code> | string | The releases page, or for a git build main's commits. |
 
 <a id="file-info"></a>
 
