@@ -268,6 +268,7 @@ end
 | Command | Description |
 |---|---|
 | <code>:back</code> | Jump back to the previous position |
+| <code>:check-updates</code> | Check GitHub for a newer release and say how to upgrade |
 | <code>:colors normal&#124;alt</code> | Set color mode |
 | <code>:config</code> | Open the config file in a text editor, creating it if there is none |
 | <code>:copy</code> | Copy the selection |
