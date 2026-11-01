@@ -1,6 +1,6 @@
 ---
 title: "Reference"
-description: "Every option, command, Lua function, key and action in onon 0.11.1."
+description: "Every option, command, Lua function, key and action in onon 0.11.2."
 editUrl: false
 tableOfContents:
   maxHeadingLevel: 2
@@ -325,6 +325,7 @@ The index below is followed by a detailed entry for every function. Lua errors a
 | <code>onon.cache.entries()</code> | returns the number of cached page tiles and thumbnails. |
 | <code>onon.cache.limit([mib])</code> | reads or changes the render cache memory limit in MiB. |
 | <code>onon.cache.pending()</code> | returns the number of queued tile renders. |
+| <code>onon.check_updates(callback)</code> | asks GitHub, in the background, whether a newer onon release exists, as :check-updates does, and calls a callback with what it found. |
 | <code>onon.clear_pending_keys()</code> | clears pending key, mark, and numeric-count input. |
 | <code>onon.clipboard.get_text()</code> | returns the current clipboard contents as UTF-8 text. |
 | <code>onon.clipboard.set_text(text)</code> | replaces the clipboard with UTF-8 text. |
@@ -455,6 +456,31 @@ The number of tile renders waiting to be processed.
 #### Example
 
 	if onon.cache.pending() > 0 then onon.message("rendering") end
+
+
+### <code>onon.check_updates(callback)</code>
+
+asks GitHub, in the background, whether a newer onon
+release exists, as :check-updates does, and calls a callback with what it
+found.
+
+#### Parameters
+
+  - callback: Receives an [Update info](#update-info) table once the check
+    finishes. Builds that are not a release, such as dev builds, are not
+    checked: success is false and error says why.
+
+#### Returns
+
+An operation handle with numeric id, cancel(), and active() members.
+
+#### Example
+
+	onon.check_updates(function(info)
+	  if info.available then
+	    onon.message("onon " .. info.latest .. " is available")
+	  end
+	end)
 
 
 ### <code>onon.clear_pending_keys()</code>
@@ -1713,7 +1739,7 @@ The `spec` of `plugin:job`. The command runs without a shell.
 
 ### Results
 
-Callbacks are given these. The results of a plugin's filesystem, HTTP, document and job calls have the [Operation result](#operation-result)'s fields as well as their own; timers and `onon.schedule` call their callbacks with nothing.
+Callbacks are given these. The results of a plugin's filesystem, HTTP, document and job calls, and of `onon.check_updates`, have the [Operation result](#operation-result)'s fields as well as their own; timers and `onon.schedule` call their callbacks with nothing.
 
 <a id="handle"></a>
 
@@ -1751,6 +1777,20 @@ What `onon.pick_file` and `onon.pick_directory` give their callbacks.
 | <code>path</code> | string | The path picked, or empty. |
 | <code>cancelled</code> | boolean | Whether the picker was closed without picking, which is not an error. |
 | <code>error</code> | string | Why the picker failed, or empty. |
+
+<a id="update-info"></a>
+
+#### Update info `onon.check_updates()` callback
+
+What `onon.check_updates` gives its callback, with the [Operation result](#operation-result)'s fields. `:check-updates` reports the same check.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>current</code> | string | The running version. |
+| <code>latest</code> | string | The latest release's version, or empty if the check failed. |
+| <code>available</code> | boolean | Whether `latest` is newer than `current`. |
+| <code>method</code> | string | The package manager onon was installed with, or empty for a download. |
+| <code>url</code> | string | The releases page. |
 
 <a id="file-info"></a>
 
