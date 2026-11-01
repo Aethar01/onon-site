@@ -6,6 +6,16 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.11.2
+
+Released 2026-11-01. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.11.2)
+
+### What's Changed
+* Add onon.check_updates, sharing :check-updates's check by @Aethar01 in [#40](https://github.com/Aethar01/onon/pull/40)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.11.1...0.11.2
+
 ## 0.11.1
 
 Released 2026-11-01. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.11.1)
