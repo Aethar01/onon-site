@@ -6,6 +6,16 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.11.3
+
+Released 2026-11-01. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.11.3)
+
+### What's Changed
+* Check git builds for newer commits on main by @Aethar01 in [#41](https://github.com/Aethar01/onon/pull/41)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.11.2...0.11.3
+
 ## 0.11.2
 
 Released 2026-11-01. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.11.2)
