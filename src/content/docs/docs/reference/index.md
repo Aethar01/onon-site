@@ -1,6 +1,6 @@
 ---
 title: "Reference"
-description: "Every option, command, Lua function, key and action in onon 0.11.4."
+description: "Every option, command, Lua function, key and action in onon 0.12.0."
 editUrl: false
 tableOfContents:
   maxHeadingLevel: 2
@@ -39,7 +39,7 @@ Assign options with `onon.options.<name> = <value>` in Lua or `:set <name>=<valu
 | <code>link_schemes</code> | table | <code>{&#34;http&#34;, &#34;https&#34;, &#34;mailto&#34;}</code> | URI schemes that document links may open externally; other links only show their target. |
 | <code>loading_indicator</code> | boolean | <code>true</code> | Animate a loading indicator on pages still rendering for the first time. |
 | <code>max_zoom</code> | number | <code>8</code> | Maximum manual zoom scale. |
-| <code>menus</code> | table | <code>{}</code> | Where onon's own menus sit, by name, such as { outline = { anchor = "left", width = "40%" } }: each takes width and height, the most of the window it takes, in logical pixels or a percentage, and anchor, as views do. Menus: annotation, choice, colors, help, keybind_keys, keybinds, matches, options, outline, print, printers, recent, themes. |
+| <code>menus</code> | table | <code>{}</code> | Where onon's own menus sit, by name, such as { outline = { anchor = "left", width = "40%" } }: each takes width and height, the most of the window it takes, in logical pixels or a percentage, and anchor, as views do, or beside, for a menu opened over another, beside the row it was opened from, as keybind_keys and printers are unless set. Menus: annotation, choice, colors, help, keybind_keys, keybinds, matches, options, outline, print, printers, recent, themes. |
 | <code>min_zoom</code> | number | <code>0.5</code> | Minimum manual zoom scale. |
 | <code>mouse_text_select</code> | boolean | <code>true</code> | Enable text selection with the left mouse button. |
 | <code>mupdf_store_mb</code> | integer | <code>256</code> | MuPDF cache for fonts and decoded images in MiB; applies to newly opened documents. |
@@ -281,6 +281,7 @@ end
 | <code>:highlight</code> | Highlight the selection in the last colour used |
 | <code>:hints</code> | Label links on screen to follow one by typing its hint |
 | <code>:keybinds</code> | Toggle the keybinds menu |
+| <code>:options</code> | Toggle the options menu |
 | <code>:lua &lt;code&gt;</code> | Execute Lua code inline |
 | <code>:matches</code> | List every match of the current search |
 | <code>:mode continuous&#124;single</code> | Set render mode |
@@ -1013,8 +1014,8 @@ filter, empty, columns, prompt, modal, stack, width, height, anchor, at,
 dock, resizable, draw, and the callbacks on_select, on_selection_changed,
 on_query_changed, on_input, on_submit, on_click, on_key, on_action,
 on_mouse, and on_close. Rows may be strings or row tables with text,
-value, id, secondary, depth, disabled, key, marker, heading, swatch,
-checked, button, and cells fields. See UI views below.
+value, id, secondary, hint, depth, disabled, key, marker, heading, swatch,
+checked, button, edit, and cells fields. See UI views below.
 
 #### Returns
 
@@ -1121,6 +1122,7 @@ Create views with `local view = onon.ui.create(spec)`, then call `view:show()`. 
 | `width`, `height` | Its size: logical pixels, or a percentage of the window such as `"30%"`; `"70%"` unless set, and at most the document's part of the window. A list fits its height to its rows. |
 | `anchor` | Where it sits in the document's part of the window: `center` (the default), `top`, `bottom`, `left`, `right`, `top_left`, `top_right`, `bottom_left` or `bottom_right`, a little in from the edges. With `at`, the part of the view that sits at that point instead, `top_left` unless given: `bottom_left` for a popup above a point, `center` for one centred on it. |
 | `at` | A point the view is pinned to: `{ x = 10, y = 40 }` in the window, in logical pixels, kept in the window, or `{ page = 3, x = 72, y = 100 }` on a page, in its points from its top left as the document events give them, moving with the page and hidden while it is not shown. |
+| `attach` | Attaches the view to something it moves with: `{ view = other }`, another view, beside its selected row with its first row level with it, as a submenu is; or a box, `{ x = 10, y = 40, w = 120, h = 20 }` in the window or with `page` on a page, as `at` takes a point, below it as a dropdown is. `side` (`right`, `left`, `below` or `above`) is the side tried first; without room there it takes the other, and is kept in the window. While what it is attached to is not shown, it sits at its `anchor`. |
 | `dock` | `left`, `right`, `top` or `bottom`: a panel against that side of the window, its `width` or `height` taken from the document, which lays itself out beside it. Panels docked to the same side stack inwards in the order they open. |
 | `resizable` | For a docked view: its inner edge can be dragged to resize it. `view:size()` gives a view's width and height. |
 
@@ -1143,6 +1145,7 @@ A row is a string, its text, or a table of these fields. Other fields are the pl
 | `value` | string | What `on_select` is given as the value: the text unless set, or with `cells` the first cell. |
 | `id` | string | The row's own name, given to its callbacks. |
 | `secondary` | string | Drawn on the right. |
+| `hint` | string | Drawn on the right, muted, while the row is selected and has no `secondary`, such as what Enter on it does. |
 | `depth` | integer | Sets the row in a step for each level. |
 | `disabled` | boolean | Disables the row. |
 | `key` | string | A key binding, drawn in a column before the text. |
@@ -1151,6 +1154,7 @@ A row is a string, its text, or a table of these fields. Other fields are the pl
 | `swatch` | colour | A colour drawn before the text, written as in the elements table. |
 | `checked` | boolean | A check box before the text, checked or not; no check box unless set. |
 | `button` | boolean | Draws the row as a button, as the keybind menu's Add a key… is. |
+| `edit` | boolean or table | Makes choosing the row type into it rather than run `on_select`: see [Typing](#typing). `true` starts from its `secondary` text; a table may give the `text` to start from, a `hint` at what to type and a `placeholder` shown while nothing is. |
 | `cells` | string[] | Its text in the view's `columns`, searched as its text is. |
 
 #### Drawing a view
@@ -1197,6 +1201,7 @@ Everything a canvas draws out of sight, below or above what shows of the body, i
 
 - `prompt = "Open"` puts a text field in the header, labelled with it, whose text is the query: typing filters a list without /, and Enter chooses the selected row, or runs `on_submit` if the view has one.
 - `canvas:input` draws a text field. The first drawn has the typing until Tab, Shift-Tab or a click moves it; Tab and Shift-Tab move through the prompt, fields, buttons and check boxes in the order they are drawn. `view:field(id)` and `view:set_field(id, text)` read and write a field's text, before the view opens too, and `view:fields()` gives them all, as an `on_submit` reading a form wants.
+- A row with `edit` is typed into in place: Enter or a click on it, or `view:edit_row(index)`, turns its secondary text into the text being typed, all of it selected, with the hint after the row's text while there is room. `on_input` and `on_submit` hear it by the row's `id`, or its value without one; Enter keeps the text, and Escape drops it, with no callback. While it is typed into, the keys edit it rather than move through the list. onon's print dialog and options menu type their values this way.
 - Fields and prompts edit as onon's own prompt does, with the same keys, a press placing the cursor, a drag selecting, and copy, cut and paste with the clipboard actions. Text an input method is composing shows underlined at the cursor. In a field of more than one line, Enter starts a new line, Ctrl- or Cmd-Enter submits, and the arrows, Home and End move by line.
 - A menu has the keys while it is open. A panel takes them when clicked, if it has fields, buttons, check boxes, a prompt or `on_key`, or from `view:focus()`, until Escape, a click elsewhere, or `view:blur()`; `view:focused()` says whether it has them.
 
@@ -1207,15 +1212,15 @@ Everything a canvas draws out of sight, below or above what shows of the body, i
 | `on_select(index, value, text, id, row)` | When a row is chosen. `index` and `id` are the row's in the rows as set, however filtered, and `row` is the row as given, string or table. |
 | `on_selection_changed(index, value, text, id, row)` | When a key, the pointer or the query moves the selection, not when the view opens or `set_selected` moves it, as for a live preview. |
 | `on_query_changed(query)` | When the user changes the search query or prompt, not when `set_query` does. |
-| `on_input(text, id)` | When the user changes a field's text. |
-| `on_submit(text, id)` | On Enter in a field, or in the prompt, whose `id` is nil. |
+| `on_input(text, id)` | When the user changes a field's text, or a row's being typed into. |
+| `on_submit(text, id)` | On Enter in a field, a row being typed into, or the prompt, whose `id` is nil. |
 | `on_click(id)` | When a button or check box is clicked. |
 | `on_key(key)` | For each key pressed while the view has the keys and is not being typed in, named as `bind` names it, before the view's own keys; returning true takes the key. |
 | `on_action(action)` | For the action bound to a key pressed while the view has the keys, before the view runs it; returning true takes the action. |
 | `on_mouse(event)` | For the pointer over the view, and after a press on it until the release; returning true keeps the view from handling it. `event.type` is `press`, `release`, `move`, `leave` or `wheel`; `event.x` and `event.y` are logical pixels from the top left of what the body draws, scrolled; `event.region` is the id of the region there; a press or release has `button` (`left`, `middle`, `right`, `x1` or `x2`) and a press `clicks`; a wheel has `dx` and `dy`, positive to the right and down. A press on a text field, button or check box goes to it instead. |
 | `on_close()` | When the view closes: by `view:close()` or, for a menu, the user, another menu replacing it, or the document closing. |
 
-View methods are `show()`, `close()`, `visible()`, `redraw()`, `size()`, `focus()`, `blur()`, `focused()`, `set_title(title)`, `set_rows(rows)`, `set_selected(index)`, `set_scroll(scroll)`, `set_query(query)`, `field(id)`, `fields()`, `set_field(id, text)`, `selected()`, `scroll()`, and `query()`. Selection indices are 1-based, with 0 meaning no selection. A drawn body's scroll is in logical pixels, a list's in rows. Once a view closes, its methods read the state it closed with, as `on_close` does, until it is shown again from its spec.
+View methods are `show()`, `close()`, `visible()`, `redraw()`, `size()`, `focus()`, `blur()`, `focused()`, `set_title(title)`, `set_rows(rows)`, `set_selected(index)`, `set_scroll(scroll)`, `set_query(query)`, `field(id)`, `fields()`, `set_field(id, text)`, `edit_row(index)`, `selected()`, `scroll()`, and `query()`. Selection indices are 1-based, with 0 meaning no selection. A drawn body's scroll is in logical pixels, a list's in rows. Once a view closes, its methods read the state it closed with, as `on_close` does, until it is shown again from its spec.
 
 ```lua
 -- A sidebar of page thumbnails, docked left and resizable; clicking one
@@ -1464,6 +1469,7 @@ Keys in a system's own column are bound there as well as the default keys.
 | <code>print</code> | <code>&lt;C-p&gt;</code> | <code>&lt;D-p&gt;</code> |  |  | false |
 | <code>help</code> | <code>&lt;F1&gt;</code>, <code>g?</code> |  |  |  | false |
 | <code>keybinds</code> |  |  |  |  | false |
+| <code>options_menu</code> |  |  |  |  | false |
 | <code>pan</code> | <code>&lt;Space&gt;</code> |  |  |  | false |
 | <code>autoscroll</code> |  |  |  |  | false |
 | <code>quit</code> | <code>q</code> | <code>&lt;D-q&gt;</code>, <code>&lt;D-w&gt;</code> | <code>&lt;C-q&gt;</code>, <code>&lt;C-w&gt;</code> | <code>&lt;C-q&gt;</code>, <code>&lt;C-w&gt;</code> | false |

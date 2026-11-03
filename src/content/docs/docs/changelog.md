@@ -6,6 +6,18 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.12.0
+
+Released 2026-11-03. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.12.0)
+
+### What's Changed
+* Open submenus beside their row, dropdowns under their field, and context menus at the pointer by @Aethar01 in [#42](https://github.com/Aethar01/onon/pull/42)
+* Type list values in their own row, keep buttons bold when selected, and say how to remove a keybind by @Aethar01 in [#43](https://github.com/Aethar01/onon/pull/43)
+* Add :options to open the options menu by @Aethar01 in [#44](https://github.com/Aethar01/onon/pull/44)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.11.4...0.12.0
+
 ## 0.11.4
 
 Released 2026-11-02. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.11.4)
