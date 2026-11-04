@@ -18,7 +18,7 @@ Assign options with `onon.options.<name> = <value>` in Lua or `:set <name>=<valu
 |---|---|---|---|
 | <code>alt_colors</code> | boolean | <code>false</code> | Start with alternate colors: true, false, or "system" to follow the OS's dark mode as it changes. |
 | <code>alt_colors_keep_images</code> | boolean | <code>true</code> | Keep raster images in their own colors in alternate-color mode. |
-| <code>anchor_position</code> | string | <code>&#34;center&#34;</code> | Viewport anchor: center, top, or bottom. |
+| <code>anchor_position</code> | string | <code>&#34;center&#34;</code> | Where the page stays when the window is resized or the zoom fits it again: center, top, or bottom. An end of the document in view stays in view as the window is resized. Bars and docked views shown or hidden leave the page where it is instead, moving it only to keep an end of the document in view. |
 | <code>animation_frame_ms</code> | integer | <code>0</code> | Animation timestep in milliseconds; 0 follows the display's refresh rate. |
 | <code>annotation_colors</code> | table | <code>{&#34;#ffe066&#34;, &#34;#8ce99a&#34;, &#34;#74c0fc&#34;, &#34;#ffa8a8&#34;}</code> | Highlight colours offered by the highlight picker, as #RRGGBB. |
 | <code>anti_aliasing</code> | integer | <code>8</code> | MuPDF antialiasing level from 0 through 8. |
@@ -111,7 +111,7 @@ Fields left out keep the base theme's values. Assign a preset by name with `onon
 
 Colours are `"#RRGGBB"` or `{ r, g, b }`. The `alt` table holds the colours used in alternate-color mode, toggled with `:colors`, and has the same colour fields as the theme. The `font` table picks the UI font; with neither `family` nor `path` set it is the system's interface font.
 
-The `motion` table sets how the UI moves. Each transition is written as CSS writes one, a duration and an easing such as `"140ms ease-out"`, or as `{ duration = 140, easing = "ease-out" }`; easings are `linear`, `ease`, `ease-in`, `ease-out`, `ease-in-out` and `cubic-bezier(x1, y1, x2, y2)`, and `"none"` turns one transition off. By default only what moves is animated: the selection, the cursor and the sides of the status bar glide to where they go, while menus and messages appear and go at once; give `panel` or `message` a transition to fade them. `scale` slows or speeds every transition, and `0` turns motion off altogether, as the classic theme does.
+The `motion` table sets how the UI moves. Each transition is written as CSS writes one, a duration and an easing such as `"140ms ease-out"`, or as `{ duration = 140, easing = "ease-out" }`; easings are `linear`, `ease`, `ease-in`, `ease-out`, `ease-in-out` and `cubic-bezier(x1, y1, x2, y2)`, and `"none"` turns one transition off. By default only what moves is animated: the selection, the cursor and the sides of the status bar glide to where they go, while menus and messages appear and go at once; give `panel` or `message` a transition to fade them, or `edges` one to slide the bars and docked views in and out. `scale` slows or speeds every transition, and `0` turns motion off altogether, as the classic theme does.
 
 | Field | Type | Default | Description |
 |---|---|---|---|
@@ -158,6 +158,7 @@ The `motion` table sets how the UI moves. Each transition is written as CSS writ
 | <code>motion.prompt</code> | transition | <code>&#34;100ms ease-out&#34;</code> | The sides of the status bar growing and shrinking with their text, as a pill does when a prompt opens. |
 | <code>motion.message</code> | transition | <code>&#34;none&#34;</code> | Status messages fading in, and out when cleared. |
 | <code>motion.cursor</code> | transition | <code>&#34;50ms ease-out&#34;</code> | The prompt's cursor gliding to where it moves. |
+| <code>motion.edges</code> | transition | <code>&#34;none&#34;</code> | The status bar, tab bar and docked views sliding in along the window's edges as they are shown, the bars sliding out as they are hidden, the page moving with them only where it must. |
 
 ### Elements
 
