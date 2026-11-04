@@ -6,6 +6,16 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.13.2
+
+Released 2026-11-04. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.13.2)
+
+### What's Changed
+* Stop a held Cmd shortcut freezing until it is let go by @Aethar01 in [#47](https://github.com/Aethar01/onon/pull/47)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.13.1...0.13.2
+
 ## 0.13.1
 
 Released 2026-11-04. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.13.1)
