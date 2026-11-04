@@ -1,6 +1,6 @@
 ---
 title: "Reference"
-description: "Every option, command, Lua function, key and action in onon 0.13.0."
+description: "Every option, command, Lua function, key and action in onon 0.13.1."
 editUrl: false
 tableOfContents:
   maxHeadingLevel: 2
@@ -1579,13 +1579,13 @@ Keys in a system's own column are bound there as well as the default keys.
 | <code>fit_height</code> | <code>S</code> |  |  |  | false |
 | <code>reload_config</code> | <code>&lt;C-S-r&gt;</code> |  |  |  | false |
 | <code>open_config</code> |  | <code>&lt;D-,&gt;</code> |  |  | false |
-| <code>rotate_cw</code> | <code>r</code> |  |  |  | false |
-| <code>rotate_ccw</code> | <code>R</code> |  |  |  | false |
+| <code>rotate_cw</code> | <code>r</code> |  |  |  | true |
+| <code>rotate_ccw</code> | <code>R</code> |  |  |  | true |
 | <code>goto_page_prompt</code> | <code>&lt;C-g&gt;</code> |  |  |  | false |
 | <code>clear_search</code> |  |  |  |  | false |
 | <code>highlight_selection</code> | <code>H</code> |  |  |  | false |
-| <code>undo</code> | <code>u</code> | <code>&lt;D-z&gt;</code> | <code>&lt;C-z&gt;</code> | <code>&lt;C-z&gt;</code> | false |
-| <code>redo</code> | <code>U</code> | <code>&lt;D-S-z&gt;</code> | <code>&lt;C-y&gt;</code>, <code>&lt;C-S-z&gt;</code> | <code>&lt;C-y&gt;</code>, <code>&lt;C-S-z&gt;</code> | false |
+| <code>undo</code> | <code>u</code> | <code>&lt;D-z&gt;</code> | <code>&lt;C-z&gt;</code> | <code>&lt;C-z&gt;</code> | true |
+| <code>redo</code> | <code>U</code> | <code>&lt;D-S-z&gt;</code> | <code>&lt;C-y&gt;</code>, <code>&lt;C-S-z&gt;</code> | <code>&lt;C-y&gt;</code>, <code>&lt;C-S-z&gt;</code> | true |
 | <code>delete_annotation</code> | <code>x</code> |  |  |  | false |
 | <code>search_matches</code> | <code>gm</code> |  |  |  | false |
 | <code>show_completion</code> | <code>&lt;Tab&gt;</code> |  |  |  | false |
@@ -1595,8 +1595,8 @@ Keys in a system's own column are bound there as well as the default keys.
 | <code>cut</code> | <code>&lt;C-x&gt;</code> | <code>&lt;D-x&gt;</code> |  |  | false |
 | <code>paste</code> | <code>&lt;C-v&gt;</code> | <code>&lt;D-v&gt;</code> |  |  | false |
 | <code>close</code> | <code>&lt;Esc&gt;</code> |  |  |  | false |
-| <code>jump_forward</code> | <code>&lt;C-i&gt;</code> | <code>&lt;D-]&gt;</code> | <code>&lt;A-Right&gt;</code> | <code>&lt;A-Right&gt;</code> | false |
-| <code>jump_backward</code> | <code>&lt;C-o&gt;</code> | <code>&lt;D-[&gt;</code> | <code>&lt;A-Left&gt;</code> | <code>&lt;A-Left&gt;</code> | false |
+| <code>jump_forward</code> | <code>&lt;C-i&gt;</code> | <code>&lt;D-]&gt;</code> | <code>&lt;A-Right&gt;</code> | <code>&lt;A-Right&gt;</code> | true |
+| <code>jump_backward</code> | <code>&lt;C-o&gt;</code> | <code>&lt;D-[&gt;</code> | <code>&lt;A-Left&gt;</code> | <code>&lt;A-Left&gt;</code> | true |
 | <code>open_file_picker</code> | <code>&lt;C-S-o&gt;</code> | <code>&lt;D-o&gt;</code> |  |  | false |
 | <code>show_recent_files</code> | <code>gr</code> |  |  |  | false |
 | <code>save</code> | <code>&lt;C-s&gt;</code> | <code>&lt;D-s&gt;</code> |  |  | false |
@@ -1606,10 +1606,10 @@ Keys in a system's own column are bound there as well as the default keys.
 | <code>options_menu</code> |  |  |  |  | false |
 | <code>pan</code> | <code>&lt;Space&gt;</code> |  |  |  | false |
 | <code>autoscroll</code> |  |  |  |  | false |
-| <code>next_tab</code> | <code>gt</code>, <code>&lt;C-Tab&gt;</code>, <code>&lt;C-PgDn&gt;</code> | <code>&lt;D-S-]&gt;</code> |  |  | false |
-| <code>prev_tab</code> | <code>gT</code>, <code>&lt;C-S-Tab&gt;</code>, <code>&lt;C-PgUp&gt;</code> | <code>&lt;D-S-[&gt;</code> |  |  | false |
-| <code>new_tab</code> |  | <code>&lt;D-t&gt;</code> | <code>&lt;C-t&gt;</code> | <code>&lt;C-t&gt;</code> | false |
-| <code>close_tab</code> |  | <code>&lt;D-w&gt;</code> | <code>&lt;C-w&gt;</code> | <code>&lt;C-w&gt;</code> | false |
+| <code>next_tab</code> | <code>gt</code>, <code>&lt;C-Tab&gt;</code>, <code>&lt;C-PgDn&gt;</code> | <code>&lt;D-S-]&gt;</code> |  |  | true |
+| <code>prev_tab</code> | <code>gT</code>, <code>&lt;C-S-Tab&gt;</code>, <code>&lt;C-PgUp&gt;</code> | <code>&lt;D-S-[&gt;</code> |  |  | true |
+| <code>new_tab</code> |  | <code>&lt;D-t&gt;</code> | <code>&lt;C-t&gt;</code> | <code>&lt;C-t&gt;</code> | true |
+| <code>close_tab</code> |  | <code>&lt;D-w&gt;</code> | <code>&lt;C-w&gt;</code> | <code>&lt;C-w&gt;</code> | true |
 | <code>tabs_menu</code> |  |  |  |  | false |
 | <code>toggle_tab_bar</code> |  |  |  |  | false |
 | <code>quit</code> | <code>q</code> | <code>&lt;D-q&gt;</code> | <code>&lt;C-q&gt;</code> | <code>&lt;C-q&gt;</code> | false |

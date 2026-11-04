@@ -6,6 +6,16 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.13.1
+
+Released 2026-11-04. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.13.1)
+
+### What's Changed
+* Repeat held tab, undo, jump and rotate keys by @Aethar01 in [#46](https://github.com/Aethar01/onon/pull/46)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.13.0...0.13.1
+
 ## 0.13.0
 
 Released 2026-11-04. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.13.0)
