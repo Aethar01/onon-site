@@ -6,6 +6,17 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.13.3
+
+Released 2026-11-04. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.13.3)
+
+### What's Changed
+* Slide bars in and out, and leave the page where it is when they toggle by @Aethar01 in [#48](https://github.com/Aethar01/onon/pull/48)
+* Keep an end of the document in view as the window is resized by @Aethar01 in [#49](https://github.com/Aethar01/onon/pull/49)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.13.2...0.13.3
+
 ## 0.13.2
 
 Released 2026-11-04. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.13.2)
