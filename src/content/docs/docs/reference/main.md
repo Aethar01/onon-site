@@ -39,11 +39,13 @@ Assign options with `onon.options.<name> = <value>` in Lua or `:set <name>=<valu
 | <code>link_schemes</code> | table | <code>{&#34;http&#34;, &#34;https&#34;, &#34;mailto&#34;}</code> | URI schemes that document links may open externally; other links only show their target. |
 | <code>loading_indicator</code> | boolean | <code>true</code> | Animate a loading indicator on pages still rendering for the first time. |
 | <code>max_zoom</code> | number | <code>8</code> | Maximum manual zoom scale. |
-| <code>menus</code> | table | <code>{}</code> | Where onon's own menus sit, by name, such as { outline = { anchor = "left", width = "40%" } }: each takes width and height, the most of the window it takes, in logical pixels or a percentage, and anchor, as views do, or beside, for a menu opened over another, beside the row it was opened from, as keybind_keys and printers are unless set. Menus: annotation, choice, colors, help, keybind_keys, keybinds, matches, options, outline, print, printers, recent, themes. |
+| <code>menus</code> | table | <code>{}</code> | Where onon's own menus sit, by name, such as { outline = { anchor = "left", width = "40%" } }: each takes width and height, the most of the window it takes, in logical pixels or a percentage, and anchor, as views do, or beside, for a menu opened over another, beside the row it was opened from, as keybind_keys and printers are unless set. Menus: annotation, choice, colors, help, keybind_keys, keybinds, matches, options, outline, print, printers, recent, tabs, themes. |
 | <code>min_zoom</code> | number | <code>0.5</code> | Minimum manual zoom scale. |
 | <code>mouse_text_select</code> | boolean | <code>true</code> | Enable text selection with the left mouse button. |
 | <code>mupdf_store_mb</code> | integer | <code>256</code> | MuPDF cache for fonts and decoded images in MiB; applies to newly opened documents. |
-| <code>open_in_new_window</code> | boolean | <code>true</code> | On macOS, open a document Finder or `open` sends to a running onon in a new window rather than the current one. |
+| <code>native_tabs</code> | boolean | <code>false</code> | On macOS, use the system's window tabs, as other Mac apps do, with Merge All Windows and the tab bar's +, whatever the tab_bar options say; by default onon draws its own tab bar, as on other systems. Restart onon for a change to take effect. |
+| <code>open_documents</code> | string | <code>&#34;tab&#34;</code> | Where a document the system sends a running onon, such as from Finder or `open`, or one dropped on the window, opens: tab, in a new tab; window, in a new window; or replace, in place of the document shown. A window with no document takes it whichever is set. |
+| <code>open_in_new_window</code> | boolean | <code>false</code> | Deprecated; use open_documents, true being "window" and false "replace". |
 | <code>outline_height_percent</code> | integer | <code>80</code> | Outline overlay height as a percentage of the window. |
 | <code>outline_initial_depth</code> | integer | <code>1</code> | Outline levels expanded when the outline opens. |
 | <code>outline_width_percent</code> | integer | <code>70</code> | Most of the window the outline overlay takes, as a percentage of its width; the outline is narrower when its entries are. |
@@ -63,6 +65,7 @@ Assign options with `onon.options.<name> = <value>` in Lua or `:set <name>=<valu
 | <code>render_oversample</code> | number | <code>1</code> | Render scale multiplier; values above 1 supersample. |
 | <code>render_threads</code> | integer | <code>0</code> | Page rendering threads; 0 picks one per core up to 4, leaving a core free. Applies to newly opened documents. |
 | <code>renderer</code> | string | <code>&#34;auto&#34;</code> | Renderer SDL draws with, read when onon starts: "auto" for SDL's own choice, "gpu" for its GPU renderer (Vulkan, Metal or Direct3D 12), or one of SDL's drivers, such as "vulkan", "opengl", "metal", "direct3d11" or "software". One that cannot start falls back to "auto"; SDL_RENDER_DRIVER in the environment overrides it. |
+| <code>restore_tabs</code> | boolean | <code>true</code> | Open the tabs the window had when onon last closed with several, when it starts with no document named, each loaded when first shown. |
 | <code>scroll_off</code> | integer | <code>1</code> | Minimum number of rows kept visible above and below the selected item in UI menus, like Vim's scrolloff. |
 | <code>scroll_step</code> | integer | <code>64</code> | Keyboard and mouse scroll distance in pixels. |
 | <code>sequence_timeout_ms</code> | integer | <code>700</code> | Maximum delay between keys in a binding sequence. |
@@ -73,8 +76,16 @@ Assign options with `onon.options.<name> = <value>` in Lua or `:set <name>=<valu
 | <code>smooth_zoom_dampening</code> | number | <code>0.8</code> | Catch-up factor for smooth zooming per animation frame; higher values are more responsive and less damped; clamped to 0.01 through 1. |
 | <code>spread_gap</code> | integer | <code>0</code> | Horizontal spread gap; aliases page_gap_horizontal. |
 | <code>status_bar_left</code> | string | <code>&#34;{modified}{message}&#34;</code> | Left status bar template. |
+| <code>status_bar_order</code> | integer | <code>10</code> | Where the status bar sits among the bars and docked views along the window's edges, as tab_bar_order says; lower is nearer the edge. |
 | <code>status_bar_right</code> | string | <code>&#34;{document}  {label}/{total}  {zoom}&#34;</code> | Right status bar template. |
 | <code>status_bar_visible</code> | boolean | <code>true</code> | Show the status bar. |
+| <code>tab_bar_drag_space</code> | number | <code>48</code> | Logical pixels kept clear at the end of a tab bar in the title row, however many tabs there are, to drag the window by; 0 for none. |
+| <code>tab_bar_order</code> | integer | <code>20</code> | Where the tab bar sits among the bars and docked views along the window's edges: each takes its side of what those of lower order leave. The status bar is 10 and docked views 30 unless they say, so by default a tab bar at the bottom sits above the status bar, and one at the left stops at it. |
+| <code>tab_bar_position</code> | string | <code>&#34;title&#34;</code> | Where onon draws its tab bar: title, along the top in the row of the window's buttons (on Linux, where the system draws the title bar, as top); top, in a row of its own below them; bottom; left; or right. native_tabs = true on macOS sets it aside for the system's tabs. |
+| <code>tab_bar_resizable</code> | boolean | <code>true</code> | Let the pointer drag the inner edge of a tab bar at the left or right to resize it. |
+| <code>tab_bar_visible</code> | string | <code>&#34;auto&#34;</code> | When onon's tab bar shows: auto, while the window has more than one tab; always; or never, which turns tabs off: what would open in a new tab opens in a new window instead, a file dropped on the window replaces its document, and no tabs are restored, as before onon had tabs. true is always and false never. toggle_tab_bar and :tabbar only show or hide the bar of a window, its tabs kept. |
+| <code>tab_drag</code> | boolean | <code>true</code> | Let the pointer drag tabs in onon's tab bar to reorder them. |
+| <code>tab_width</code> | string|number | <code>&#34;fit&#34;</code> | How wide tabs are: fit, each as wide as its name; fill, sharing the bar's width equally; or a width in logical pixels or as a percentage of the window's, such as 160 or "20%". Tabs keep between the tab element's min_width and max_width, but for fill, which keeps only min_width. A bar at the left or right is as wide as its tabs: the width given, or with fit and fill, max_width; dragging its inner edge resizes it. |
 | <code>trim_margins</code> | boolean | <code>false</code> | Lay pages out by their content, trimming blank margins. |
 | <code>trim_padding</code> | integer | <code>8</code> | Margin in points kept around a page's content when trimming margins. |
 | <code>zoom_step</code> | number | <code>1.15</code> | Factor zoom_in multiplies the zoom by, and zoom_out divides it by; above 1. |
@@ -140,6 +151,7 @@ The `motion` table sets how the UI moves. Each transition is written as CSS writ
 | <code>shadow</code> | boolean | <code>true</code> | Draw a soft shadow under floating panels. |
 | <code>status_bar_style</code> | string | <code>&#34;bar&#34;</code> | Status bar layout: bar along the bottom of the window, or pill, floating over the page. |
 | <code>status_bar_padding</code> | integer | <code>10</code> | Horizontal status bar padding in logical pixels. |
+| <code>tab_bar_style</code> | string | <code>&#34;bar&#34;</code> | Tab bar layout: bar, along the window's edge, or pill, tabs floating over the page as pills. |
 | <code>motion.scale</code> | number | <code>1</code> | Speed of every transition: 1 as given, 2 twice as slow, 0 for no motion at all, as when the OS is set to reduce motion. |
 | <code>motion.panel</code> | transition | <code>&#34;none&#34;</code> | Menus and completion fading in as they open, and menus fading out as they close. |
 | <code>motion.selection</code> | transition | <code>&#34;80ms ease-out&#34;</code> | The selected row's highlight gliding to the next row selected. |
@@ -181,11 +193,13 @@ Colours name a palette colour, which follows the color mode, or are `"#RRGGBB"`,
 | <code>padding</code> | insets | Space between the box's edges and its contents in logical pixels: one number, { vertical, horizontal }, or { top, right, bottom, left }. |
 | <code>margin</code> | insets | Space around the box in logical pixels, written as padding is. |
 | <code>width</code> | number | Width in logical pixels. |
+| <code>min_width</code> | number | The narrowest the element may be, in logical pixels. |
+| <code>max_width</code> | number | The widest the element may be, in logical pixels; 0 for no limit. |
 | <code>gap</code> | number | Space between the element's parts in logical pixels. |
 | <code>floating</code> | boolean | Float over the page rather than take space from it. |
 | <code>draw</code> | function | A function(canvas, box, state) that draws the box in place of the default drawing. See [Drawing](#drawing). |
 
-Every element starts from `shape = "rect", radius = 0, fill = "none", border = { width = 0, color = "border", sides = "all" }, shadow = "none", opacity = 1, text = "foreground", secondary = "muted", bold = false, padding = 0, margin = 0, width = 1, gap = 0, floating = false, draw = nil`. The elements, with what their styles change from that in the default theme:
+Every element starts from `shape = "rect", radius = 0, fill = "none", border = { width = 0, color = "border", sides = "all" }, shadow = "none", opacity = 1, text = "foreground", secondary = "muted", bold = false, padding = 0, margin = 0, width = 1, min_width = 0, max_width = 0, gap = 0, floating = false, draw = nil`. The elements, with what their styles change from that in the default theme:
 
 | Element | Description | Properties | Default style |
 |---|---|---|---|
@@ -216,6 +230,9 @@ Every element starts from `shape = "rect", radius = 0, fill = "none", border = {
 | <code>title_bar</code> | Behind the window buttons onon draws where the system draws no title bar, as on Windows. Its text colour draws the buttons' symbols. | shape, radius, fill, border, shadow, opacity, draw, text | <code>fill = &#34;status_bar&#34;</code> |
 | <code>title_button</code> | A window button under the pointer, drawn a little fainter while pressed. | shape, radius, fill, border, shadow, opacity, draw, text | <code>fill = &#34;foreground/15&#34;</code> |
 | <code>title_close</code> | The close button under the pointer. Starts from <code>title_button</code>. | shape, radius, fill, border, shadow, opacity, draw, text | <code>fill = &#34;#c42b1c&#34;, text = &#34;#ffffff&#34;</code> |
+| <code>tab_bar</code> | onon's tab bar, where tab_bar_position puts it and tab_bar_visible shows it, wherever the system draws no tabs of its own. Its padding surrounds the tabs, margin sets it off the window's edges, gap is the space between tabs, and floating draws it over the page instead of beside it, as the status bar's does; a theme with tab_bar_style = "pill" floats its tabs as pills. In the title row, floating tabs sit their top margin below the window's top, or centred on the window's buttons if that is lower. Border sides and margins are given as for a bar at the top, and turn with the bar: its bottom is the side facing the document. | shape, radius, fill, border, shadow, opacity, draw, padding, margin, gap, floating | <code>fill = &#34;status_bar&#34;, border = { width = 1, sides = &#34;bottom&#34; }</code> |
+| <code>tab</code> | A tab in the tab bar, named for its document. Its secondary colour marks a tab with unsaved edits, and its padding sets the bar's height. min_width and max_width bound its width in a bar at the top or bottom; tab_width = "fill" ignores max_width. Its sides turn with the bar, as tab_bar's do. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding, min_width, max_width | <code>text = &#34;muted&#34;, secondary = &#34;accent&#34;, padding = { 4, 14 }, min_width = 90, max_width = 220</code> |
+| <code>tab_selected</code> | The tab shown. Starts from <code>tab</code>. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding, min_width, max_width | <code>fill = &#34;background&#34;, border = { width = 2, color = &#34;accent&#34;, sides = &#34;bottom&#34; }, secondary = &#34;accent&#34;, padding = { 4, 14 }, min_width = 90, max_width = 220</code> |
 | <code>loader</code> | The drops bouncing on a page still rendering; its box is the page. | fill, opacity, draw | <code>fill = &#34;muted&#34;</code> |
 | <code>autoscroll_marker</code> | The marker where autoscroll started: its fill, its outline as its border, and its width. | fill, border, opacity, width, draw | <code>fill = &#34;#fafafad7&#34;, border = { width = 1.2, color = &#34;#282828e6&#34; }, width = 32</code> |
 | <code>page</code> | Each page of the document, its fill showing until the page renders. Pages turned other than by quarter turns are drawn plain. | shape, radius, fill, border, shadow | <code>fill = &#34;page&#34;, shadow = &#34;0 2 1 0 shadow&#34;</code> |
@@ -295,7 +312,8 @@ end
 | <code>:present</code> | Toggle presentation mode |
 | <code>:prev</code> | Go to the previous search match |
 | <code>:print [lp options]</code> | Print the saved document from a dialog, or directly with lp options such as -d office -P 1-3 |
-| <code>:quit, :q</code> | Exit; :q! discards unsaved edits |
+| <code>:quit, :q</code> | Close the tab, and the window with its last tab; :q! discards its unsaved edits |
+| <code>:quitall, :qa</code> | Exit, closing every tab; :qa! discards unsaved edits |
 | <code>:recent</code> | Open the recent-files menu |
 | <code>:redo</code> | Reapply the last undone edit |
 | <code>:reload-config</code> | Reload the config file |
@@ -303,11 +321,24 @@ end
 | <code>:search &lt;text&gt;</code> | Search document text |
 | <code>:set [option[?]&#124;option!&#124;option=value]</code> | Inspect or change options |
 | <code>:statusbar [on&#124;off]</code> | Show or hide the status bar |
+| <code>:tabbar [on&#124;off]</code> | Show or hide the tab bar |
+| <code>:tabclose [N], :tabc</code> | Close the tab, or tab N; :tabclose! discards its unsaved edits |
+| <code>:tabdo &lt;command&gt;</code> | Run a command in every tab, such as :tabdo write |
+| <code>:tabfirst</code> | Go to the first tab |
+| <code>:tablast</code> | Go to the last tab |
+| <code>:tabmove [N&#124;+N&#124;-N], :tabm</code> | Move the tab to the end, after tab N (0 for first), or N places |
+| <code>:tabnew [filename], :tabe</code> | Open a document in a new tab, or a blank tab |
+| <code>:tabnext [N&#124;+N&#124;-N], :tabn</code> | Go to the next tab, to tab N, or N tabs on |
+| <code>:tabonly, :tabo</code> | Close every other tab; :tabonly! discards their unsaved edits |
+| <code>:tabprevious [N], :tabp</code> | Go to the previous tab, or N tabs back |
+| <code>:tabs</code> | List the tabs, to choose one to show |
 | <code>:theme [name]</code> | Pick a theme, seeing each as it is selected, or switch to one |
 | <code>:trim [on&#124;off]</code> | Lay pages out by their content, trimming margins |
 | <code>:undo</code> | Undo the last edit |
 | <code>:version</code> | Show the onon version |
-| <code>:write [path], :w</code> | Save edits, or a copy to path; :wq saves and exits; :w! saves over a remote file that changed |
+| <code>:write [path], :w</code> | Save edits, or a copy to path; :wq saves and closes the tab; :w! saves over a remote file that changed |
+| <code>:writeall, :wa</code> | Save the edits in every tab |
+| <code>:wqall, :wqa</code> | Save the edits in every tab and exit |
 | <code>:zoom in&#124;out&#124;reset&#124;PERCENT</code> | Zoom a step, reset, or set e.g. :zoom 150 |
 
 Search modifiers, which work as in Vim and may appear anywhere in the query: `\v` regular expression from here on, `\V` literal text from here on (the default), `\c` ignore case (the default), `\C` match case, `\<` start of a word, `\>` end of a word, `\%.p` current page only, `\%3p` page 3 only, `\%<3p` pages before page 3, `\%>3p` pages after page 3. Regular expressions use [Go syntax](https://pkg.go.dev/regexp/syntax), and `\\` searches for a backslash in literal text.
@@ -357,6 +388,11 @@ The index below is followed by a detailed entry for every function. Lua errors a
 | <code>onon.search_match_count()</code> | returns the number of discovered search matches. |
 | <code>onon.search_match_index()</code> | returns the current search match index. |
 | <code>onon.search_query()</code> | returns the active search query. |
+| <code>onon.tabs.close([index[, force]])</code> | closes a tab, and the window with its last. |
+| <code>onon.tabs.current()</code> | returns the index of the tab shown. |
+| <code>onon.tabs.list()</code> | returns the window's tabs in order. |
+| <code>onon.tabs.open([path])</code> | opens a document in a new tab after the one shown, or shows the tab that already has it open. |
+| <code>onon.tabs.select(index)</code> | shows the tab at index. |
 | <code>onon.ui.create(spec)</code> | creates a view: a menu or panel of rows, or a body a plugin draws, with text fields, buttons and check boxes, placed in the window, pinned to a point or page, or docked. |
 | <code>onon.unbind(key)</code> | removes a key binding. |
 | <code>onon.unbind_mouse(event)</code> | removes a mouse binding. |
@@ -1003,6 +1039,103 @@ The active query as typed, modifiers included, or an empty string when search is
 	local query = onon.search_query()
 
 
+### <code>onon.tabs.close([index[, force]])</code>
+
+closes a tab, and the window with its last.
+
+#### Parameters
+
+  - index: The 1-based index of the tab to close; the tab shown when omitted.
+  - force: Close it even with unsaved edits, discarding them. Without it, a tab with unsaved edits stays open the first time, with a warning.
+
+#### Returns
+
+Nothing. The tab closes after the current Lua dispatch, once the calls
+made before it have taken effect, so index counts the tabs they leave.
+
+#### Errors
+
+Raises an error when there is no tab at index.
+
+#### Example
+
+	onon.tabs.close(2)
+
+
+### <code>onon.tabs.current()</code>
+
+returns the index of the tab shown.
+
+#### Returns
+
+The 1-based index of the tab shown.
+
+#### Example
+
+	onon.message("tab " .. onon.tabs.current() .. " of " .. #onon.tabs.list())
+
+
+### <code>onon.tabs.list()</code>
+
+returns the window's tabs in order.
+
+#### Returns
+
+A list of [Tab](#tab) tables, one for each tab, from the first. Tabs
+that onon.tabs calls made earlier in the same Lua dispatch open, show or
+close are not in it yet, as those calls take effect once it returns.
+
+#### Example
+
+	for _, tab in ipairs(onon.tabs.list()) do
+	  onon.log("info", tab.index .. ": " .. tab.name)
+	end
+
+
+### <code>onon.tabs.open([path])</code>
+
+opens a document in a new tab after the one shown, or shows
+the tab that already has it open.
+
+#### Parameters
+
+  - path: A document path, URL or ssh host:path, as onon.open takes. Without one, a blank tab opens.
+
+#### Returns
+
+Nothing. The tab opens after the current Lua dispatch.
+
+#### Errors
+
+Raises an error when the document cannot be opened.
+
+#### Example
+
+	onon.tabs.open("appendix.pdf")
+
+
+### <code>onon.tabs.select(index)</code>
+
+shows the tab at index.
+
+#### Parameters
+
+  - index: The 1-based index of the tab to show.
+
+#### Returns
+
+Nothing. The tab is shown after the current Lua dispatch, once the calls
+made before it have taken effect, so index counts the tabs they leave.
+
+#### Errors
+
+Raises an error when there is no tab at index.
+
+#### Example
+
+	onon.tabs.select(1)
+
+
 ### <code>onon.ui.create(spec)</code>
 
 creates a view: a menu or panel of rows, or a body a plugin
@@ -1124,6 +1257,7 @@ Create views with `local view = onon.ui.create(spec)`, then call `view:show()`. 
 | `at` | A point the view is pinned to: `{ x = 10, y = 40 }` in the window, in logical pixels, kept in the window, or `{ page = 3, x = 72, y = 100 }` on a page, in its points from its top left as the document events give them, moving with the page and hidden while it is not shown. |
 | `attach` | Attaches the view to something it moves with: `{ view = other }`, another view, beside its selected row with its first row level with it, as a submenu is; or a box, `{ x = 10, y = 40, w = 120, h = 20 }` in the window or with `page` on a page, as `at` takes a point, below it as a dropdown is. `side` (`right`, `left`, `below` or `above`) is the side tried first; without room there it takes the other, and is kept in the window. While what it is attached to is not shown, it sits at its `anchor`. |
 | `dock` | `left`, `right`, `top` or `bottom`: a panel against that side of the window, its `width` or `height` taken from the document, which lays itself out beside it. Panels docked to the same side stack inwards in the order they open. |
+| `order` | For a docked view: where it sits among the bars and docked views along the window's edges, each taking its side of what those of lower order leave. The status bar is 10 (`status_bar_order`), the tab bar 20 (`tab_bar_order`) and docked views 30 unless they say, so by default a view docked at the bottom sits above the status bar, and one docked at the left stops at it; with `order = 0` it takes its side of the whole window. |
 | `resizable` | For a docked view: its inner edge can be dragged to resize it. `view:size()` gives a view's width and height. |
 
 #### Lists
@@ -1327,13 +1461,13 @@ Each plugin has an isolated local-module cache and search root. It may require a
 
 A successful `:reload-config` replaces the Lua state and cancels all handles and jobs from the old generation without invoking their callbacks. If reload fails, the previous state and its operations remain active. A failed plugin load rolls back that plugin and cancels work it started. Viewer shutdown emits `shutdown` before runtime close; close then cancels remaining operations and jobs. Storage is keyed by plugin ID in the session database and survives reloads and application restarts.
 
-Supported events are `app_ready`, `document_open_pre`, `document_opened`, `document_close_pre`, `document_closed`, `document_reloaded`, `config_reloaded`, `mouse_button_pre`, `mouse_button`, `selection_changed`, `page_changed`, `zoom_changed`, `option_changed`, and `shutdown`. Each callback is given a table, listed in [Events](#events). `page_changed` and `zoom_changed` are emitted once per frame with the settled value, so a continuous gesture reports where it came to rest. Event callbacks run in subscription order within each plugin; returning true marks an event consumed where the host supports consumption but does not stop later callbacks.
+Supported events are `app_ready`, `document_open_pre`, `document_opened`, `document_close_pre`, `document_closed`, `document_reloaded`, `config_reloaded`, `mouse_button_pre`, `mouse_button`, `selection_changed`, `page_changed`, `zoom_changed`, `option_changed`, `tab_changed`, `tab_list_changed`, and `shutdown`. Each callback is given a table, listed in [Events](#events). `page_changed` and `zoom_changed` are emitted once per frame with the settled value, so a continuous gesture reports where it came to rest. Event callbacks run in subscription order within each plugin; returning true marks an event consumed where the host supports consumption but does not stop later callbacks.
 
 Plugins are found in every one of the platform plugin directories, and rescanned by `:reload-config`: on Linux `/usr/lib/onon/plugins`, `$XDG_DATA_HOME/onon/plugins` (or `~/.local/share/onon/plugins`), `$XDG_CONFIG_HOME/onon/plugins`, `~/.config/onon/plugins` and each `$XDG_CONFIG_DIRS/onon/plugins`; on macOS `~/Library/Application Support/onon/plugins` and `~/.config/onon/plugins`; on Windows `%LOCALAPPDATA%\onon\plugins` and `%APPDATA%\onon\plugins`. Where two have a plugin with the same id, the first wins. Disable plugin discovery with `--no-plugins`, or start from built-in defaults with `--no-config`, which also skips the generated settings file.
 
 #### Single instance
 
-Instances are per document. Each window listens on a socket named after the document it is showing, and the address follows the document when the window opens another one. `--unique` hands the request to the window already showing that document and exits; with no such window, this process opens it. `--goto PAGE` opens at a page and `--goto PAGE:X:Y` at a point on it, overriding any remembered session position, whether the work is done here or by an existing window. `--command TEXT` runs a viewer command there, as typed after `:`, including any command registered by a plugin. An unrecognised command exits non-zero. `X` and `Y` are points measured from the page's top-left corner, which is also SyncTeX's convention. Sockets live under `$XDG_RUNTIME_DIR/onon` on Linux, the per-user temporary directory on macOS, and `%LOCALAPPDATA%\onon` on Windows. They are mode 0600 and named by a hash of the document path, which keeps them within the platform socket length limit. A socket left by a crashed process is reclaimed on the next start.
+Instances are per document. Each tab listens on a socket named after the document it is showing, and the address follows the document when the tab opens another one. `--unique` hands the request to the tab already showing that document, which its window shows and brings forward, and exits; with no such window, this process opens it. `--tab` opens the document in a new tab of the window focused last, when that window's process was started with the same `--config`, `--no-config` and `--no-plugins`, even when another tab shows it; with `--unique` as well, a tab showing it is brought forward instead. With no document it opens an empty tab there. On macOS one process opens every window, so the system can gather them into tabs, and a document named on the command line goes to the running onon started with the same flags, as one Finder sends does: the tab showing it, or where `open_documents` says. `--goto PAGE` opens at a page and `--goto PAGE:X:Y` at a point on it, overriding any remembered session position, whether the work is done here or by an existing window. `--command TEXT` runs a viewer command there, as typed after `:`, including any command registered by a plugin. An unrecognised command exits non-zero. `X` and `Y` are points measured from the page's top-left corner, which is also SyncTeX's convention. Sockets live under `$XDG_RUNTIME_DIR/onon` on Linux, the per-user temporary directory on macOS, and `%LOCALAPPDATA%\onon` on Windows. They are mode 0600 and named by a hash of the document path, which keeps them within the platform socket length limit. A socket left by a crashed process is reclaimed on the next start.
 
 ## Key and mouse names
 
@@ -1472,7 +1606,13 @@ Keys in a system's own column are bound there as well as the default keys.
 | <code>options_menu</code> |  |  |  |  | false |
 | <code>pan</code> | <code>&lt;Space&gt;</code> |  |  |  | false |
 | <code>autoscroll</code> |  |  |  |  | false |
-| <code>quit</code> | <code>q</code> | <code>&lt;D-q&gt;</code>, <code>&lt;D-w&gt;</code> | <code>&lt;C-q&gt;</code>, <code>&lt;C-w&gt;</code> | <code>&lt;C-q&gt;</code>, <code>&lt;C-w&gt;</code> | false |
+| <code>next_tab</code> | <code>gt</code>, <code>&lt;C-Tab&gt;</code>, <code>&lt;C-PgDn&gt;</code> | <code>&lt;D-S-]&gt;</code> |  |  | false |
+| <code>prev_tab</code> | <code>gT</code>, <code>&lt;C-S-Tab&gt;</code>, <code>&lt;C-PgUp&gt;</code> | <code>&lt;D-S-[&gt;</code> |  |  | false |
+| <code>new_tab</code> |  | <code>&lt;D-t&gt;</code> | <code>&lt;C-t&gt;</code> | <code>&lt;C-t&gt;</code> | false |
+| <code>close_tab</code> |  | <code>&lt;D-w&gt;</code> | <code>&lt;C-w&gt;</code> | <code>&lt;C-w&gt;</code> | false |
+| <code>tabs_menu</code> |  |  |  |  | false |
+| <code>toggle_tab_bar</code> |  |  |  |  | false |
+| <code>quit</code> | <code>q</code> | <code>&lt;D-q&gt;</code> | <code>&lt;C-q&gt;</code> | <code>&lt;C-q&gt;</code> | false |
 
 ## Lua tables
 
@@ -1484,11 +1624,11 @@ Every table onon gives Lua code or takes from it, with its fields. A type such a
 - `onon.theme`: the theme; see [Theme](#theme). Read or assign whole, or one field at a time.
 - `onon.themes`: each built-in theme as a fresh table, such as `onon.themes.birch`.
 - `onon.ui.create`'s spec and rows: see [UI views](#ui-views).
-- `onon.cache`, `onon.ui`, and `onon.plugin`: functions are listed above.
+- `onon.cache`, `onon.tabs`, `onon.ui`, and `onon.plugin`: functions are listed above.
 
 ### Document and platform
 
-`onon.platform`, `onon.document` and its functions, and a plugin's `document`, give these. Coordinates are in unrotated PDF points from the page's top left.
+`onon.platform`, `onon.document` and its functions, `onon.tabs`, and a plugin's `document`, give these. Coordinates are in unrotated PDF points from the page's top left.
 
 <a id="platform"></a>
 
@@ -1524,6 +1664,22 @@ Every table onon gives Lua code or takes from it, with its fields. A type such a
 | <code>outline()</code> | function | Returns its outline: a list of [Outline entry](#outline-entry) tables, empty when it has none. |
 | <code>page_info(page)</code> | function | Returns [Page info](#page-info) for a 1-based page; an out-of-range page raises an error. |
 | <code>selection()</code> | function | Returns the current [Selection](#selection). |
+
+<a id="tab"></a>
+
+#### Tab `onon.tabs.list()`
+
+One of the window's tabs, as `onon.tabs.list()` gives them.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>index</code> | integer | Its 1-based position, as `onon.tabs.select` and `onon.tabs.close` take. |
+| <code>path</code> | string | The path or URL of its document; empty for an empty tab. |
+| <code>name</code> | string | The name it shows. |
+| <code>page</code> | integer | The 1-based page it shows; 0 before its document opens. |
+| <code>page_count</code> | integer | Its document's number of pages; 0 before it opens. |
+| <code>modified</code> | boolean | Whether it has unsaved edits. |
+| <code>active</code> | boolean | Whether it is the tab shown. |
 
 <a id="rectangle"></a>
 
@@ -1951,6 +2107,31 @@ What `plugin:on(event, callback)` gives its callback. `shutdown` gives an empty 
 | <code>scale</code> | number | The zoom now, 1 being 100%. |
 | <code>previous_scale</code> | number | The zoom before. |
 | <code>percent</code> | number | The zoom now as a percentage. |
+
+<a id="tab-event"></a>
+
+#### Tab event `tab_changed` callback
+
+`tab_changed`, when the window shows another tab.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>document</code> | table | `path`, `name`, and `page_count` of the document the tab now shown has open; `path` is empty when it has none. |
+| <code>generation</code> | integer | A number that changes whenever a document is opened or reloaded. |
+| <code>index</code> | integer | The 1-based position of the tab now shown. |
+| <code>previous</code> | integer | The 1-based position of the tab shown before, or 0 when that tab was closed. |
+
+<a id="tab-list-event"></a>
+
+#### Tab list event `tab_list_changed` callback
+
+`tab_list_changed`, when a tab of the window opens, closes or moves, or gains or loses unsaved edits, so a plugin drawing its own tabs can redraw them from `onon.tabs.list()`.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>reason</code> | string | `opened`, `closed`, `moved` or `modified`. |
+| <code>index</code> | integer | The 1-based position of the tab that changed: where it is now, or where it was for one closed. |
+| <code>count</code> | integer | How many tabs the window has now. |
 
 <a id="option-event"></a>
 

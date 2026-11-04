@@ -6,6 +6,16 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.13.0
+
+Released 2026-11-04. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.13.0)
+
+### What's Changed
+* Add tabs by @Aethar01 in [#45](https://github.com/Aethar01/onon/pull/45)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.12.0...0.13.0
+
 ## 0.12.0
 
 Released 2026-11-03. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.12.0)
