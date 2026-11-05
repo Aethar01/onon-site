@@ -111,7 +111,7 @@ Fields left out keep the base theme's values. Assign a preset by name with `onon
 
 Colours are `"#RRGGBB"` or `{ r, g, b }`. The `alt` table holds the colours used in alternate-color mode, toggled with `:colors`, and has the same colour fields as the theme. The `font` table picks the UI font; with neither `family` nor `path` set it is the system's interface font.
 
-The `motion` table sets how the UI moves. Each transition is written as CSS writes one, a duration and an easing such as `"140ms ease-out"`, or as `{ duration = 140, easing = "ease-out" }`; easings are `linear`, `ease`, `ease-in`, `ease-out`, `ease-in-out` and `cubic-bezier(x1, y1, x2, y2)`, and `"none"` turns one transition off. By default only what moves is animated: the selection, the cursor and the sides of the status bar glide to where they go, while menus and messages appear and go at once; give `panel` or `message` a transition to fade them, or `edges` one to slide the bars and docked views in and out. `scale` slows or speeds every transition, and `0` turns motion off altogether, as the classic theme does.
+The `motion` table sets how the UI moves. Each transition is written as CSS writes one, a duration and an easing such as `"140ms ease-out"`, or as `{ duration = 140, easing = "ease-out" }`; easings are `linear`, `ease`, `ease-in`, `ease-out`, `ease-in-out` and `cubic-bezier(x1, y1, x2, y2)`, and `"none"` turns one transition off. By default everything moves, briefly: the selection, the cursor and the sides of the status bar glide to where they go, menus and messages fade in and out, and the bars and docked views slide in and out along the edges. `scale` slows or speeds every transition, and `0` turns motion off altogether, as the classic theme does.
 
 | Field | Type | Default | Description |
 |---|---|---|---|
@@ -153,12 +153,12 @@ The `motion` table sets how the UI moves. Each transition is written as CSS writ
 | <code>status_bar_padding</code> | integer | <code>10</code> | Horizontal status bar padding in logical pixels. |
 | <code>tab_bar_style</code> | string | <code>&#34;bar&#34;</code> | Tab bar layout: bar, along the window's edge, or pill, tabs floating over the page as pills. |
 | <code>motion.scale</code> | number | <code>1</code> | Speed of every transition: 1 as given, 2 twice as slow, 0 for no motion at all, as when the OS is set to reduce motion. |
-| <code>motion.panel</code> | transition | <code>&#34;none&#34;</code> | Menus and completion fading in as they open, and menus fading out as they close. |
+| <code>motion.panel</code> | transition | <code>&#34;120ms ease-out&#34;</code> | Menus and completion fading in as they open, and menus fading out as they close. |
 | <code>motion.selection</code> | transition | <code>&#34;80ms ease-out&#34;</code> | The selected row's highlight gliding to the next row selected. |
 | <code>motion.prompt</code> | transition | <code>&#34;100ms ease-out&#34;</code> | The sides of the status bar growing and shrinking with their text, as a pill does when a prompt opens. |
-| <code>motion.message</code> | transition | <code>&#34;none&#34;</code> | Status messages fading in, and out when cleared. |
+| <code>motion.message</code> | transition | <code>&#34;150ms ease-out&#34;</code> | Status messages fading in, and out when cleared. |
 | <code>motion.cursor</code> | transition | <code>&#34;50ms ease-out&#34;</code> | The prompt's cursor gliding to where it moves. |
-| <code>motion.edges</code> | transition | <code>&#34;none&#34;</code> | The status bar, tab bar and docked views sliding in along the window's edges as they are shown, the bars sliding out as they are hidden, the page moving with them only where it must. |
+| <code>motion.edges</code> | transition | <code>&#34;160ms ease-out&#34;</code> | The status bar, tab bar and docked views sliding in along the window's edges as they are shown, the bars sliding out as they are hidden, the page moving with them only where it must. |
 
 ### Elements
 
