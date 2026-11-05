@@ -6,6 +6,16 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.13.4
+
+Released 2026-11-05. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.13.4)
+
+### What's Changed
+* Faster CI: cache Go builds, avoid recompiling, drop wasted release caching by @Aethar01 in [#50](https://github.com/Aethar01/onon/pull/50)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.13.3...0.13.4
+
 ## 0.13.3
 
 Released 2026-11-04. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.13.3)
