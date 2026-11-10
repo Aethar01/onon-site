@@ -6,6 +6,16 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.14.4
+
+Released 2026-11-10. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.4)
+
+### What's Changed
+* Give views a header detail, and draw every title as given by @Aethar01 in [#57](https://github.com/Aethar01/onon/pull/57)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.14.3...0.14.4
+
 ## 0.14.3
 
 Released 2026-11-10. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.3)

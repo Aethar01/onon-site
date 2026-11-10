@@ -1,6 +1,6 @@
 ---
 title: "Reference"
-description: "Every option, command, Lua function, key and action in onon 0.14.3."
+description: "Every option, command, Lua function, key and action in onon 0.14.4."
 editUrl: false
 ---
 
@@ -583,6 +583,7 @@ Every function is listed below, then described under the group it belongs to. Lu
 | [<code>onon.formats.supports(path)</code>](#ononformatssupports) | checks whether a path extension names a supported format. |
 | [<code>onon.fullscreen([enabled])</code>](#ononfullscreen) | reads or changes fullscreen state. |
 | [<code>onon.goto_document_point(spec)</code>](#onongoto_document_point) | moves to a page coordinate in document space. |
+| [<code>onon.load_document(path[, callback])</code>](#ononload_document) | loads a local document in the background, without a tab, to read it or draw its pages. |
 | [<code>onon.log(level, message)</code>](#ononlog) | writes a diagnostic without changing the user-facing message. |
 | [<code>onon.message([text])</code>](#ononmessage) | reads or replaces the viewer's status message. |
 | [<code>onon.mode()</code>](#ononmode) | returns the current viewer input mode. |
@@ -635,6 +636,32 @@ Raises an error when the document cannot be opened.
 **Example**
 
 	onon.open("appendix.pdf")
+
+
+#### <code>onon.load_document</code>
+
+<code>onon.load_document(path[, callback])</code> loads a local document in the background, without a tab,
+to read it or draw its pages.
+
+**Parameters**
+
+  - path: A local document path; ~ is not expanded.
+  - callback: Optional; called with a [Background document result](#background-document-result) once the document opened or failed.
+
+**Returns**
+
+A [Background document](#background-document), opening.
+
+**Errors**
+
+Raises an error for a remote URI.
+
+**Example**
+
+	local doc
+	doc = onon.load_document("paper.pdf", function(result)
+	  if result.success then onon.message(doc:metadata().title) end
+	end)
 
 
 #### <code>onon.open_external</code>
@@ -1292,7 +1319,7 @@ Nothing. The viewer's user-facing message is unchanged.
 draws, with text fields, buttons and check boxes, placed in the window,
 pinned to a point or page, or docked.
 
-The spec may contain id, title, rows, selected, scroll, query, searchable,
+The spec may contain id, title, detail, rows, selected, scroll, query, searchable,
 filter, empty, columns, prompt, modal, stack, width, height, anchor, at,
 dock, resizable, draw, and the callbacks on_select, on_selection_changed,
 on_query_changed, on_input, on_submit, on_click, on_key, on_action,
@@ -1892,6 +1919,35 @@ A `plugin:job` result. `success` needs the process to exit with 0, in time.
 | <code>stdout</code> | string | Its standard output. |
 | <code>stderr</code> | string | Its standard error. |
 
+#### Background document
+
+**Source:** `onon.load_document()`
+
+A document `onon.load_document` loaded without a tab, to read or draw a file other than the one shown. It is not in the tabs, the recent files or the session. At most 8 are open at once: opening another closes the one used least recently. They close when the configuration reloads. `metadata`, `outline` and `page_info` raise an error unless it is open.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>path</code> | string | The document's absolute path. |
+| <code>state()</code> | function | Returns `opening`, `open`, `failed` or `closed`. |
+| <code>page_count()</code> | function | Returns its number of pages; 0 unless it is open. |
+| <code>error()</code> | function | Returns why it failed to open, such as `password required`; else empty. |
+| <code>metadata()</code> | function | Returns its [Document metadata](#document-metadata), as `onon.document.metadata()` does the shown document's. |
+| <code>outline()</code> | function | Returns its outline, a list of [Outline entry](#outline-entry) tables. |
+| <code>page_info(page)</code> | function | Returns [Page info](#page-info) for a 1-based page. |
+| <code>page_text(page, callback)</code> | function | Reads a page's text asynchronously, as `plugin.document:page_text` does. Returns a [Handle](#handle). |
+| <code>page_links(page, callback)</code> | function | Reads a page's links asynchronously, as `plugin.document:page_links` does. Returns a [Handle](#handle). |
+| <code>close()</code> | function | Closes it, with the pages drawn of it. |
+
+#### Background document result
+
+**Source:** `onon.load_document()` callback
+
+What `onon.load_document`'s callback is given. `success` is whether it opened.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>page_count</code> | integer | Its number of pages; 0 if it failed. |
+
 #### Page text result
 
 **Source:** `plugin.document:page_text()` callback
@@ -2056,7 +2112,8 @@ Create views with `local view = onon.ui.create(spec)`, then call `view:show()`. 
 
 | Field | Meaning |
 |---|---|
-| `id`, `title` | The view's name and the title in its header. A view with a `draw` function and no title has no header. |
+| `id`, `title` | The view's name and the title in its header, drawn as given. A view with a `draw` function and no title has no header. |
+| `detail` | Text drawn muted on the right of the header, as a count or a mode is, before the search and its count while the rows are searched; in a header with a `prompt`, before the count. |
 | `modal` | True unless set false. A modal view is a menu: it takes the keys, closes on a click outside it, and replaces any other menu. A view that is not modal is a panel: it stays open over the document, under any menu, until closed, and takes the pointer over it, and the keys when it has them (see [Typing](#typing)). |
 | `stack` | For a menu: opens it over the menu open, which closing it returns to, instead of replacing it. |
 | `width`, `height` | Its size: logical pixels, or a percentage of the window such as `"30%"`; `"70%"` unless set, and at most the document's part of the window. A list fits its height to its rows. |
@@ -2114,6 +2171,7 @@ A row is a string, its text, or a table of these fields. Other fields are the pl
 | <code>canvas:clip(x, y, w, h)</code> | Nothing; limits what is drawn after to the rect, until `canvas:clip()`. |
 | <code>canvas:image(path, x, y [, w [, h]])</code> | A PNG, JPEG, GIF, WebP or BMP file, a path not absolute being from the configuration's directory, at its size in logical pixels, or a width or height given, keeping its proportions if only one is. It reloads when the file changes. Returns its width and height. |
 | <code>canvas:page(page, x, y, w [, h [, area]])</code> | The page, turned as the document's are: its thumbnail fitted to the width, or within the width and height, rendering as it is first drawn. With `area`, `{ x =, y = [, zoom =] }`, the part of the page from that point, in its points, at the box's top left, at `zoom` times the document's zoom (1 unless set), drawn sharp from the page's tiles; it needs a height. Returns its width and height. |
+| <code>canvas:document_page(doc, page, x, y, w [, h])</code> | A page of a [Background document](#background-document), fitted to the width, or within the width and height, upright: the page's colour until it renders, which it does once first drawn, and nothing for a page it does not have or a document that failed to open. Returns its width and height. |
 | <code>canvas:animate(key, target [, animation])</code> | Nothing; returns where the value named `key` is on its way to `target`, gliding as the animation's timing says, `"200ms ease-out"` unless given; a value not asked for on the frame before is at its target. Return true from the draw function while it moves. |
 | <code>canvas:region(id, x, y, w, h)</code> | Nothing; names the rect for the pointer events over it, which carry the id. Returns whether the pointer is over it, for drawing it hovered. |
 | <code>canvas:input(id, x, y, w [, options])</code> | The text field `id`, `w` wide, with options `placeholder`, `secret` (bullets for a password) and `lines` (more than one wraps and takes newlines). Returns its width and height. See [Typing](#typing). |
@@ -2134,6 +2192,7 @@ The fields, buttons and check boxes take the theme's `input`, `input_focused`, `
 | <code>col:button(id, label [, width])</code> | A button, the column's width unless given. |
 | <code>col:checkbox(id, label, checked)</code> | A check box. |
 | <code>col:page(page [, height [, area]])</code> | A page, or part of one, the column's width. |
+| <code>col:document_page(doc, page [, height])</code> | A page of a [Background document](#background-document), the column's width. |
 | <code>col:image(path [, w [, h]])</code> | An image. |
 | <code>col:space(height)</code> | Nothing; moves down. |
 | <code>col:y()</code> | Nothing; returns where the next thing goes. |
@@ -2163,7 +2222,7 @@ Everything a canvas draws out of sight, below or above what shows of the body, i
 | `on_mouse(event)` | For the pointer over the view, and after a press on it until the release; returning true keeps the view from handling it. `event.type` is `press`, `release`, `move`, `leave` or `wheel`; `event.x` and `event.y` are logical pixels from the top left of what the body draws, scrolled; `event.region` is the id of the region there; a press or release has `button` (`left`, `middle`, `right`, `x1` or `x2`) and a press `clicks`; a wheel has `dx` and `dy`, positive to the right and down. A press on a text field, button or check box goes to it instead. |
 | `on_close()` | When the view closes: by `view:close()` or, for a menu, the user, another menu replacing it, or the document closing. |
 
-View methods are `show()`, `close()`, `visible()`, `redraw()`, `size()`, `focus()`, `blur()`, `focused()`, `set_title(title)`, `set_rows(rows)`, `set_selected(index)`, `set_scroll(scroll)`, `set_query(query)`, `field(id)`, `fields()`, `set_field(id, text)`, `edit_row(index)`, `selected()`, `scroll()`, and `query()`. Selection indices are 1-based, with 0 meaning no selection. A drawn body's scroll is in logical pixels, a list's in rows. Once a view closes, its methods read the state it closed with, as `on_close` does, until it is shown again from its spec.
+View methods are `show()`, `close()`, `visible()`, `redraw()`, `size()`, `focus()`, `blur()`, `focused()`, `set_title(title)`, `set_detail(detail)`, `set_rows(rows)`, `set_selected(index)`, `set_scroll(scroll)`, `set_query(query)`, `field(id)`, `fields()`, `set_field(id, text)`, `edit_row(index)`, `selected()`, `scroll()`, and `query()`. Selection indices are 1-based, with 0 meaning no selection. A drawn body's scroll is in logical pixels, a list's in rows. Once a view closes, its methods read the state it closed with, as `on_close` does, until it is shown again from its spec.
 
 ```lua
 -- A sidebar of page thumbnails, docked left and resizable; clicking one
@@ -2210,7 +2269,7 @@ form:show()
 
 ## Plugins
 
-Plugins are discovered without being executed. Enable one explicitly with `local plugin = require("plugin-id")`; only the required plugin and its declared dependencies execute. The entrypoint must call `onon.plugin.register("plugin-id"[, spec])`; `require` returns the registered module.
+Plugins are discovered without being executed. Enable one explicitly with `local plugin = require("plugin-id")`; only the required plugin and its declared dependencies execute. The entrypoint must call `onon.plugin.register("plugin-id"[, spec])`; `require` returns the registered module. A plugin's own modules load as Lua's `require` finds them, from its `lua` directory: `require("plugin-id.util")` loads `lua/plugin-id/util.lua`, beside the entrypoint, and `require("util")` loads `lua/util.lua`. Each plugin's modules are its own.
 
 A plugin may describe itself in a [Plugin manifest](#plugin-manifest), `onon-plugin.json`, and declares its options in a [Plugin spec](#plugin-spec). The [Plugin module](#plugin-module) `register` returns has the functions below, and those that register actions, commands and event callbacks. Registered actions use `plugin-id.action`; commands use `:plugin-id-command`, where the command name cannot contain `-`; options use `plugin-id.option`.
 
