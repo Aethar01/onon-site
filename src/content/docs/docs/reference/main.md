@@ -583,6 +583,7 @@ Every function is listed below, then described under the group it belongs to. Lu
 | [<code>onon.formats.supports(path)</code>](#ononformatssupports) | checks whether a path extension names a supported format. |
 | [<code>onon.fullscreen([enabled])</code>](#ononfullscreen) | reads or changes fullscreen state. |
 | [<code>onon.goto_document_point(spec)</code>](#onongoto_document_point) | moves to a page coordinate in document space. |
+| [<code>onon.load_document(path[, callback])</code>](#ononload_document) | loads a local document in the background, without a tab, to read it or draw its pages. |
 | [<code>onon.log(level, message)</code>](#ononlog) | writes a diagnostic without changing the user-facing message. |
 | [<code>onon.message([text])</code>](#ononmessage) | reads or replaces the viewer's status message. |
 | [<code>onon.mode()</code>](#ononmode) | returns the current viewer input mode. |
@@ -635,6 +636,32 @@ Raises an error when the document cannot be opened.
 **Example**
 
 	onon.open("appendix.pdf")
+
+
+#### <code>onon.load_document</code>
+
+<code>onon.load_document(path[, callback])</code> loads a local document in the background, without a tab,
+to read it or draw its pages.
+
+**Parameters**
+
+  - path: A local document path; ~ is not expanded.
+  - callback: Optional; called with a [Background document result](#background-document-result) once the document opened or failed.
+
+**Returns**
+
+A [Background document](#background-document), opening.
+
+**Errors**
+
+Raises an error for a remote URI.
+
+**Example**
+
+	local doc
+	doc = onon.load_document("paper.pdf", function(result)
+	  if result.success then onon.message(doc:metadata().title) end
+	end)
 
 
 #### <code>onon.open_external</code>
@@ -1717,7 +1744,6 @@ What `onon.plugin.register` and `require("plugin-id")` return; `onon.config` is 
 | <code>on(event, callback)</code> | function | Calls `callback(payload)` for each event; see [Events](#events). Returns the subscription's ID, an integer. |
 | <code>off(id)</code> | function | Removes the subscription `on` returned `id` for. |
 | <code>job(spec, callback)</code> | function | Starts a [Job spec](#job-spec)'s process, calling `callback` with its [Job result](#job-result). Returns a [Handle](#handle). |
-| <code>open_document(path[, callback])</code> | function | Opens a local document without a tab, calling `callback` with a [Background document result](#background-document-result) once it opened or failed. Returns a [Background document](#background-document). |
 
 #### Action spec
 
@@ -1895,9 +1921,9 @@ A `plugin:job` result. `success` needs the process to exit with 0, in time.
 
 #### Background document
 
-**Source:** `plugin:open_document()`
+**Source:** `onon.load_document()`
 
-A document `plugin:open_document` opened without a tab, to read or draw a file other than the one shown. It is not in the tabs, the recent files or the session. At most 8 are open at once: opening another closes the one used least recently. They close when the configuration reloads. `metadata`, `outline` and `page_info` raise an error unless it is open.
+A document `onon.load_document` loaded without a tab, to read or draw a file other than the one shown. It is not in the tabs, the recent files or the session. At most 8 are open at once: opening another closes the one used least recently. They close when the configuration reloads. `metadata`, `outline` and `page_info` raise an error unless it is open.
 
 | Field | Type | Description |
 |---|---|---|
@@ -1914,9 +1940,9 @@ A document `plugin:open_document` opened without a tab, to read or draw a file o
 
 #### Background document result
 
-**Source:** `plugin:open_document()` callback
+**Source:** `onon.load_document()` callback
 
-What `plugin:open_document`'s callback is given. `success` is whether it opened.
+What `onon.load_document`'s callback is given. `success` is whether it opened.
 
 | Field | Type | Description |
 |---|---|---|
