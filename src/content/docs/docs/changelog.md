@@ -6,6 +6,17 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.14.1
+
+Released 2026-11-10. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.1)
+
+### What's Changed
+* Fix menus opening off to the right while they zoom in (glass theme) by @Aethar01 in [#52](https://github.com/Aethar01/onon/pull/52)
+* Fix blank zooming menus on the gpu renderer by @Aethar01 in [#53](https://github.com/Aethar01/onon/pull/53)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.14.0...0.14.1
+
 ## 0.14.0
 
 Released 2026-11-10. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.0)
