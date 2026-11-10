@@ -6,6 +6,17 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.14.2
+
+Released 2026-11-10. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.2)
+
+### What's Changed
+* Give config.lua a plugin module of its own: onon.config by @Aethar01 in [#55](https://github.com/Aethar01/onon/pull/55)
+* Organise the reference by task, with navigable headings by @Aethar01 in [#54](https://github.com/Aethar01/onon/pull/54)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.14.1...0.14.2
+
 ## 0.14.1
 
 Released 2026-11-10. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.1)

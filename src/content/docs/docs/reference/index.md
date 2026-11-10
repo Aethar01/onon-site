@@ -1,6 +1,6 @@
 ---
 title: "Reference"
-description: "Every option, command, Lua function, key and action in onon 0.14.1."
+description: "Every option, command, Lua function, key and action in onon 0.14.2."
 editUrl: false
 ---
 
@@ -345,1265 +345,13 @@ onon.theme.elements.row_selected.draw = function(canvas, box, state)
 end
 ```
 
-## Commands
+## Key bindings
 
-| Command | Description |
-|---|---|
-| <code>:back</code> | Jump back to the previous position |
-| <code>:check-updates</code> | Check GitHub for a newer release and say how to upgrade |
-| <code>:colors normal&#124;alt</code> | Set color mode |
-| <code>:config</code> | Open the config file in a text editor, creating it if there is none |
-| <code>:copy</code> | Copy the selection |
-| <code>:cover [on&#124;off]</code> | Show the first page alone in dual-page mode |
-| <code>:dual [on&#124;off]</code> | Toggle or set dual-page mode |
-| <code>:fit width&#124;height&#124;page&#124;manual</code> | Set fit mode |
-| <code>:forward</code> | Jump forward again after :back |
-| <code>:fullscreen [on&#124;off]</code> | Toggle or set fullscreen |
-| <code>:help</code> | Show commands, key bindings, search modifiers and options |
-| <code>:highlight</code> | Highlight the selection in the last colour used |
-| <code>:hints</code> | Label links on screen to follow one by typing its hint |
-| <code>:keybinds</code> | Toggle the keybinds menu |
-| <code>:options</code> | Toggle the options menu |
-| <code>:lua &lt;code&gt;</code> | Execute Lua code inline |
-| <code>:matches</code> | List every match of the current search |
-| <code>:mode continuous&#124;single</code> | Set render mode |
-| <code>:next</code> | Go to the next search match |
-| <code>:noh</code> | Clear the search highlights |
-| <code>:open &lt;filename&gt;</code> | Open another document relative to the current one, or a URL or ssh host:path |
-| <code>:open_file_picker</code> | Open the PDF file picker |
-| <code>:outline</code> | Open the document outline |
-| <code>:overview</code> | Toggle the page overview grid |
-| <code>:page PAGE, :p PAGE, :N</code> | Jump to a page number or label |
-| <code>:present</code> | Toggle presentation mode |
-| <code>:prev</code> | Go to the previous search match |
-| <code>:print [lp options]</code> | Print the saved document from a dialog, or directly with lp options such as -d office -P 1-3 |
-| <code>:quit, :q</code> | Close the tab, and the window with its last tab; :q! discards its unsaved edits |
-| <code>:quitall, :qa</code> | Exit, closing every tab; :qa! discards unsaved edits |
-| <code>:recent</code> | Open the recent-files menu |
-| <code>:redo</code> | Reapply the last undone edit |
-| <code>:reload-config</code> | Reload the config file |
-| <code>:rotate [cw&#124;ccw&#124;DEGREES]</code> | Rotate by a quarter turn, or to 0, 90, 180 or 270 |
-| <code>:search &lt;text&gt;</code> | Search document text |
-| <code>:set [option[?]&#124;option!&#124;option=value]</code> | Inspect or change options |
-| <code>:statusbar [on&#124;off]</code> | Show or hide the status bar |
-| <code>:tabbar [on&#124;off]</code> | Show or hide the tab bar |
-| <code>:tabclose [N], :tabc</code> | Close the tab, or tab N; :tabclose! discards its unsaved edits |
-| <code>:tabdo &lt;command&gt;</code> | Run a command in every tab, such as :tabdo write |
-| <code>:tabfirst</code> | Go to the first tab |
-| <code>:tablast</code> | Go to the last tab |
-| <code>:tabmove [N&#124;+N&#124;-N], :tabm</code> | Move the tab to the end, after tab N (0 for first), or N places |
-| <code>:tabnew [filename], :tabe</code> | Open a document in a new tab, or a blank tab |
-| <code>:tabnext [N&#124;+N&#124;-N], :tabn</code> | Go to the next tab, to tab N, or N tabs on |
-| <code>:tabonly, :tabo</code> | Close every other tab; :tabonly! discards their unsaved edits |
-| <code>:tabprevious [N], :tabp</code> | Go to the previous tab, or N tabs back |
-| <code>:tabs</code> | List the tabs, to choose one to show |
-| <code>:theme [name]</code> | Pick a theme, seeing each as it is selected, or switch to one |
-| <code>:trim [on&#124;off]</code> | Lay pages out by their content, trimming margins |
-| <code>:undo</code> | Undo the last edit |
-| <code>:version</code> | Show the onon version |
-| <code>:write [path], :w</code> | Save edits, or a copy to path; :wq saves and closes the tab; :w! saves over a remote file that changed |
-| <code>:writeall, :wa</code> | Save the edits in every tab |
-| <code>:wqall, :wqa</code> | Save the edits in every tab and exit |
-| <code>:zoom in&#124;out&#124;reset&#124;PERCENT</code> | Zoom a step, reset, or set e.g. :zoom 150 |
-
-Search modifiers, which work as in Vim and may appear anywhere in the query: `\v` regular expression from here on, `\V` literal text from here on (the default), `\c` ignore case (the default), `\C` match case, `\<` start of a word, `\>` end of a word, `\%.p` current page only, `\%3p` page 3 only, `\%<3p` pages before page 3, `\%>3p` pages after page 3. Regular expressions use [Go syntax](https://pkg.go.dev/regexp/syntax), and `\\` searches for a backslash in literal text.
-
-## Lua functions
-
-The index below is followed by a detailed entry for every function. Lua errors are raised as protected-call errors; use `pcall` when a script should handle them without aborting the current dispatch.
-
-### Index
-
-| Function | Summary |
-|---|---|
-| <code>onon.bind(key, action)</code> | binds a key sequence to an action or Lua callback. |
-| <code>onon.bind_mouse(event, action)</code> | binds a mouse event to an action or Lua callback. |
-| <code>onon.cache.clear()</code> | drops all rendered tiles and thumbnails. |
-| <code>onon.cache.entries()</code> | returns the number of cached page tiles and thumbnails. |
-| <code>onon.cache.limit([mib])</code> | reads or changes the render cache memory limit in MiB. |
-| <code>onon.cache.pending()</code> | returns the number of queued tile renders. |
-| <code>onon.check_updates(callback)</code> | asks GitHub, in the background, whether a newer onon release exists, as :check-updates does, and calls a callback with what it found. |
-| <code>onon.clear_pending_keys()</code> | clears pending key, mark, and numeric-count input. |
-| <code>onon.clipboard.get_text()</code> | returns the current clipboard contents as UTF-8 text. |
-| <code>onon.clipboard.set_text(text)</code> | replaces the clipboard with UTF-8 text. |
-| <code>onon.command(command)</code> | executes a viewer command. |
-| <code>onon.current_count()</code> | returns the pending numeric action count. |
-| <code>onon.fit_mode([mode])</code> | reads or changes the fit mode. Valid modes are manual, page, width, and height. |
-| <code>onon.formats.extensions()</code> | returns extensions supported by the linked document engine. |
-| <code>onon.formats.supports(path)</code> | checks whether a path extension names a supported format. |
-| <code>onon.fullscreen([enabled])</code> | reads or changes fullscreen state. |
-| <code>onon.goto_document_point(spec)</code> | moves to a page coordinate in document space. |
-| <code>onon.log(level, message)</code> | writes a diagnostic without changing the user-facing message. |
-| <code>onon.message([text])</code> | reads or replaces the viewer's status message. |
-| <code>onon.mode()</code> | returns the current viewer input mode. |
-| <code>onon.open(path)</code> | opens another document. |
-| <code>onon.open_external(uri_or_path)</code> | asks the operating system to open a URI or path. |
-| <code>onon.page([page])</code> | reads or changes the current physical page. |
-| <code>onon.page_count()</code> | returns the current document's page count. |
-| <code>onon.pending_keys()</code> | returns pending key-sequence tokens. |
-| <code>onon.pick_directory(callback)</code> | opens the native directory picker and invokes a callback with its result. |
-| <code>onon.pick_file(callback)</code> | opens the native document picker, filtered to the formats this build can open, and invokes a callback with its result. |
-| <code>onon.plugin.register(id[, spec])</code> | registers and returns a lazily loaded plugin module. |
-| <code>onon.recent_files([limit])</code> | returns recent document paths. |
-| <code>onon.register_scheme(name, resolve)</code> | makes name: a scheme that :open, onon.open and the command line accept, resolved by a function to the URL or path to open. |
-| <code>onon.render_mode([mode])</code> | reads or changes the render mode. Valid modes are continuous and single. |
-| <code>onon.rotation([degrees])</code> | reads or changes clockwise rotation in degrees. |
-| <code>onon.schedule(callback)</code> | queues a callback on the main Lua thread after the current dispatch. |
-| <code>onon.search(query[, backward])</code> | starts an asynchronous document search. |
-| <code>onon.search_match_count()</code> | returns the number of discovered search matches. |
-| <code>onon.search_match_index()</code> | returns the current search match index. |
-| <code>onon.search_query()</code> | returns the active search query. |
-| <code>onon.tabs.close([index[, force]])</code> | closes a tab, and the window with its last. |
-| <code>onon.tabs.current()</code> | returns the index of the tab shown. |
-| <code>onon.tabs.list()</code> | returns the window's tabs in order. |
-| <code>onon.tabs.open([path])</code> | opens a document in a new tab after the one shown, or shows the tab that already has it open. |
-| <code>onon.tabs.select(index)</code> | shows the tab at index. |
-| <code>onon.ui.create(spec)</code> | creates a view: a menu or panel of rows, or a body a plugin draws, with text fields, buttons and check boxes, placed in the window, pinned to a point or page, or docked. |
-| <code>onon.unbind(key)</code> | removes a key binding. |
-| <code>onon.unbind_mouse(event)</code> | removes a mouse binding. |
-| <code>onon.version()</code> | returns onon's version. |
-| <code>onon.zoom([scale])</code> | reads or changes the zoom and clamps values to the configured range. |
-
-### <code>onon.bind(key, action)</code>
-
-binds a key sequence to an action or Lua callback.
-
-#### Parameters
-
-  - key: A printable key, special key name, modified key, or multi-key
-    sequence, such as `j`, `<PgDn>`, `<C-p>`, or `gg`. See
-    [Key and mouse names](#key-and-mouse-names).
-  - action: A bindable action such as onon.next_page, or a Lua callback.
-
-#### Returns
-
-Nothing. A later binding replaces an earlier binding for the same key.
-
-#### Errors
-
-Raises an error when the key or action is invalid.
-
-#### Example
-
-	onon.bind("<C-p>", function()
-	  onon.page(1)
-	end)
-
-
-### <code>onon.bind_mouse(event, action)</code>
-
-binds a mouse event to an action or Lua callback.
-
-#### Parameters
-
-  - event: A mouse event such as `wheel_down`, `left_down`, or
-    `<C-wheel_up>`. See [Key and mouse names](#key-and-mouse-names).
-  - action: A bindable action or a Lua callback.
-
-#### Returns
-
-Nothing.
-
-#### Errors
-
-Raises an error when the event or action is invalid.
-
-#### Example
-
-	onon.bind_mouse("<C-wheel_up>", onon.zoom_in)
-
-
-### <code>onon.cache.clear()</code>
-
-drops all rendered tiles and thumbnails.
-
-#### Returns
-
-Nothing.
-
-#### Example
-
-	onon.cache.clear()
-
-
-### <code>onon.cache.entries()</code>
-
-returns the number of cached page tiles and thumbnails.
-
-#### Returns
-
-The number of rendered textures currently held in the render cache.
-
-#### Example
-
-	onon.log("debug", tostring(onon.cache.entries()))
-
-
-### <code>onon.cache.limit([mib])</code>
-
-reads or changes the render cache memory limit in MiB.
-
-An omitted limit reads the current limit; supplying an integer changes it and
-returns the resulting limit. 0 removes the limit.
-
-
-### <code>onon.cache.pending()</code>
-
-returns the number of queued tile renders.
-
-#### Returns
-
-The number of tile renders waiting to be processed.
-
-#### Example
-
-	if onon.cache.pending() > 0 then onon.message("rendering") end
-
-
-### <code>onon.check_updates(callback)</code>
-
-asks GitHub, in the background, whether a newer onon
-release exists, as :check-updates does, and calls a callback with what it
-found.
-
-#### Parameters
-
-  - callback: Receives an [Update info](#update-info) table once the check
-    finishes. A git build, whose version names its commit, is checked for
-    newer commits on main instead. Other builds that are not a release,
-    such as dev builds, are not checked: success is false and error says
-    why.
-
-#### Returns
-
-An operation handle with numeric id, cancel(), and active() members.
-
-#### Example
-
-	onon.check_updates(function(info)
-	  if info.available then
-	    onon.message("onon " .. info.latest .. " is available")
-	  end
-	end)
-
-
-### <code>onon.clear_pending_keys()</code>
-
-clears pending key, mark, and numeric-count input.
-
-#### Returns
-
-Nothing.
-
-#### Example
-
-	onon.clear_pending_keys()
-
-
-### <code>onon.clipboard.get_text()</code>
-
-returns the current clipboard contents as UTF-8 text.
-
-#### Returns
-
-The current clipboard contents as UTF-8 text.
-
-#### Errors
-
-Raises an error when clipboard access is unavailable.
-
-
-### <code>onon.clipboard.set_text(text)</code>
-
-replaces the clipboard with UTF-8 text.
-
-#### Parameters
-
-  - text: UTF-8 text to place on the clipboard.
-
-#### Returns
-
-Nothing.
-
-
-### <code>onon.command(command)</code>
-
-executes a viewer command.
-
-#### Parameters
-
-  - command: A viewer command, with or without the leading colon.
-
-#### Returns
-
-Nothing.
-
-#### Errors
-
-Raises an error when the command is invalid or cannot be executed.
-
-#### Example
-
-	onon.command(":fit width")
-
-
-### <code>onon.current_count()</code>
-
-returns the pending numeric action count.
-
-#### Returns
-
-The pending numeric prefix as a string, or an empty string when no count is pending.
-
-#### Example
-
-	onon.message("count: " .. onon.current_count())
-
-
-### <code>onon.fit_mode([mode])</code>
-
-reads or changes the fit mode. Valid modes are manual, page, width,
-and height.
-
-#### Parameters
-
-  - mode: Optional manual, page, width, or height value. Omit it to read the current mode.
-
-#### Returns
-
-The active fit mode.
-
-#### Errors
-
-Raises an error for an invalid mode or when setting it without a viewer host.
-
-#### Example
-
-	onon.fit_mode("width")
-
-
-### <code>onon.formats.extensions()</code>
-
-returns extensions supported by the linked document engine.
-
-#### Returns
-
-An alphabetically sorted array of lower-case extensions without leading dots.
-
-#### Example
-
-	for _, extension in ipairs(onon.formats.extensions()) do
-	  onon.log("debug", extension)
-	end
-
-
-### <code>onon.formats.supports(path)</code>
-
-checks whether a path extension names a supported format.
-
-#### Parameters
-
-  - path: A path whose extension should be checked.
-
-#### Returns
-
-True when the extension names a format supported by the linked engine.
-
-#### Behavior
-
-This is an extension hint. Opening also sniffs content, so a missing or misleading extension may still open.
-
-#### Example
-
-	if onon.formats.supports("book.epub") then onon.open("book.epub") end
-
-
-### <code>onon.fullscreen([enabled])</code>
-
-reads or changes fullscreen state.
-
-#### Parameters
-
-  - enabled: Optional boolean. Omit it to read the current state.
-
-#### Returns
-
-The current fullscreen state.
-
-#### Example
-
-	onon.fullscreen(true)
-
-
-### <code>onon.goto_document_point(spec)</code>
-
-moves to a page coordinate in document space.
-
-#### Parameters
-
-  - spec: A table containing 1-based integer page and numeric x and y coordinates.
-
-#### Returns
-
-Nothing. Coordinates are measured from the page's top-left corner in document points.
-
-#### Example
-
-	onon.goto_document_point({ page = 3, x = 72, y = 144 })
-
-
-### <code>onon.log(level, message)</code>
-
-writes a diagnostic without changing the user-facing message.
-
-#### Parameters
-
-  - level: debug, info, warn, or error.
-  - message: Diagnostic text written to the application log, tagged with
-    the plugin responsible, or config outside plugin code.
-
-#### Returns
-
-Nothing. The viewer's user-facing message is unchanged.
-
-#### Example
-
-	onon.log("info", "plugin loaded")
-
-
-### <code>onon.message([text])</code>
-
-reads or replaces the viewer's status message.
-
-#### Parameters
-
-  - text: Optional replacement status message.
-
-#### Returns
-
-The current message as a string.
-
-#### Example
-
-	onon.message("ready")
-	local current = onon.message()
-
-
-### <code>onon.mode()</code>
-
-returns the current viewer input mode.
-
-#### Returns
-
-The current input mode: normal, command, goto, or search; nil without a viewer host.
-
-#### Example
-
-	if onon.mode() == "normal" then onon.message("ready") end
-
-
-### <code>onon.open(path)</code>
-
-opens another document.
-
-#### Parameters
-
-  - path: A document path. Relative paths resolve from the current document directory.
-
-#### Returns
-
-Nothing. Opening is applied by the viewer after the current Lua dispatch.
-
-#### Errors
-
-Raises an error when the document cannot be opened.
-
-#### Example
-
-	onon.open("appendix.pdf")
-
-
-### <code>onon.open_external(uri_or_path)</code>
-
-asks the operating system to open a URI or path.
-
-#### Parameters
-
-  - uri_or_path: A URI or filesystem path for the operating system's default application.
-
-#### Returns
-
-Nothing.
-
-#### Errors
-
-Raises an error when the operating-system opener cannot be started.
-
-#### Example
-
-	onon.open_external("https://example.com")
-
-
-### <code>onon.page([page])</code>
-
-reads or changes the current physical page.
-
-#### Parameters
-
-  - page: Optional 1-based physical page number to navigate to.
-
-#### Returns
-
-The current 1-based page number, or nil when no document is open.
-
-#### Example
-
-	local page = onon.page()
-	onon.page(page + 1)
-
-
-### <code>onon.page_count()</code>
-
-returns the current document's page count.
-
-#### Returns
-
-The number of pages, or nil when no document is open.
-
-#### Example
-
-	if (onon.page_count() or 0) > 100 then onon.message("long document") end
-
-
-### <code>onon.pending_keys()</code>
-
-returns pending key-sequence tokens.
-
-#### Returns
-
-An array of pending key-sequence tokens.
-
-#### Example
-
-	for _, key in ipairs(onon.pending_keys()) do onon.log("debug", key) end
-
-
-### <code>onon.pick_directory(callback)</code>
-
-opens the native directory picker and invokes a callback with its result.
-
-#### Parameters
-
-  - callback: Receives { success, path, cancelled, error } after the native picker closes.
-
-#### Returns
-
-Nothing. The callback completes before this function returns.
-
-#### Example
-
-	onon.pick_directory(function(result)
-	  if result.success then onon.message(result.path) end
-	end)
-
-
-### <code>onon.pick_file(callback)</code>
-
-opens the native document picker, filtered to the formats this
-build can open, and invokes a callback with its result.
-
-#### Parameters
-
-  - callback: Receives { success, path, cancelled, error } after the native picker closes.
-
-#### Returns
-
-Nothing. The picker and callback complete before this function returns.
-
-#### Errors
-
-Raises an error when the callback fails.
-
-#### Example
-
-	onon.pick_file(function(result)
-	  if result.success then onon.open(result.path) end
-	end)
-
-
-### <code>onon.plugin.register(id[, spec])</code>
-
-registers and returns a lazily loaded plugin module.
-
-#### Parameters
-
-  - id: The plugin ID currently being loaded by require.
-  - spec: Optional plugin option declarations.
-
-#### Returns
-
-The plugin module table.
-
-#### Errors
-
-Raises an error when the ID is invalid, undiscovered, disabled, or does not
-match the plugin currently being loaded.
-
-#### Example
-
-	local plugin = onon.plugin.register("my-plugin")
-
-
-### <code>onon.recent_files([limit])</code>
-
-returns recent document paths.
-
-#### Parameters
-
-  - limit: Optional maximum number of paths. Defaults to recent_files_max.
-
-#### Returns
-
-An array of document paths, or an empty array when session storage is disabled.
-
-
-### <code>onon.register_scheme(name, resolve)</code>
-
-makes name: a scheme that :open, onon.open and the
-command line accept, resolved by a function to the URL or path to open.
-
-#### Parameters
-
-  - name: The scheme, two or more letters, digits, +, - or ., starting with a letter, as in "arxiv". Built-in schemes such as https and sftp cannot be taken.
-  - resolve: A function given the text after name: (and any //) and the whole argument, returning the URL or path to open. It may return another registered scheme.
-
-#### Returns
-
-Nothing. A later registration of the same name replaces it.
-
-#### Errors
-
-Raises an error when name is not a valid scheme or is built in. When resolve raises an error or returns nothing, opening fails with that error.
-
-#### Example
-
-	onon.register_scheme("arxiv", function(id)
-	  return "https://arxiv.org/pdf/" .. id
-	end)
-
-
-### <code>onon.render_mode([mode])</code>
-
-reads or changes the render mode. Valid modes are continuous and single.
-
-#### Parameters
-
-  - mode: Optional continuous or single value. Omit it to read the current mode.
-
-#### Returns
-
-The active render mode.
-
-#### Errors
-
-Raises an error for an invalid mode or when setting it without a viewer host.
-
-#### Example
-
-	onon.render_mode("single")
-
-
-### <code>onon.rotation([degrees])</code>
-
-reads or changes clockwise rotation in degrees.
-
-#### Parameters
-
-  - degrees: Optional clockwise rotation. Omit it to read the current rotation.
-
-#### Returns
-
-The normalized clockwise rotation, or nil without a viewer host.
-
-#### Example
-
-	onon.rotation(90)
-
-
-### <code>onon.schedule(callback)</code>
-
-queues a callback on the main Lua thread after the current dispatch.
-
-#### Parameters
-
-  - callback: A zero-argument callback to run on the main Lua thread after the current dispatch.
-
-#### Returns
-
-An operation handle with numeric id, cancel(), and active() members.
-
-#### Example
-
-	local handle = onon.schedule(function() onon.message("later") end)
-
-
-### <code>onon.search(query[, backward])</code>
-
-starts an asynchronous document search.
-
-#### Parameters
-
-  - query: Search text, which may contain search modifiers such as `\v` or `\<`.
-  - backward: Optional boolean selecting backward search.
-
-#### Returns
-
-Nothing. Matching runs asynchronously.
-
-#### Example
-
-	onon.search("-iw introduction")
-
-
-### <code>onon.search_match_count()</code>
-
-returns the number of discovered search matches.
-
-#### Returns
-
-The number of matches discovered so far. Search may still be running.
-
-#### Example
-
-	onon.message(onon.search_match_count() .. " matches")
-
-
-### <code>onon.search_match_index()</code>
-
-returns the current search match index.
-
-#### Returns
-
-The current 1-based match index, or nil when no match is focused.
-
-#### Example
-
-	local index = onon.search_match_index()
-
-
-### <code>onon.search_query()</code>
-
-returns the active search query.
-
-#### Returns
-
-The active query as typed, modifiers included, or an empty string when search is inactive.
-
-#### Example
-
-	local query = onon.search_query()
-
-
-### <code>onon.tabs.close([index[, force]])</code>
-
-closes a tab, and the window with its last.
-
-#### Parameters
-
-  - index: The 1-based index of the tab to close; the tab shown when omitted.
-  - force: Close it even with unsaved edits, discarding them. Without it, a tab with unsaved edits stays open the first time, with a warning.
-
-#### Returns
-
-Nothing. The tab closes after the current Lua dispatch, once the calls
-made before it have taken effect, so index counts the tabs they leave.
-
-#### Errors
-
-Raises an error when there is no tab at index.
-
-#### Example
-
-	onon.tabs.close(2)
-
-
-### <code>onon.tabs.current()</code>
-
-returns the index of the tab shown.
-
-#### Returns
-
-The 1-based index of the tab shown.
-
-#### Example
-
-	onon.message("tab " .. onon.tabs.current() .. " of " .. #onon.tabs.list())
-
-
-### <code>onon.tabs.list()</code>
-
-returns the window's tabs in order.
-
-#### Returns
-
-A list of [Tab](#tab) tables, one for each tab, from the first. Tabs
-that onon.tabs calls made earlier in the same Lua dispatch open, show or
-close are not in it yet, as those calls take effect once it returns.
-
-#### Example
-
-	for _, tab in ipairs(onon.tabs.list()) do
-	  onon.log("info", tab.index .. ": " .. tab.name)
-	end
-
-
-### <code>onon.tabs.open([path])</code>
-
-opens a document in a new tab after the one shown, or shows
-the tab that already has it open.
-
-#### Parameters
-
-  - path: A document path, URL or ssh host:path, as onon.open takes. Without one, a blank tab opens.
-
-#### Returns
-
-Nothing. The tab opens after the current Lua dispatch.
-
-#### Errors
-
-Raises an error when the document cannot be opened.
-
-#### Example
-
-	onon.tabs.open("appendix.pdf")
-
-
-### <code>onon.tabs.select(index)</code>
-
-shows the tab at index.
-
-#### Parameters
-
-  - index: The 1-based index of the tab to show.
-
-#### Returns
-
-Nothing. The tab is shown after the current Lua dispatch, once the calls
-made before it have taken effect, so index counts the tabs they leave.
-
-#### Errors
-
-Raises an error when there is no tab at index.
-
-#### Example
-
-	onon.tabs.select(1)
-
-
-### <code>onon.ui.create(spec)</code>
-
-creates a view: a menu or panel of rows, or a body a plugin
-draws, with text fields, buttons and check boxes, placed in the window,
-pinned to a point or page, or docked.
-
-The spec may contain id, title, rows, selected, scroll, query, searchable,
-filter, empty, columns, prompt, modal, stack, width, height, anchor, at,
-dock, resizable, draw, and the callbacks on_select, on_selection_changed,
-on_query_changed, on_input, on_submit, on_click, on_key, on_action,
-on_mouse, and on_close. Rows may be strings or row tables with text,
-value, id, secondary, hint, depth, disabled, key, marker, heading, swatch,
-checked, button, edit, and cells fields. See UI views below.
-
-#### Returns
-
-A view object with show, close, visible, redraw, size, focus, row, query and field setters, and state accessors.
-
-#### Example
-
-	local view = onon.ui.create({
-	  title = "Recent files",
-	  rows = onon.recent_files(10),
-	  on_select = function(_, path) onon.open(path) end,
-	})
-	view:show()
-
-
-### <code>onon.unbind(key)</code>
-
-removes a key binding.
-
-#### Parameters
-
-  - key: The key or key sequence to remove.
-
-#### Returns
-
-Nothing. Removing an unbound key is harmless.
-
-#### Errors
-
-Raises an error when the key is invalid.
-
-#### Example
-
-	onon.unbind("<C-p>")
-
-
-### <code>onon.unbind_mouse(event)</code>
-
-removes a mouse binding.
-
-#### Parameters
-
-  - event: The mouse event to remove.
-
-#### Returns
-
-Nothing. Removing an unbound event is harmless.
-
-#### Errors
-
-Raises an error when the event is invalid.
-
-#### Example
-
-	onon.unbind_mouse("middle_down")
-
-
-### <code>onon.version()</code>
-
-returns onon's version.
-
-#### Returns
-
-The release tag onon was built from, such as v0.7.0, or dev for a build not
-made from a tag.
-
-#### Example
-
-	onon.log("info", "running onon " .. onon.version())
-
-
-### <code>onon.zoom([scale])</code>
-
-reads or changes the zoom and clamps values to the configured range.
-
-#### Parameters
-
-  - scale: Optional manual zoom scale. Omit it to read the current scale.
-
-#### Returns
-
-The current zoom scale, or nil without a viewer host.
-
-#### Errors
-
-Raises an error when the scale is invalid or cannot be set.
-
-#### Example
-
-	onon.zoom(1.5)
-
-
-### UI views
-
-Create views with `local view = onon.ui.create(spec)`, then call `view:show()`. A view is a menu or a panel: a list of rows, or a body its `draw` function draws, with text fields, buttons and check boxes. onon's own menus are views made the same way, so they and plugins' look and behave alike, and the theme styles both.
-
-#### Placing a view
-
-| Field | Meaning |
-|---|---|
-| `id`, `title` | The view's name and the title in its header. A view with a `draw` function and no title has no header. |
-| `modal` | True unless set false. A modal view is a menu: it takes the keys, closes on a click outside it, and replaces any other menu. A view that is not modal is a panel: it stays open over the document, under any menu, until closed, and takes the pointer over it, and the keys when it has them (see [Typing](#typing)). |
-| `stack` | For a menu: opens it over the menu open, which closing it returns to, instead of replacing it. |
-| `width`, `height` | Its size: logical pixels, or a percentage of the window such as `"30%"`; `"70%"` unless set, and at most the document's part of the window. A list fits its height to its rows. |
-| `anchor` | Where it sits in the document's part of the window: `center` (the default), `top`, `bottom`, `left`, `right`, `top_left`, `top_right`, `bottom_left` or `bottom_right`, a little in from the edges. With `at`, the part of the view that sits at that point instead, `top_left` unless given: `bottom_left` for a popup above a point, `center` for one centred on it. |
-| `at` | A point the view is pinned to: `{ x = 10, y = 40 }` in the window, in logical pixels, kept in the window, or `{ page = 3, x = 72, y = 100 }` on a page, in its points from its top left as the document events give them, moving with the page and hidden while it is not shown. |
-| `attach` | Attaches the view to something it moves with: `{ view = other }`, another view, beside its selected row with its first row level with it, as a submenu is; or a box, `{ x = 10, y = 40, w = 120, h = 20 }` in the window or with `page` on a page, as `at` takes a point, below it as a dropdown is. `side` (`right`, `left`, `below` or `above`) is the side tried first; without room there it takes the other, and is kept in the window. While what it is attached to is not shown, it sits at its `anchor`. |
-| `dock` | `left`, `right`, `top` or `bottom`: a panel against that side of the window, its `width` or `height` taken from the document, which lays itself out beside it. Panels docked to the same side stack inwards in the order they open. |
-| `order` | For a docked view: where it sits among the bars and docked views along the window's edges, each taking its side of what those of lower order leave. The status bar is 10 (`status_bar_order`), the tab bar 20 (`tab_bar_order`) and docked views 30 unless they say, so by default a view docked at the bottom sits above the status bar, and one docked at the left stops at it; with `order = 0` it takes its side of the whole window. |
-| `motion` | How the view moves: an animation for it to come in and go with, or a table of `enter` and `exit` for it and `rows`, `selection` and `cursor` for what moves in it, over the theme's `motion`, as `motion = { enter = "slide 200ms", rows = "fade 80ms stagger:10ms" }`. |
-| `resizable` | For a docked view: its inner edge can be dragged to resize it. `view:size()` gives a view's width and height. |
-
-#### Lists
-
-| Field | Meaning |
-|---|---|
-| `rows` | The rows, each a string or a table; see below. |
-| `selected`, `scroll`, `query` | The selected row (1-based), the first row shown, and the search query to start with. |
-| `searchable` | Whether / searches the rows; true unless set false. |
-| `filter` | Whether the query filters the rows; true unless set false, as for a view that sets its own rows for each query in `on_query_changed`. |
-| `empty` | What the list says when it has no rows. |
-| `columns` | Lays out rows' `cells` as a table: a list of columns, each with a `title`, a `width` (logical pixels, a percentage of the row, or `"*"`, the default, for a share of what the others leave) and an `align` (`left`, `center` or `right`). Titles show above the rows. |
-
-A row is a string, its text, or a table of these fields. Other fields are the plugin's own, and come back with the row.
-
-| Field | Type | Meaning |
-|---|---|---|
-| `text` | string | The row's text; with `cells` and no text, the cells joined by spaces. |
-| `value` | string | What `on_select` is given as the value: the text unless set, or with `cells` the first cell. |
-| `id` | string | The row's own name, given to its callbacks. |
-| `secondary` | string | Drawn on the right. |
-| `hint` | string | Drawn on the right, muted, while the row is selected and has no `secondary`, such as what Enter on it does. |
-| `depth` | integer | Sets the row in a step for each level. |
-| `disabled` | boolean | Disables the row. |
-| `key` | string | A key binding, drawn in a column before the text. |
-| `marker` | string | Drawn before the text in the secondary colour, in a column as wide as the widest row's marker, so the text of rows with and without one lines up. |
-| `heading` | boolean | Makes the row a section title, which cannot be chosen. |
-| `swatch` | colour | A colour drawn before the text, written as in the elements table. |
-| `checked` | boolean | A check box before the text, checked or not; no check box unless set. |
-| `button` | boolean | Draws the row as a button, as the keybind menu's Add a key… is. |
-| `edit` | boolean or table | Makes choosing the row type into it rather than run `on_select`: see [Typing](#typing). `true` starts from its `secondary` text; a table may give the `text` to start from, a `hint` at what to type and a `placeholder` shown while nothing is. |
-| `cells` | string[] | Its text in the view's `columns`, searched as its text is. |
-
-#### Drawing a view
-
-`draw = function(canvas, box, state)` draws the view's body, below its header, in place of its rows; `canvas:default()` draws the rows. The canvas has the methods element draw functions have (see [Drawing](#drawing)), and those below. `box` is the body, and `state.scroll` how far it is scrolled.
-
-- What the function draws below the body scrolls into it, by the wheel, the keys that move a list, the scrollbar, and `view:set_scroll(pixels)`.
-- A function that returns true is drawn again on the next frame, for drawing that moves. Otherwise the view is drawn again after its callbacks and as the pointer moves between its regions; call `view:redraw()` when what it draws changes otherwise, as from a timer.
-- If it fails, the error is reported once and the rows are drawn instead.
-
-| Method | Draws |
-|---|---|
-| <code>canvas:text(x, y, text [, color] [, options])</code> | Text in `color`, the foreground unless given, its options `true` for bold, or a table of `color`, `bold`, `mono` (a monospaced font), `size` (logical pixels), `width` (to truncate to, or with `wrap = true` wrap to) and `align` (`left`, `center` or `right`, within the width, or about x without one). Lines break at newlines. Returns its width and height. |
-| <code>canvas:measure(text [, options])</code> | Nothing; returns the width and height text would take. |
-| <code>canvas:clip(x, y, w, h)</code> | Nothing; limits what is drawn after to the rect, until `canvas:clip()`. |
-| <code>canvas:image(path, x, y [, w [, h]])</code> | A PNG, JPEG, GIF, WebP or BMP file, a path not absolute being from the configuration's directory, at its size in logical pixels, or a width or height given, keeping its proportions if only one is. It reloads when the file changes. Returns its width and height. |
-| <code>canvas:page(page, x, y, w [, h [, area]])</code> | The page, turned as the document's are: its thumbnail fitted to the width, or within the width and height, rendering as it is first drawn. With `area`, `{ x =, y = [, zoom =] }`, the part of the page from that point, in its points, at the box's top left, at `zoom` times the document's zoom (1 unless set), drawn sharp from the page's tiles; it needs a height. Returns its width and height. |
-| <code>canvas:animate(key, target [, animation])</code> | Nothing; returns where the value named `key` is on its way to `target`, gliding as the animation's timing says, `"200ms ease-out"` unless given; a value not asked for on the frame before is at its target. Return true from the draw function while it moves. |
-| <code>canvas:region(id, x, y, w, h)</code> | Nothing; names the rect for the pointer events over it, which carry the id. Returns whether the pointer is over it, for drawing it hovered. |
-| <code>canvas:input(id, x, y, w [, options])</code> | The text field `id`, `w` wide, with options `placeholder`, `secret` (bullets for a password) and `lines` (more than one wraps and takes newlines). Returns its width and height. See [Typing](#typing). |
-| <code>canvas:button(id, x, y, w, label)</code> | A button, `w` wide, clicked with the pointer, or with Space or Enter when Tab reaches it; `on_click(id)` hears of it. Returns its width and height. |
-| <code>canvas:column([options])</code> | Nothing; returns a column that lays out what it draws down the canvas: see [Columns](#columns). |
-| <code>canvas:checkbox(id, x, y, label, checked)</code> | A check box with its label, clicked as a button is; the plugin keeps whether it is checked, as `on_click` tells it. Returns its width and height. |
-
-The fields, buttons and check boxes take the theme's `input`, `input_focused`, `button`, `button_focused` and `check` elements. The cursor shows an I-beam over a field and a hand over a button or check box.
-
-#### Columns
-
-`canvas:column({ x =, y =, width =, gap = })` lays out a form, or anything drawn down a body, without working out where each thing goes: each method draws at the column's left, below what it drew last, `gap` (8 unless given) apart, and returns its width and height. The column starts at `x`, `y` (0, 0 unless given), `width` wide, as far in from the right as from the left unless given.
-
-| Method | Draws |
-|---|---|
-| <code>col:text(text [, color] [, options])</code> | Text, as `canvas:text` draws it, wrapped to the column unless `wrap = false`. |
-| <code>col:input(id [, options])</code> | A text field the column's width. |
-| <code>col:button(id, label [, width])</code> | A button, the column's width unless given. |
-| <code>col:checkbox(id, label, checked)</code> | A check box. |
-| <code>col:page(page [, height [, area]])</code> | A page, or part of one, the column's width. |
-| <code>col:image(path [, w [, h]])</code> | An image. |
-| <code>col:space(height)</code> | Nothing; moves down. |
-| <code>col:y()</code> | Nothing; returns where the next thing goes. |
-
-Everything a canvas draws out of sight, below or above what shows of the body, is neither drawn nor, for a page, rendered, so a view can draw all it holds, as every page of a long document, and costs only what shows.
-
-#### Typing
-
-- `prompt = "Open"` puts a text field in the header, labelled with it, whose text is the query: typing filters a list without /, and Enter chooses the selected row, or runs `on_submit` if the view has one.
-- `canvas:input` draws a text field. The first drawn has the typing until Tab, Shift-Tab or a click moves it; Tab and Shift-Tab move through the prompt, fields, buttons and check boxes in the order they are drawn. `view:field(id)` and `view:set_field(id, text)` read and write a field's text, before the view opens too, and `view:fields()` gives them all, as an `on_submit` reading a form wants.
-- A row with `edit` is typed into in place: Enter or a click on it, or `view:edit_row(index)`, turns its secondary text into the text being typed, all of it selected, with the hint after the row's text while there is room. `on_input` and `on_submit` hear it by the row's `id`, or its value without one; Enter keeps the text, and Escape drops it, with no callback. While it is typed into, the keys edit it rather than move through the list. onon's print dialog and options menu type their values this way.
-- Fields and prompts edit as onon's own prompt does, with the same keys, a press placing the cursor, a drag selecting, and copy, cut and paste with the clipboard actions. Text an input method is composing shows underlined at the cursor. In a field of more than one line, Enter starts a new line, Ctrl- or Cmd-Enter submits, and the arrows, Home and End move by line.
-- A menu has the keys while it is open. A panel takes them when clicked, if it has fields, buttons, check boxes, a prompt or `on_key`, or from `view:focus()`, until Escape, a click elsewhere, or `view:blur()`; `view:focused()` says whether it has them.
-
-#### Callbacks
-
-| Callback | Runs |
-|---|---|
-| `on_select(index, value, text, id, row)` | When a row is chosen. `index` and `id` are the row's in the rows as set, however filtered, and `row` is the row as given, string or table. |
-| `on_selection_changed(index, value, text, id, row)` | When a key, the pointer or the query moves the selection, not when the view opens or `set_selected` moves it, as for a live preview. |
-| `on_query_changed(query)` | When the user changes the search query or prompt, not when `set_query` does. |
-| `on_input(text, id)` | When the user changes a field's text, or a row's being typed into. |
-| `on_submit(text, id)` | On Enter in a field, a row being typed into, or the prompt, whose `id` is nil. |
-| `on_click(id)` | When a button or check box is clicked. |
-| `on_key(key)` | For each key pressed while the view has the keys and is not being typed in, named as `bind` names it, before the view's own keys; returning true takes the key. |
-| `on_action(action)` | For the action bound to a key pressed while the view has the keys, before the view runs it; returning true takes the action. |
-| `on_mouse(event)` | For the pointer over the view, and after a press on it until the release; returning true keeps the view from handling it. `event.type` is `press`, `release`, `move`, `leave` or `wheel`; `event.x` and `event.y` are logical pixels from the top left of what the body draws, scrolled; `event.region` is the id of the region there; a press or release has `button` (`left`, `middle`, `right`, `x1` or `x2`) and a press `clicks`; a wheel has `dx` and `dy`, positive to the right and down. A press on a text field, button or check box goes to it instead. |
-| `on_close()` | When the view closes: by `view:close()` or, for a menu, the user, another menu replacing it, or the document closing. |
-
-View methods are `show()`, `close()`, `visible()`, `redraw()`, `size()`, `focus()`, `blur()`, `focused()`, `set_title(title)`, `set_rows(rows)`, `set_selected(index)`, `set_scroll(scroll)`, `set_query(query)`, `field(id)`, `fields()`, `set_field(id, text)`, `edit_row(index)`, `selected()`, `scroll()`, and `query()`. Selection indices are 1-based, with 0 meaning no selection. A drawn body's scroll is in logical pixels, a list's in rows. Once a view closes, its methods read the state it closed with, as `on_close` does, until it is shown again from its spec.
-
-```lua
--- A sidebar of page thumbnails, docked left and resizable; clicking one
--- goes to it.
-local sidebar = onon.ui.create({
-  dock = "left", width = 144, resizable = true,
-  draw = function(canvas, box)
-    local size, y = box.w - 24, 8
-    for page = 1, onon.page_count() do
-      local _, h = canvas:page(page, 12, y, size)
-      if canvas:region(page, 12, y, size, h) or page == onon.page() then
-        canvas:stroke(canvas:path():rect(11, y - 1, size + 2, h + 2), "accent", 2)
-      end
-      y = y + h + 12
-    end
-  end,
-  on_mouse = function(ev)
-    if ev.type == "press" and ev.region then onon.page(ev.region) return true end
-  end,
-})
-sidebar:show()
-
--- A form over the document, laid out by a column.
-local form
-form = onon.ui.create({
-  title = "New bookmark", width = 360, height = 260,
-  draw = function(canvas, box)
-    local col = canvas:column({ x = 12, y = 8 })
-    col:text("Name", "muted")
-    col:input("name", { placeholder = "Chapter 1" })
-    col:input("note", { placeholder = "Note", lines = 3 })
-    col:button("save", "Save")
-  end,
-  on_click = function(id)
-    if id == "save" then
-      local fields = form:fields()
-      onon.message("saved " .. fields.name)
-      form:close()
-    end
-  end,
-})
-form:show()
-```
-
-### Portable API
-
-The `onon` tables below are available to configuration and plugin Lua code.
-
-| Module | Returns / fields | Description |
-|---|---|---|
-| <code>onon.platform</code> | [Platform](#platform) | Also available from `require("onon.platform")`. The system onon runs on and its directories. |
-| <code>onon.path</code> | table | Also available from `require("onon.path")`. Fields: `separator`, `list_separator`; functions: `join(...)`, `clean(path)`, `basename(path)`, `dirname(path)`, `extension(path)`, `is_absolute(path)`, `absolute(path)`, `relative(base, target)`, and `expand_home(path)`. Operations use native platform path rules; `expand_home` expands only `~`, `~/...`, and `~\...`. |
-| <code>onon.json</code> | table | Also available from `require("onon.json")`. `encode(value)` returns compact JSON and `decode(text)` returns a Lua value. `null` is the stable module-local JSON null sentinel. Arrays require contiguous positive integer keys; objects require string keys. Cycles, sparse or mixed tables, non-finite numbers, unsupported Lua values, and trailing input are errors. Decoded empty arrays and objects retain their shape when re-encoded. |
-
-#### Document inspection
-
-These read the open document. The [Document](#document) table's fields are refreshed when the document changes. The functions below raise an error when no document is open. Rectangles are `x0`, `y0`, `x1`, `y1` in unrotated PDF points. [Lua tables](#lua-tables) lists the fields of each table they return.
-
-| Function | Returns / fields | Description |
-|---|---|---|
-| <code>onon.document.metadata()</code> | [Document metadata](#document-metadata) | Return the document's metadata. Absent fields are empty strings. |
-| <code>onon.document.outline()</code> | [Outline entry](#outline-entry)[] | Return the outline as a tree, each entry holding the entries under it in `children`. |
-| <code>onon.document.page_info(page)</code> | [Page info](#page-info) | Return a 1-based page's label and size. Sizes are unrotated PDF points; an out-of-range page raises an error. |
-| <code>onon.document.selection()</code> | [Selection](#selection) | Return the current selection: its text and where it is on each page. `pages` is empty when nothing is selected. |
-| <code>plugin.document:page_text(page, callback)</code> | [Handle](#handle) | Extract a page's text asynchronously, calling `callback` with a [Page text result](#page-text-result). |
-| <code>plugin.document:page_links(page, callback)</code> | [Handle](#handle) | Read a page's links asynchronously, calling `callback` with a [Page links result](#page-links-result). |
-
-### Plugins
-
-Plugins are discovered without being executed. Enable one explicitly with `local plugin = require("plugin-id")`; only the required plugin and its declared dependencies execute. The entrypoint must call `onon.plugin.register("plugin-id"[, spec])`; `require` returns the registered module.
-
-A plugin may describe itself in a [Plugin manifest](#plugin-manifest), `onon-plugin.json`, and declares its options in a [Plugin spec](#plugin-spec). The [Plugin module](#plugin-module) `register` returns has the functions below, and those that register actions, commands and event callbacks. Registered actions use `plugin-id.action`; commands use `:plugin-id-command`, where the command name cannot contain `-`; options use `plugin-id.option`.
-
-| Function | Returns / fields | Description |
-|---|---|---|
-| <code>plugin.fs:read_dir(path[, options], callback)</code> | [Handle](#handle) | Read one directory asynchronously, calling `callback` with a [Directory result](#directory-result). `options` are [Filesystem options](#filesystem-options). Without following, a symlink supplied as `path` is rejected; entries themselves are reported as symlinks. |
-| <code>plugin.fs:stat(path[, options], callback)</code> | [Handle](#handle) | Stat a path asynchronously, calling `callback` with its [File info](#file-info). `options` are [Filesystem options](#filesystem-options). |
-| <code>plugin.timer:after(ms, callback)</code> | [Handle](#handle) | Call `callback()` once after `ms` milliseconds. `ms` may be zero. |
-| <code>plugin.timer:every(ms, callback)</code> | [Handle](#handle) | Call `callback()` repeatedly, waiting `ms` milliseconds between dispatches. `ms` must be greater than zero. |
-| <code>plugin.storage:get(key)</code> | value or nil | Synchronously return the value stored for this plugin ID, or nil when absent or when no session database is available. |
-| <code>plugin.storage:set(key, value)</code> | none | Synchronously persist a plugin-scoped value. Supports nil, booleans, finite numbers, strings, contiguous arrays, and string-keyed objects; tables cannot be cyclic or mix array and object keys. Raises an error when no session database is available; the value is not silently discarded. |
-| <code>plugin.storage:delete(key)</code> | none | Synchronously delete a plugin-scoped value. |
-| <code>plugin.storage:keys()</code> | string[] | Synchronously return this plugin's keys in lexical order. |
-| <code>plugin.http:request(spec, callback)</code> | [Handle](#handle) | Make an asynchronous [HTTP request](#http-request), calling `callback` with its [HTTP response](#http-response). |
-| <code>plugin:job(spec, callback)</code> | [Handle](#handle) | Start a subprocess from a [Job spec](#job-spec) without invoking a shell, calling `callback` with its [Job result](#job-result). |
-
-#### Handles and results
-
-Every `schedule`, filesystem, timer, HTTP, document-extraction, and job call returns a handle with numeric `id`, `cancel()`, and `active()`. `active()` becomes false before a one-shot completion callback runs. Repeating timers remain active between callbacks until cancelled. `cancel()` is idempotent, removes the operation, and does not invoke its callback, so delivered result tables always have `cancelled=false`. Callbacks run serially on the main Lua thread, never on worker goroutines. [Results](#results) lists each result's fields.
-
-#### Limits
-
-| Resource | Returns / fields | Description |
-|---|---|---|
-| <code>Storage value</code> | 65,536 bytes | Limit applies to the encoded JSON value for each key. |
-| <code>HTTP response body</code> | 8 MiB | A larger response fails the operation; request bodies have no API-specific size limit. |
-| <code>HTTP redirects</code> | 10 | Following a redirect after the tenth redirect fails the operation. |
-| <code>Job stdout</code> | 4 MiB | Captured independently; additional output is discarded. |
-| <code>Job stderr</code> | 4 MiB | Captured independently; additional output is discarded. |
-
-#### Lifecycle
-
-Each plugin has an isolated local-module cache and search root. It may require another discovered plugin by ID only when that ID is declared in `dependencies`. Dependencies load first, and events are delivered in activation order, so dependencies receive an event before their dependents. Registration of actions, commands, and event subscriptions is allowed only while the plugin entrypoint is loading; `off(id)`, storage calls, timers, filesystem and HTTP operations, and jobs remain available afterward.
-
-A successful `:reload-config` replaces the Lua state and cancels all handles and jobs from the old generation without invoking their callbacks. If reload fails, the previous state and its operations remain active. A failed plugin load rolls back that plugin and cancels work it started. Viewer shutdown emits `shutdown` before runtime close; close then cancels remaining operations and jobs. Storage is keyed by plugin ID in the session database and survives reloads and application restarts.
-
-Supported events are `app_ready`, `document_open_pre`, `document_opened`, `document_close_pre`, `document_closed`, `document_reloaded`, `config_reloaded`, `mouse_button_pre`, `mouse_button`, `selection_changed`, `page_changed`, `zoom_changed`, `option_changed`, `tab_changed`, `tab_list_changed`, and `shutdown`. Each callback is given a table, listed in [Events](#events). `page_changed` and `zoom_changed` are emitted once per frame with the settled value, so a continuous gesture reports where it came to rest. Event callbacks run in subscription order within each plugin; returning true marks an event consumed where the host supports consumption but does not stop later callbacks.
-
-Plugins are found in every one of the platform plugin directories, and rescanned by `:reload-config`: on Linux `/usr/lib/onon/plugins`, `$XDG_DATA_HOME/onon/plugins` (or `~/.local/share/onon/plugins`), `$XDG_CONFIG_HOME/onon/plugins`, `~/.config/onon/plugins` and each `$XDG_CONFIG_DIRS/onon/plugins`; on macOS `~/Library/Application Support/onon/plugins` and `~/.config/onon/plugins`; on Windows `%LOCALAPPDATA%\onon\plugins` and `%APPDATA%\onon\plugins`. Where two have a plugin with the same id, the first wins. Disable plugin discovery with `--no-plugins`, or start from built-in defaults with `--no-config`, which also skips the generated settings file.
-
-#### Single instance
-
-Instances are per document. Each tab listens on a socket named after the document it is showing, and the address follows the document when the tab opens another one. `--unique` hands the request to the tab already showing that document, which its window shows and brings forward, and exits; with no such window, this process opens it. `--tab` opens the document in a new tab of the window focused last, when that window's process was started with the same `--config`, `--no-config` and `--no-plugins`, even when another tab shows it; with `--unique` as well, a tab showing it is brought forward instead. With no document it opens an empty tab there. On macOS one process opens every window, so the system can gather them into tabs, and a document named on the command line goes to the running onon started with the same flags, as one Finder sends does: the tab showing it, or where `open_documents` says. `--goto PAGE` opens at a page and `--goto PAGE:X:Y` at a point on it, overriding any remembered session position, whether the work is done here or by an existing window. `--command TEXT` runs a viewer command there, as typed after `:`, including any command registered by a plugin. An unrecognised command exits non-zero. `X` and `Y` are points measured from the page's top-left corner, which is also SyncTeX's convention. Sockets live under `$XDG_RUNTIME_DIR/onon` on Linux, the per-user temporary directory on macOS, and `%LOCALAPPDATA%\onon` on Windows. They are mode 0600 and named by a hash of the document path, which keeps them within the platform socket length limit. A socket left by a crashed process is reclaimed on the next start.
-
-## Key and mouse names
+<a id="key-and-mouse-names"></a>
 
 `onon.bind` and `onon.unbind` take a key sequence; `onon.bind_mouse` and `onon.unbind_mouse` take a mouse event. An unknown name is an error. To find the name of a key, bind it in `:keybinds`, which records the keys you press.
 
-### Keys
-
-A sequence is one or more keys written one after another, such as `gg`, `g?` or `<C-w>j`. Each key must follow the one before within `sequence_timeout_ms`. Digits 1 to 9 start a count, as in `5j` or `12g`, and `'` and `"` jump to and set marks, so binding a sequence that begins with any of them is an error.
-
-Printable keys are written as the character they type with the current keyboard layout, so on a US keyboard Shift+1 is `!`. Letters are case-sensitive: `J` is Shift+j, or j with Caps Lock on. On layouts without Latin letters, letter keys are read as their QWERTY letters. Write `<` as `<lt>`.
-
-Other keys are written by name in angle brackets. Names are case-insensitive.
-
-| Name | Key |
-|---|---|
-| `<CR>` | Enter, Return or keypad Enter; also `<Enter>` and `<Return>`. |
-| `<Esc>` | Escape; also `<Escape>`. |
-| `<Tab>` | Tab. |
-| `<BS>` | Backspace; also `<Backspace>`. |
-| `<Del>` | Delete; also `<Delete>`. |
-| `<Ins>` | Insert; also `<Insert>`. |
-| `<Space>` | Space. |
-| `<Up>`, `<Down>`, `<Left>`, `<Right>` | Arrow keys. |
-| `<PgUp>` | Page Up; also `<PageUp>`. |
-| `<PgDn>` | Page Down; also `<PageDown>`. |
-| `<Home>` | Home. |
-| `<End>` | End. |
-| `<F1>` to `<F24>` | Function keys. |
-| `<k0>` to `<k9>` | Keypad digits. |
-| `<kPlus>`, `<kMinus>`, `<kMultiply>`, `<kDivide>`, `<kPoint>` | Keypad operators. |
-
-### Modifiers
-
-Modifiers go inside the brackets before the key name, as in `<C-p>`, `<C-S-Tab>`, `<A-Left>` or `<D-c>`.
-
-| Prefix | Modifier |
-|---|---|
-| `C-` | Ctrl. |
-| `A-` | Alt; Option on macOS. `M-` is the same. |
-| `D-` | Cmd on macOS; the Super or Windows key elsewhere. |
-| `S-` | Shift. |
-
-Ctrl, Alt and Cmd combine with any key: letters, digits, symbols and the names above, as in `<C-a>`, `<C-=>`, `<A-Space>` or `<D-Up>`. With them, a key is named by its unshifted character and Shift is written out: `<C-S-r>` is Ctrl+Shift+r, `<C-S-1>` is Ctrl+Shift+1, `<A-j>` is Alt+j, whatever character Option+j types on macOS, and `<C-R>` is Ctrl+r. Write `>` as `<gt>` after a modifier, as in `<C-gt>`. Without Ctrl, Alt or Cmd, Shift applies to named keys, as in `<S-Tab>` or `<S-F5>`, and `<S-j>` means `J`; for other printable keys, write the shifted character. While a prompt is open, a character pressed with Alt alone is typed rather than running its binding, since Option on macOS and AltGr elsewhere type characters of their own.
-
-Modifiers may be written in any order, so `<C-S-Tab>`, `<s-c-tab>` and `<S-C-TAB>` are the same key. Bindings are stored and shown in the first form, with modifiers in C, A, D, S order.
-
-### Editing a prompt
-
-While a prompt is open, these keys edit its text before any binding of theirs runs. On every system, Left and Right move a character and with Ctrl a word, Home and End go to the ends, Shift with any of them selects, Backspace and Delete delete a character and with Ctrl a word, `<C-w>` deletes the word before the cursor, and `<C-v>` pastes. Up and Down step through the prompt's history. `<C-a>` on Windows and Linux, and `<D-a>` on macOS, selects all of it.
-
-On macOS, prompts also edit as Mac text fields do: Option with Left, Right, Backspace or Delete works by word, Cmd with Left or Right goes to the ends and Cmd-Backspace deletes to the start, and `<C-a>`, `<C-e>`, `<C-b>`, `<C-f>`, `<C-h>`, `<C-d>` and `<C-k>` work as in Emacs.
-
-### Mouse events
-
-| Event | Fires on |
-|---|---|
-| `left_down`, `left_up` | Pressing or releasing the left button. |
-| `middle_down`, `middle_up` | The middle button. |
-| `right_down`, `right_up` | The right button. |
-| `x1_down`, `x1_up`, `x2_down`, `x2_up` | The side buttons, usually back and forward. |
-| `wheel_up`, `wheel_down` | Each step of the vertical wheel. |
-| `wheel_left`, `wheel_right` | Each step of the horizontal wheel or a sideways tilt. |
-| `<C-wheel_up>`, `<C-wheel_down>` | The vertical wheel with Ctrl held. |
-
-Button events take no modifiers, and the horizontal wheel does nothing while Ctrl is held. Event names are case-insensitive and may be written in angle brackets like keys: `<middle_down>` is `middle_down`. `-` may be written for `_`, and `ctrl_wheel_up` is the same as `<C-wheel_up>`.
-
-A bound button event replaces that button's built-in behaviour, such as text selection and following links on the left button. Wheel directions scroll smoothly only while they are bound to their default scroll actions.
-
-## Bindable actions
+### Bindable actions
 
 Every action is available as `onon.<action>`, can be passed to `onon.bind`, and can be called from a runtime Lua callback.
 
@@ -1681,25 +429,1096 @@ Keys in a system's own column are bound there as well as the default keys.
 | <code>toggle_tab_bar</code> |  |  |  |  | false |
 | <code>quit</code> | <code>q</code> | <code>&lt;D-q&gt;</code> | <code>&lt;C-q&gt;</code> | <code>&lt;C-q&gt;</code> | false |
 
+### Keys
+
+A sequence is one or more keys written one after another, such as `gg`, `g?` or `<C-w>j`. Each key must follow the one before within `sequence_timeout_ms`. Digits 1 to 9 start a count, as in `5j` or `12g`, and `'` and `"` jump to and set marks, so binding a sequence that begins with any of them is an error.
+
+Printable keys are written as the character they type with the current keyboard layout, so on a US keyboard Shift+1 is `!`. Letters are case-sensitive: `J` is Shift+j, or j with Caps Lock on. On layouts without Latin letters, letter keys are read as their QWERTY letters. Write `<` as `<lt>`.
+
+Other keys are written by name in angle brackets. Names are case-insensitive.
+
+| Name | Key |
+|---|---|
+| `<CR>` | Enter, Return or keypad Enter; also `<Enter>` and `<Return>`. |
+| `<Esc>` | Escape; also `<Escape>`. |
+| `<Tab>` | Tab. |
+| `<BS>` | Backspace; also `<Backspace>`. |
+| `<Del>` | Delete; also `<Delete>`. |
+| `<Ins>` | Insert; also `<Insert>`. |
+| `<Space>` | Space. |
+| `<Up>`, `<Down>`, `<Left>`, `<Right>` | Arrow keys. |
+| `<PgUp>` | Page Up; also `<PageUp>`. |
+| `<PgDn>` | Page Down; also `<PageDown>`. |
+| `<Home>` | Home. |
+| `<End>` | End. |
+| `<F1>` to `<F24>` | Function keys. |
+| `<k0>` to `<k9>` | Keypad digits. |
+| `<kPlus>`, `<kMinus>`, `<kMultiply>`, `<kDivide>`, `<kPoint>` | Keypad operators. |
+
+### Modifiers
+
+Modifiers go inside the brackets before the key name, as in `<C-p>`, `<C-S-Tab>`, `<A-Left>` or `<D-c>`.
+
+| Prefix | Modifier |
+|---|---|
+| `C-` | Ctrl. |
+| `A-` | Alt; Option on macOS. `M-` is the same. |
+| `D-` | Cmd on macOS; the Super or Windows key elsewhere. |
+| `S-` | Shift. |
+
+Ctrl, Alt and Cmd combine with any key: letters, digits, symbols and the names above, as in `<C-a>`, `<C-=>`, `<A-Space>` or `<D-Up>`. With them, a key is named by its unshifted character and Shift is written out: `<C-S-r>` is Ctrl+Shift+r, `<C-S-1>` is Ctrl+Shift+1, `<A-j>` is Alt+j, whatever character Option+j types on macOS, and `<C-R>` is Ctrl+r. Write `>` as `<gt>` after a modifier, as in `<C-gt>`. Without Ctrl, Alt or Cmd, Shift applies to named keys, as in `<S-Tab>` or `<S-F5>`, and `<S-j>` means `J`; for other printable keys, write the shifted character. While a prompt is open, a character pressed with Alt alone is typed rather than running its binding, since Option on macOS and AltGr elsewhere type characters of their own.
+
+Modifiers may be written in any order, so `<C-S-Tab>`, `<s-c-tab>` and `<S-C-TAB>` are the same key. Bindings are stored and shown in the first form, with modifiers in C, A, D, S order.
+
+### Mouse events
+
+| Event | Fires on |
+|---|---|
+| `left_down`, `left_up` | Pressing or releasing the left button. |
+| `middle_down`, `middle_up` | The middle button. |
+| `right_down`, `right_up` | The right button. |
+| `x1_down`, `x1_up`, `x2_down`, `x2_up` | The side buttons, usually back and forward. |
+| `wheel_up`, `wheel_down` | Each step of the vertical wheel. |
+| `wheel_left`, `wheel_right` | Each step of the horizontal wheel or a sideways tilt. |
+| `<C-wheel_up>`, `<C-wheel_down>` | The vertical wheel with Ctrl held. |
+
+Button events take no modifiers, and the horizontal wheel does nothing while Ctrl is held. Event names are case-insensitive and may be written in angle brackets like keys: `<middle_down>` is `middle_down`. `-` may be written for `_`, and `ctrl_wheel_up` is the same as `<C-wheel_up>`.
+
+A bound button event replaces that button's built-in behaviour, such as text selection and following links on the left button. Wheel directions scroll smoothly only while they are bound to their default scroll actions.
+
+### Editing a prompt
+
+While a prompt is open, these keys edit its text before any binding of theirs runs. On every system, Left and Right move a character and with Ctrl a word, Home and End go to the ends, Shift with any of them selects, Backspace and Delete delete a character and with Ctrl a word, `<C-w>` deletes the word before the cursor, and `<C-v>` pastes. Up and Down step through the prompt's history. `<C-a>` on Windows and Linux, and `<D-a>` on macOS, selects all of it.
+
+On macOS, prompts also edit as Mac text fields do: Option with Left, Right, Backspace or Delete works by word, Cmd with Left or Right goes to the ends and Cmd-Backspace deletes to the start, and `<C-a>`, `<C-e>`, `<C-b>`, `<C-f>`, `<C-h>`, `<C-d>` and `<C-k>` work as in Emacs.
+
+
+## Commands
+
+| Command | Description |
+|---|---|
+| <code>:back</code> | Jump back to the previous position |
+| <code>:check-updates</code> | Check GitHub for a newer release and say how to upgrade |
+| <code>:colors normal&#124;alt</code> | Set color mode |
+| <code>:config</code> | Open the config file in a text editor, creating it if there is none |
+| <code>:copy</code> | Copy the selection |
+| <code>:cover [on&#124;off]</code> | Show the first page alone in dual-page mode |
+| <code>:dual [on&#124;off]</code> | Toggle or set dual-page mode |
+| <code>:fit width&#124;height&#124;page&#124;manual</code> | Set fit mode |
+| <code>:forward</code> | Jump forward again after :back |
+| <code>:fullscreen [on&#124;off]</code> | Toggle or set fullscreen |
+| <code>:help</code> | Show commands, key bindings, search modifiers and options |
+| <code>:highlight</code> | Highlight the selection in the last colour used |
+| <code>:hints</code> | Label links on screen to follow one by typing its hint |
+| <code>:keybinds</code> | Toggle the keybinds menu |
+| <code>:options</code> | Toggle the options menu |
+| <code>:lua &lt;code&gt;</code> | Execute Lua code inline |
+| <code>:matches</code> | List every match of the current search |
+| <code>:mode continuous&#124;single</code> | Set render mode |
+| <code>:next</code> | Go to the next search match |
+| <code>:noh</code> | Clear the search highlights |
+| <code>:open &lt;filename&gt;</code> | Open another document relative to the current one, or a URL or ssh host:path |
+| <code>:open_file_picker</code> | Open the PDF file picker |
+| <code>:outline</code> | Open the document outline |
+| <code>:overview</code> | Toggle the page overview grid |
+| <code>:page PAGE, :p PAGE, :N</code> | Jump to a page number or label |
+| <code>:present</code> | Toggle presentation mode |
+| <code>:prev</code> | Go to the previous search match |
+| <code>:print [lp options]</code> | Print the saved document from a dialog, or directly with lp options such as -d office -P 1-3 |
+| <code>:quit, :q</code> | Close the tab, and the window with its last tab; :q! discards its unsaved edits |
+| <code>:quitall, :qa</code> | Exit, closing every tab; :qa! discards unsaved edits |
+| <code>:recent</code> | Open the recent-files menu |
+| <code>:redo</code> | Reapply the last undone edit |
+| <code>:reload-config</code> | Reload the config file |
+| <code>:rotate [cw&#124;ccw&#124;DEGREES]</code> | Rotate by a quarter turn, or to 0, 90, 180 or 270 |
+| <code>:search &lt;text&gt;</code> | Search document text |
+| <code>:set [option[?]&#124;option!&#124;option=value]</code> | Inspect or change options |
+| <code>:statusbar [on&#124;off]</code> | Show or hide the status bar |
+| <code>:tabbar [on&#124;off]</code> | Show or hide the tab bar |
+| <code>:tabclose [N], :tabc</code> | Close the tab, or tab N; :tabclose! discards its unsaved edits |
+| <code>:tabdo &lt;command&gt;</code> | Run a command in every tab, such as :tabdo write |
+| <code>:tabfirst</code> | Go to the first tab |
+| <code>:tablast</code> | Go to the last tab |
+| <code>:tabmove [N&#124;+N&#124;-N], :tabm</code> | Move the tab to the end, after tab N (0 for first), or N places |
+| <code>:tabnew [filename], :tabe</code> | Open a document in a new tab, or a blank tab |
+| <code>:tabnext [N&#124;+N&#124;-N], :tabn</code> | Go to the next tab, to tab N, or N tabs on |
+| <code>:tabonly, :tabo</code> | Close every other tab; :tabonly! discards their unsaved edits |
+| <code>:tabprevious [N], :tabp</code> | Go to the previous tab, or N tabs back |
+| <code>:tabs</code> | List the tabs, to choose one to show |
+| <code>:theme [name]</code> | Pick a theme, seeing each as it is selected, or switch to one |
+| <code>:trim [on&#124;off]</code> | Lay pages out by their content, trimming margins |
+| <code>:undo</code> | Undo the last edit |
+| <code>:version</code> | Show the onon version |
+| <code>:write [path], :w</code> | Save edits, or a copy to path; :wq saves and closes the tab; :w! saves over a remote file that changed |
+| <code>:writeall, :wa</code> | Save the edits in every tab |
+| <code>:wqall, :wqa</code> | Save the edits in every tab and exit |
+| <code>:zoom in&#124;out&#124;reset&#124;PERCENT</code> | Zoom a step, reset, or set e.g. :zoom 150 |
+
+Search modifiers, which work as in Vim and may appear anywhere in the query: `\v` regular expression from here on, `\V` literal text from here on (the default), `\c` ignore case (the default), `\C` match case, `\<` start of a word, `\>` end of a word, `\%.p` current page only, `\%3p` page 3 only, `\%<3p` pages before page 3, `\%>3p` pages after page 3. Regular expressions use [Go syntax](https://pkg.go.dev/regexp/syntax), and `\\` searches for a backslash in literal text.
+
+## Lua API
+
+<a id="lua-functions"></a>
+
+Every function is listed below, then described under the group it belongs to. Lua errors are raised as protected-call errors; use `pcall` when a script should handle them without aborting the current dispatch.
+
+### All functions
+
+| Function | Summary |
+|---|---|
+| [<code>onon.bind(key, action)</code>](#ononbind) | binds a key sequence to an action or Lua callback. |
+| [<code>onon.bind_mouse(event, action)</code>](#ononbind_mouse) | binds a mouse event to an action or Lua callback. |
+| [<code>onon.cache.clear()</code>](#ononcacheclear) | drops all rendered tiles and thumbnails. |
+| [<code>onon.cache.entries()</code>](#ononcacheentries) | returns the number of cached page tiles and thumbnails. |
+| [<code>onon.cache.limit([mib])</code>](#ononcachelimit) | reads or changes the render cache memory limit in MiB. |
+| [<code>onon.cache.pending()</code>](#ononcachepending) | returns the number of queued tile renders. |
+| [<code>onon.check_updates(callback)</code>](#ononcheck_updates) | asks GitHub, in the background, whether a newer onon release exists, as :check-updates does, and calls a callback with what it found. |
+| [<code>onon.clear_pending_keys()</code>](#ononclear_pending_keys) | clears pending key, mark, and numeric-count input. |
+| [<code>onon.clipboard.get_text()</code>](#ononclipboardget_text) | returns the current clipboard contents as UTF-8 text. |
+| [<code>onon.clipboard.set_text(text)</code>](#ononclipboardset_text) | replaces the clipboard with UTF-8 text. |
+| [<code>onon.command(command)</code>](#ononcommand) | executes a viewer command. |
+| [<code>onon.current_count()</code>](#ononcurrent_count) | returns the pending numeric action count. |
+| [<code>onon.fit_mode([mode])</code>](#ononfit_mode) | reads or changes the fit mode. Valid modes are manual, page, width, and height. |
+| [<code>onon.formats.extensions()</code>](#ononformatsextensions) | returns extensions supported by the linked document engine. |
+| [<code>onon.formats.supports(path)</code>](#ononformatssupports) | checks whether a path extension names a supported format. |
+| [<code>onon.fullscreen([enabled])</code>](#ononfullscreen) | reads or changes fullscreen state. |
+| [<code>onon.goto_document_point(spec)</code>](#onongoto_document_point) | moves to a page coordinate in document space. |
+| [<code>onon.log(level, message)</code>](#ononlog) | writes a diagnostic without changing the user-facing message. |
+| [<code>onon.message([text])</code>](#ononmessage) | reads or replaces the viewer's status message. |
+| [<code>onon.mode()</code>](#ononmode) | returns the current viewer input mode. |
+| [<code>onon.open(path)</code>](#ononopen) | opens another document. |
+| [<code>onon.open_external(uri_or_path)</code>](#ononopen_external) | asks the operating system to open a URI or path. |
+| [<code>onon.page([page])</code>](#ononpage) | reads or changes the current physical page. |
+| [<code>onon.page_count()</code>](#ononpage_count) | returns the current document's page count. |
+| [<code>onon.pending_keys()</code>](#ononpending_keys) | returns pending key-sequence tokens. |
+| [<code>onon.pick_directory(callback)</code>](#ononpick_directory) | opens the native directory picker and invokes a callback with its result. |
+| [<code>onon.pick_file(callback)</code>](#ononpick_file) | opens the native document picker, filtered to the formats this build can open, and invokes a callback with its result. |
+| [<code>onon.plugin.register(id[, spec])</code>](#ononpluginregister) | registers and returns a lazily loaded plugin module. |
+| [<code>onon.recent_files([limit])</code>](#ononrecent_files) | returns recent document paths. |
+| [<code>onon.register_scheme(name, resolve)</code>](#ononregister_scheme) | makes name: a scheme that :open, onon.open and the command line accept, resolved by a function to the URL or path to open. |
+| [<code>onon.render_mode([mode])</code>](#ononrender_mode) | reads or changes the render mode. Valid modes are continuous and single. |
+| [<code>onon.rotation([degrees])</code>](#ononrotation) | reads or changes clockwise rotation in degrees. |
+| [<code>onon.schedule(callback)</code>](#ononschedule) | queues a callback on the main Lua thread after the current dispatch. |
+| [<code>onon.search(query[, backward])</code>](#ononsearch) | starts an asynchronous document search. |
+| [<code>onon.search_match_count()</code>](#ononsearch_match_count) | returns the number of discovered search matches. |
+| [<code>onon.search_match_index()</code>](#ononsearch_match_index) | returns the current search match index. |
+| [<code>onon.search_query()</code>](#ononsearch_query) | returns the active search query. |
+| [<code>onon.tabs.close([index[, force]])</code>](#onontabsclose) | closes a tab, and the window with its last. |
+| [<code>onon.tabs.current()</code>](#onontabscurrent) | returns the index of the tab shown. |
+| [<code>onon.tabs.list()</code>](#onontabslist) | returns the window's tabs in order. |
+| [<code>onon.tabs.open([path])</code>](#onontabsopen) | opens a document in a new tab after the one shown, or shows the tab that already has it open. |
+| [<code>onon.tabs.select(index)</code>](#onontabsselect) | shows the tab at index. |
+| [<code>onon.ui.create(spec)</code>](#ononuicreate) | creates a view: a menu or panel of rows, or a body a plugin draws, with text fields, buttons and check boxes, placed in the window, pinned to a point or page, or docked. |
+| [<code>onon.unbind(key)</code>](#ononunbind) | removes a key binding. |
+| [<code>onon.unbind_mouse(event)</code>](#ononunbind_mouse) | removes a mouse binding. |
+| [<code>onon.version()</code>](#ononversion) | returns onon's version. |
+| [<code>onon.zoom([scale])</code>](#ononzoom) | reads or changes the zoom and clamps values to the configured range. |
+
+### Opening documents
+
+#### <code>onon.open</code>
+
+<code>onon.open(path)</code> opens another document.
+
+**Parameters**
+
+  - path: A document path. Relative paths resolve from the current document directory.
+
+**Returns**
+
+Nothing. Opening is applied by the viewer after the current Lua dispatch.
+
+**Errors**
+
+Raises an error when the document cannot be opened.
+
+**Example**
+
+	onon.open("appendix.pdf")
+
+
+#### <code>onon.open_external</code>
+
+<code>onon.open_external(uri_or_path)</code> asks the operating system to open a URI or path.
+
+**Parameters**
+
+  - uri_or_path: A URI or filesystem path for the operating system's default application.
+
+**Returns**
+
+Nothing.
+
+**Errors**
+
+Raises an error when the operating-system opener cannot be started.
+
+**Example**
+
+	onon.open_external("https://example.com")
+
+
+#### <code>onon.recent_files</code>
+
+<code>onon.recent_files([limit])</code> returns recent document paths.
+
+**Parameters**
+
+  - limit: Optional maximum number of paths. Defaults to recent_files_max.
+
+**Returns**
+
+An array of document paths, or an empty array when session storage is disabled.
+
+
+#### <code>onon.pick_file</code>
+
+<code>onon.pick_file(callback)</code> opens the native document picker, filtered to the formats this
+build can open, and invokes a callback with its result.
+
+**Parameters**
+
+  - callback: Receives { success, path, cancelled, error } after the native picker closes.
+
+**Returns**
+
+Nothing. The picker and callback complete before this function returns.
+
+**Errors**
+
+Raises an error when the callback fails.
+
+**Example**
+
+	onon.pick_file(function(result)
+	  if result.success then onon.open(result.path) end
+	end)
+
+
+#### <code>onon.pick_directory</code>
+
+<code>onon.pick_directory(callback)</code> opens the native directory picker and invokes a callback with its result.
+
+**Parameters**
+
+  - callback: Receives { success, path, cancelled, error } after the native picker closes.
+
+**Returns**
+
+Nothing. The callback completes before this function returns.
+
+**Example**
+
+	onon.pick_directory(function(result)
+	  if result.success then onon.message(result.path) end
+	end)
+
+
+#### <code>onon.register_scheme</code>
+
+<code>onon.register_scheme(name, resolve)</code> makes name: a scheme that :open, onon.open and the
+command line accept, resolved by a function to the URL or path to open.
+
+**Parameters**
+
+  - name: The scheme, two or more letters, digits, +, - or ., starting with a letter, as in "arxiv". Built-in schemes such as https and sftp cannot be taken.
+  - resolve: A function given the text after name: (and any //) and the whole argument, returning the URL or path to open. It may return another registered scheme.
+
+**Returns**
+
+Nothing. A later registration of the same name replaces it.
+
+**Errors**
+
+Raises an error when name is not a valid scheme or is built in. When resolve raises an error or returns nothing, opening fails with that error.
+
+**Example**
+
+	onon.register_scheme("arxiv", function(id)
+	  return "https://arxiv.org/pdf/" .. id
+	end)
+
+
+#### <code>onon.formats.extensions</code>
+
+<code>onon.formats.extensions()</code> returns extensions supported by the linked document engine.
+
+**Returns**
+
+An alphabetically sorted array of lower-case extensions without leading dots.
+
+**Example**
+
+	for _, extension in ipairs(onon.formats.extensions()) do
+	  onon.log("debug", extension)
+	end
+
+
+#### <code>onon.formats.supports</code>
+
+<code>onon.formats.supports(path)</code> checks whether a path extension names a supported format.
+
+**Parameters**
+
+  - path: A path whose extension should be checked.
+
+**Returns**
+
+True when the extension names a format supported by the linked engine.
+
+**Behavior**
+
+This is an extension hint. Opening also sniffs content, so a missing or misleading extension may still open.
+
+**Example**
+
+	if onon.formats.supports("book.epub") then onon.open("book.epub") end
+
+
+### Pages and view
+
+#### <code>onon.page</code>
+
+<code>onon.page([page])</code> reads or changes the current physical page.
+
+**Parameters**
+
+  - page: Optional 1-based physical page number to navigate to.
+
+**Returns**
+
+The current 1-based page number, or nil when no document is open.
+
+**Example**
+
+	local page = onon.page()
+	onon.page(page + 1)
+
+
+#### <code>onon.page_count</code>
+
+<code>onon.page_count()</code> returns the current document's page count.
+
+**Returns**
+
+The number of pages, or nil when no document is open.
+
+**Example**
+
+	if (onon.page_count() or 0) > 100 then onon.message("long document") end
+
+
+#### <code>onon.goto_document_point</code>
+
+<code>onon.goto_document_point(spec)</code> moves to a page coordinate in document space.
+
+**Parameters**
+
+  - spec: A table containing 1-based integer page and numeric x and y coordinates.
+
+**Returns**
+
+Nothing. Coordinates are measured from the page's top-left corner in document points.
+
+**Example**
+
+	onon.goto_document_point({ page = 3, x = 72, y = 144 })
+
+
+#### <code>onon.zoom</code>
+
+<code>onon.zoom([scale])</code> reads or changes the zoom and clamps values to the configured range.
+
+**Parameters**
+
+  - scale: Optional manual zoom scale. Omit it to read the current scale.
+
+**Returns**
+
+The current zoom scale, or nil without a viewer host.
+
+**Errors**
+
+Raises an error when the scale is invalid or cannot be set.
+
+**Example**
+
+	onon.zoom(1.5)
+
+
+#### <code>onon.fit_mode</code>
+
+<code>onon.fit_mode([mode])</code> reads or changes the fit mode. Valid modes are manual, page, width,
+and height.
+
+**Parameters**
+
+  - mode: Optional manual, page, width, or height value. Omit it to read the current mode.
+
+**Returns**
+
+The active fit mode.
+
+**Errors**
+
+Raises an error for an invalid mode or when setting it without a viewer host.
+
+**Example**
+
+	onon.fit_mode("width")
+
+
+#### <code>onon.rotation</code>
+
+<code>onon.rotation([degrees])</code> reads or changes clockwise rotation in degrees.
+
+**Parameters**
+
+  - degrees: Optional clockwise rotation. Omit it to read the current rotation.
+
+**Returns**
+
+The normalized clockwise rotation, or nil without a viewer host.
+
+**Example**
+
+	onon.rotation(90)
+
+
+#### <code>onon.render_mode</code>
+
+<code>onon.render_mode([mode])</code> reads or changes the render mode. Valid modes are continuous and single.
+
+**Parameters**
+
+  - mode: Optional continuous or single value. Omit it to read the current mode.
+
+**Returns**
+
+The active render mode.
+
+**Errors**
+
+Raises an error for an invalid mode or when setting it without a viewer host.
+
+**Example**
+
+	onon.render_mode("single")
+
+
+#### <code>onon.fullscreen</code>
+
+<code>onon.fullscreen([enabled])</code> reads or changes fullscreen state.
+
+**Parameters**
+
+  - enabled: Optional boolean. Omit it to read the current state.
+
+**Returns**
+
+The current fullscreen state.
+
+**Example**
+
+	onon.fullscreen(true)
+
+
+### Search
+
+#### <code>onon.search</code>
+
+<code>onon.search(query[, backward])</code> starts an asynchronous document search.
+
+**Parameters**
+
+  - query: Search text, which may contain search modifiers such as `\v` or `\<`.
+  - backward: Optional boolean selecting backward search.
+
+**Returns**
+
+Nothing. Matching runs asynchronously.
+
+**Example**
+
+	onon.search("-iw introduction")
+
+
+#### <code>onon.search_query</code>
+
+<code>onon.search_query()</code> returns the active search query.
+
+**Returns**
+
+The active query as typed, modifiers included, or an empty string when search is inactive.
+
+**Example**
+
+	local query = onon.search_query()
+
+
+#### <code>onon.search_match_count</code>
+
+<code>onon.search_match_count()</code> returns the number of discovered search matches.
+
+**Returns**
+
+The number of matches discovered so far. Search may still be running.
+
+**Example**
+
+	onon.message(onon.search_match_count() .. " matches")
+
+
+#### <code>onon.search_match_index</code>
+
+<code>onon.search_match_index()</code> returns the current search match index.
+
+**Returns**
+
+The current 1-based match index, or nil when no match is focused.
+
+**Example**
+
+	local index = onon.search_match_index()
+
+
+### Tabs
+
+#### <code>onon.tabs.list</code>
+
+<code>onon.tabs.list()</code> returns the window's tabs in order.
+
+**Returns**
+
+A list of [Tab](#tab) tables, one for each tab, from the first. Tabs
+that onon.tabs calls made earlier in the same Lua dispatch open, show or
+close are not in it yet, as those calls take effect once it returns.
+
+**Example**
+
+	for _, tab in ipairs(onon.tabs.list()) do
+	  onon.log("info", tab.index .. ": " .. tab.name)
+	end
+
+
+#### <code>onon.tabs.current</code>
+
+<code>onon.tabs.current()</code> returns the index of the tab shown.
+
+**Returns**
+
+The 1-based index of the tab shown.
+
+**Example**
+
+	onon.message("tab " .. onon.tabs.current() .. " of " .. #onon.tabs.list())
+
+
+#### <code>onon.tabs.open</code>
+
+<code>onon.tabs.open([path])</code> opens a document in a new tab after the one shown, or shows
+the tab that already has it open.
+
+**Parameters**
+
+  - path: A document path, URL or ssh host:path, as onon.open takes. Without one, a blank tab opens.
+
+**Returns**
+
+Nothing. The tab opens after the current Lua dispatch.
+
+**Errors**
+
+Raises an error when the document cannot be opened.
+
+**Example**
+
+	onon.tabs.open("appendix.pdf")
+
+
+#### <code>onon.tabs.select</code>
+
+<code>onon.tabs.select(index)</code> shows the tab at index.
+
+**Parameters**
+
+  - index: The 1-based index of the tab to show.
+
+**Returns**
+
+Nothing. The tab is shown after the current Lua dispatch, once the calls
+made before it have taken effect, so index counts the tabs they leave.
+
+**Errors**
+
+Raises an error when there is no tab at index.
+
+**Example**
+
+	onon.tabs.select(1)
+
+
+#### <code>onon.tabs.close</code>
+
+<code>onon.tabs.close([index[, force]])</code> closes a tab, and the window with its last.
+
+**Parameters**
+
+  - index: The 1-based index of the tab to close; the tab shown when omitted.
+  - force: Close it even with unsaved edits, discarding them. Without it, a tab with unsaved edits stays open the first time, with a warning.
+
+**Returns**
+
+Nothing. The tab closes after the current Lua dispatch, once the calls
+made before it have taken effect, so index counts the tabs they leave.
+
+**Errors**
+
+Raises an error when there is no tab at index.
+
+**Example**
+
+	onon.tabs.close(2)
+
+
+### Bindings and input
+
+#### <code>onon.bind</code>
+
+<code>onon.bind(key, action)</code> binds a key sequence to an action or Lua callback.
+
+**Parameters**
+
+  - key: A printable key, special key name, modified key, or multi-key
+    sequence, such as `j`, `<PgDn>`, `<C-p>`, or `gg`. See
+    [Key and mouse names](#key-and-mouse-names).
+  - action: A bindable action such as onon.next_page, or a Lua callback.
+
+**Returns**
+
+Nothing. A later binding replaces an earlier binding for the same key.
+
+**Errors**
+
+Raises an error when the key or action is invalid.
+
+**Example**
+
+	onon.bind("<C-p>", function()
+	  onon.page(1)
+	end)
+
+
+#### <code>onon.unbind</code>
+
+<code>onon.unbind(key)</code> removes a key binding.
+
+**Parameters**
+
+  - key: The key or key sequence to remove.
+
+**Returns**
+
+Nothing. Removing an unbound key is harmless.
+
+**Errors**
+
+Raises an error when the key is invalid.
+
+**Example**
+
+	onon.unbind("<C-p>")
+
+
+#### <code>onon.bind_mouse</code>
+
+<code>onon.bind_mouse(event, action)</code> binds a mouse event to an action or Lua callback.
+
+**Parameters**
+
+  - event: A mouse event such as `wheel_down`, `left_down`, or
+    `<C-wheel_up>`. See [Key and mouse names](#key-and-mouse-names).
+  - action: A bindable action or a Lua callback.
+
+**Returns**
+
+Nothing.
+
+**Errors**
+
+Raises an error when the event or action is invalid.
+
+**Example**
+
+	onon.bind_mouse("<C-wheel_up>", onon.zoom_in)
+
+
+#### <code>onon.unbind_mouse</code>
+
+<code>onon.unbind_mouse(event)</code> removes a mouse binding.
+
+**Parameters**
+
+  - event: The mouse event to remove.
+
+**Returns**
+
+Nothing. Removing an unbound event is harmless.
+
+**Errors**
+
+Raises an error when the event is invalid.
+
+**Example**
+
+	onon.unbind_mouse("middle_down")
+
+
+#### <code>onon.command</code>
+
+<code>onon.command(command)</code> executes a viewer command.
+
+**Parameters**
+
+  - command: A viewer command, with or without the leading colon.
+
+**Returns**
+
+Nothing.
+
+**Errors**
+
+Raises an error when the command is invalid or cannot be executed.
+
+**Example**
+
+	onon.command(":fit width")
+
+
+#### <code>onon.mode</code>
+
+<code>onon.mode()</code> returns the current viewer input mode.
+
+**Returns**
+
+The current input mode: normal, command, goto, or search; nil without a viewer host.
+
+**Example**
+
+	if onon.mode() == "normal" then onon.message("ready") end
+
+
+#### <code>onon.pending_keys</code>
+
+<code>onon.pending_keys()</code> returns pending key-sequence tokens.
+
+**Returns**
+
+An array of pending key-sequence tokens.
+
+**Example**
+
+	for _, key in ipairs(onon.pending_keys()) do onon.log("debug", key) end
+
+
+#### <code>onon.current_count</code>
+
+<code>onon.current_count()</code> returns the pending numeric action count.
+
+**Returns**
+
+The pending numeric prefix as a string, or an empty string when no count is pending.
+
+**Example**
+
+	onon.message("count: " .. onon.current_count())
+
+
+#### <code>onon.clear_pending_keys</code>
+
+<code>onon.clear_pending_keys()</code> clears pending key, mark, and numeric-count input.
+
+**Returns**
+
+Nothing.
+
+**Example**
+
+	onon.clear_pending_keys()
+
+
+### Messages and interface
+
+#### <code>onon.message</code>
+
+<code>onon.message([text])</code> reads or replaces the viewer's status message.
+
+**Parameters**
+
+  - text: Optional replacement status message.
+
+**Returns**
+
+The current message as a string.
+
+**Example**
+
+	onon.message("ready")
+	local current = onon.message()
+
+
+#### <code>onon.log</code>
+
+<code>onon.log(level, message)</code> writes a diagnostic without changing the user-facing message.
+
+**Parameters**
+
+  - level: debug, info, warn, or error.
+  - message: Diagnostic text written to the application log, tagged with
+    the plugin responsible, or config outside plugin code.
+
+**Returns**
+
+Nothing. The viewer's user-facing message is unchanged.
+
+**Example**
+
+	onon.log("info", "plugin loaded")
+
+
+#### <code>onon.ui.create</code>
+
+<code>onon.ui.create(spec)</code> creates a view: a menu or panel of rows, or a body a plugin
+draws, with text fields, buttons and check boxes, placed in the window,
+pinned to a point or page, or docked.
+
+The spec may contain id, title, rows, selected, scroll, query, searchable,
+filter, empty, columns, prompt, modal, stack, width, height, anchor, at,
+dock, resizable, draw, and the callbacks on_select, on_selection_changed,
+on_query_changed, on_input, on_submit, on_click, on_key, on_action,
+on_mouse, and on_close. Rows may be strings or row tables with text,
+value, id, secondary, hint, depth, disabled, key, marker, heading, swatch,
+checked, button, edit, and cells fields. See UI views below.
+
+**Returns**
+
+A view object with show, close, visible, redraw, size, focus, row, query and field setters, and state accessors.
+
+**Example**
+
+	local view = onon.ui.create({
+	  title = "Recent files",
+	  rows = onon.recent_files(10),
+	  on_select = function(_, path) onon.open(path) end,
+	})
+	view:show()
+
+
+#### <code>onon.clipboard.get_text</code>
+
+<code>onon.clipboard.get_text()</code> returns the current clipboard contents as UTF-8 text.
+
+**Returns**
+
+The current clipboard contents as UTF-8 text.
+
+**Errors**
+
+Raises an error when clipboard access is unavailable.
+
+
+#### <code>onon.clipboard.set_text</code>
+
+<code>onon.clipboard.set_text(text)</code> replaces the clipboard with UTF-8 text.
+
+**Parameters**
+
+  - text: UTF-8 text to place on the clipboard.
+
+**Returns**
+
+Nothing.
+
+
+### Scheduling and plugins
+
+#### <code>onon.schedule</code>
+
+<code>onon.schedule(callback)</code> queues a callback on the main Lua thread after the current dispatch.
+
+**Parameters**
+
+  - callback: A zero-argument callback to run on the main Lua thread after the current dispatch.
+
+**Returns**
+
+An operation handle with numeric id, cancel(), and active() members.
+
+**Example**
+
+	local handle = onon.schedule(function() onon.message("later") end)
+
+
+#### <code>onon.plugin.register</code>
+
+<code>onon.plugin.register(id[, spec])</code> registers and returns a lazily loaded plugin module.
+
+**Parameters**
+
+  - id: The plugin ID currently being loaded by require.
+  - spec: Optional plugin option declarations.
+
+**Returns**
+
+The plugin module table.
+
+**Errors**
+
+Raises an error when the ID is invalid, undiscovered, disabled, or does not
+match the plugin currently being loaded.
+
+**Example**
+
+	local plugin = onon.plugin.register("my-plugin")
+
+
+### Render cache
+
+#### <code>onon.cache.limit</code>
+
+<code>onon.cache.limit([mib])</code> reads or changes the render cache memory limit in MiB.
+
+An omitted limit reads the current limit; supplying an integer changes it and
+returns the resulting limit. 0 removes the limit.
+
+
+#### <code>onon.cache.entries</code>
+
+<code>onon.cache.entries()</code> returns the number of cached page tiles and thumbnails.
+
+**Returns**
+
+The number of rendered textures currently held in the render cache.
+
+**Example**
+
+	onon.log("debug", tostring(onon.cache.entries()))
+
+
+#### <code>onon.cache.pending</code>
+
+<code>onon.cache.pending()</code> returns the number of queued tile renders.
+
+**Returns**
+
+The number of tile renders waiting to be processed.
+
+**Example**
+
+	if onon.cache.pending() > 0 then onon.message("rendering") end
+
+
+#### <code>onon.cache.clear</code>
+
+<code>onon.cache.clear()</code> drops all rendered tiles and thumbnails.
+
+**Returns**
+
+Nothing.
+
+**Example**
+
+	onon.cache.clear()
+
+
+### Application
+
+#### <code>onon.version</code>
+
+<code>onon.version()</code> returns onon's version.
+
+**Returns**
+
+The release tag onon was built from, such as v0.7.0, or dev for a build not
+made from a tag.
+
+**Example**
+
+	onon.log("info", "running onon " .. onon.version())
+
+
+#### <code>onon.check_updates</code>
+
+<code>onon.check_updates(callback)</code> asks GitHub, in the background, whether a newer onon
+release exists, as :check-updates does, and calls a callback with what it
+found.
+
+**Parameters**
+
+  - callback: Receives an [Update info](#update-info) table once the check
+    finishes. A git build, whose version names its commit, is checked for
+    newer commits on main instead. Other builds that are not a release,
+    such as dev builds, are not checked: success is false and error says
+    why.
+
+**Returns**
+
+An operation handle with numeric id, cancel(), and active() members.
+
+**Example**
+
+	onon.check_updates(function(info)
+	  if info.available then
+	    onon.message("onon " .. info.latest .. " is available")
+	  end
+	end)
+
+
+### Platform, path and JSON
+
+<a id="portable-api"></a>
+
+The `onon` tables below are available to configuration and plugin Lua code.
+
+| Module | Returns / fields | Description |
+|---|---|---|
+| <code>onon.platform</code> | [Platform](#platform) | Also available from `require("onon.platform")`. The system onon runs on and its directories. |
+| <code>onon.path</code> | table | Also available from `require("onon.path")`. Fields: `separator`, `list_separator`; functions: `join(...)`, `clean(path)`, `basename(path)`, `dirname(path)`, `extension(path)`, `is_absolute(path)`, `absolute(path)`, `relative(base, target)`, and `expand_home(path)`. Operations use native platform path rules; `expand_home` expands only `~`, `~/...`, and `~\...`. |
+| <code>onon.json</code> | table | Also available from `require("onon.json")`. `encode(value)` returns compact JSON and `decode(text)` returns a Lua value. `null` is the stable module-local JSON null sentinel. Arrays require contiguous positive integer keys; objects require string keys. Cycles, sparse or mixed tables, non-finite numbers, unsupported Lua values, and trailing input are errors. Decoded empty arrays and objects retain their shape when re-encoded. |
+
+### Document inspection
+
+These read the open document. The [Document](#document) table's fields are refreshed when the document changes. The functions below raise an error when no document is open. Rectangles are `x0`, `y0`, `x1`, `y1` in unrotated PDF points. [Lua tables](#lua-tables) lists the fields of each table they return.
+
+| Function | Returns / fields | Description |
+|---|---|---|
+| <code>onon.document.metadata()</code> | [Document metadata](#document-metadata) | Return the document's metadata. Absent fields are empty strings. |
+| <code>onon.document.outline()</code> | [Outline entry](#outline-entry)[] | Return the outline as a tree, each entry holding the entries under it in `children`. |
+| <code>onon.document.page_info(page)</code> | [Page info](#page-info) | Return a 1-based page's label and size. Sizes are unrotated PDF points; an out-of-range page raises an error. |
+| <code>onon.document.selection()</code> | [Selection](#selection) | Return the current selection: its text and where it is on each page. `pages` is empty when nothing is selected. |
+| <code>plugin.document:page_text(page, callback)</code> | [Handle](#handle) | Extract a page's text asynchronously, calling `callback` with a [Page text result](#page-text-result). |
+| <code>plugin.document:page_links(page, callback)</code> | [Handle](#handle) | Read a page's links asynchronously, calling `callback` with a [Page links result](#page-links-result). |
+
 ## Lua tables
 
 Every table onon gives Lua code or takes from it, with its fields. A type such as `string[]` is a list, and `{ [string]: string }` a table keyed by strings. The fields of a table onon takes may be left out unless they say they are required.
 
 - `onon.document`: see [Document](#document).
 - `onon.platform`: see [Platform](#platform).
+- `onon.config`: the configuration's own [Plugin module](#plugin-module); see [Plugins in config.lua](#plugins-in-configlua).
 - `onon.options` (alias `onon.o`): all entries from the configuration-options table.
 - `onon.theme`: the theme; see [Theme](#theme). Read or assign whole, or one field at a time.
 - `onon.themes`: each built-in theme as a fresh table, such as `onon.themes.birch`.
 - `onon.ui.create`'s spec and rows: see [UI views](#ui-views).
-- `onon.cache`, `onon.tabs`, `onon.ui`, and `onon.plugin`: functions are listed above.
+- `onon.cache`, `onon.tabs`, `onon.ui`, and `onon.plugin`: their functions are in [Lua API](#lua-api).
 
 ### Document and platform
 
 `onon.platform`, `onon.document` and its functions, `onon.tabs`, and a plugin's `document`, give these. Coordinates are in unrotated PDF points from the page's top left.
 
-<a id="platform"></a>
+#### Platform
 
-#### Platform `onon.platform`
+**Source:** `onon.platform`
 
 `onon.platform`, also `require("onon.platform")`. Directories are absolute when the system gives one, and empty when it does not.
 
@@ -1713,9 +1532,9 @@ Every table onon gives Lua code or takes from it, with its fields. A type such a
 | <code>cache_dir</code> | string | onon's cache directory. |
 | <code>temp_dir</code> | string | The system's temporary directory. |
 
-<a id="document"></a>
+#### Document
 
-#### Document `onon.document`
+**Source:** `onon.document`
 
 `onon.document`, refreshed when the document changes. Its functions raise an error when no document is open.
 
@@ -1732,9 +1551,9 @@ Every table onon gives Lua code or takes from it, with its fields. A type such a
 | <code>page_info(page)</code> | function | Returns [Page info](#page-info) for a 1-based page; an out-of-range page raises an error. |
 | <code>selection()</code> | function | Returns the current [Selection](#selection). |
 
-<a id="tab"></a>
+#### Tab
 
-#### Tab `onon.tabs.list()`
+**Source:** `onon.tabs.list()`
 
 One of the window's tabs, as `onon.tabs.list()` gives them.
 
@@ -1748,9 +1567,9 @@ One of the window's tabs, as `onon.tabs.list()` gives them.
 | <code>modified</code> | boolean | Whether it has unsaved edits. |
 | <code>active</code> | boolean | Whether it is the tab shown. |
 
-<a id="rectangle"></a>
+#### Rectangle
 
-#### Rectangle page bounds and selection geometry
+**Source:** page bounds and selection geometry
 
 An area of a page.
 
@@ -1761,9 +1580,9 @@ An area of a page.
 | <code>x1</code> | number | Right edge. |
 | <code>y1</code> | number | Bottom edge. |
 
-<a id="document-metadata"></a>
+#### Document metadata
 
-#### Document metadata `onon.document.metadata()`
+**Source:** `onon.document.metadata()`
 
 Every field is a string, empty when the document does not give it.
 
@@ -1780,9 +1599,9 @@ Every field is a string, empty when the document does not give it.
 | <code>creation_date</code> | string | When it was made, as the document writes it. |
 | <code>modification_date</code> | string | When it last changed, as the document writes it. |
 
-<a id="outline-entry"></a>
+#### Outline entry
 
-#### Outline entry `onon.document.outline()`
+**Source:** `onon.document.outline()`
 
 | Field | Type | Description |
 |---|---|---|
@@ -1794,9 +1613,9 @@ Every field is a string, empty when the document does not give it.
 | <code>y</code> | number or nil | Where on the page it goes, when it says. |
 | <code>children</code> | [Outline entry](#outline-entry)[] | The entries under it; empty when it has none. |
 
-<a id="page-info"></a>
+#### Page info
 
-#### Page info `onon.document.page_info(page)`
+**Source:** `onon.document.page_info(page)`
 
 | Field | Type | Description |
 |---|---|---|
@@ -1806,9 +1625,9 @@ Every field is a string, empty when the document does not give it.
 | <code>height</code> | number | Its height. |
 | <code>bounds</code> | [Rectangle](#rectangle) | Its box. |
 
-<a id="selection"></a>
+#### Selection
 
-#### Selection `onon.document.selection()`
+**Source:** `onon.document.selection()`
 
 | Field | Type | Description |
 |---|---|---|
@@ -1816,18 +1635,18 @@ Every field is a string, empty when the document does not give it.
 | <code>text</code> | string | The selected text. |
 | <code>pages</code> | [Selection page](#selection-page)[] | Each page the selection covers, in page order; empty when nothing is selected. |
 
-<a id="selection-page"></a>
+#### Selection page
 
-#### Selection page `onon.document.selection()` → `pages`
+**Source:** `onon.document.selection()` → `pages`
 
 | Field | Type | Description |
 |---|---|---|
 | <code>page</code> | integer | The 1-based page. |
 | <code>quads</code> | [Rectangle](#rectangle)[] | The bounding rectangle of each piece of the selection on it. |
 
-<a id="page-link"></a>
+#### Page link
 
-#### Page link `plugin.document:page_links()` → `links`
+**Source:** `plugin.document:page_links()` → `links`
 
 Each of a [Page links result](#page-links-result)'s `links`.
 
@@ -1844,9 +1663,9 @@ Each of a [Page links result](#page-links-result)'s `links`.
 
 A plugin describes itself with these, and its module has the functions that take the rest.
 
-<a id="plugin-manifest"></a>
+#### Plugin manifest
 
-#### Plugin manifest `onon-plugin.json`
+**Source:** `onon-plugin.json`
 
 `onon-plugin.json` in the plugin's directory, which may be left out. Unrecognised fields are ignored.
 
@@ -1857,9 +1676,9 @@ A plugin describes itself with these, and its module has the functions that take
 | <code>module</code> | string | The module to load: `lua/<module>.lua` or `lua/<module>/init.lua`; the ID unless given. |
 | <code>dependencies</code> | string[] | IDs of plugins it may `require`, loaded before it. |
 
-<a id="plugin-spec"></a>
+#### Plugin spec
 
-#### Plugin spec `onon.plugin.register(id[, spec])`
+**Source:** `onon.plugin.register(id[, spec])`
 
 The second argument of `onon.plugin.register(id[, spec])`.
 
@@ -1867,9 +1686,9 @@ The second argument of `onon.plugin.register(id[, spec])`.
 |---|---|---|
 | <code>options</code> | table | The plugin's options, by name: each an [Option declaration](#option-declaration). They are set as `plugin-id.name`, with `onon.options` or `:set`, and read and assigned on the module as `plugin.name`. |
 
-<a id="option-declaration"></a>
+#### Option declaration
 
-#### Option declaration plugin spec `options`
+**Source:** plugin spec `options`
 
 | Field | Type | Description |
 |---|---|---|
@@ -1877,11 +1696,11 @@ The second argument of `onon.plugin.register(id[, spec])`.
 | <code>default</code> | any | Its value until set; `false`, `0`, `""` or `{}`, by its type, unless given. |
 | <code>description</code> | string | What it does. |
 
-<a id="plugin-module"></a>
+#### Plugin module
 
-#### Plugin module `onon.plugin.register()` / `require()` result
+**Source:** `onon.plugin.register()` / `require()` result, and `onon.config`
 
-What `onon.plugin.register` and `require("plugin-id")` return. Its functions are methods, called with `:` as `plugin:on("page_changed", callback)`; the `register_*` functions and `on` work only while the plugin is loading. Fields assigned on it are kept as the plugin's own.
+What `onon.plugin.register` and `require("plugin-id")` return; `onon.config` is the configuration's own. Its functions are methods, called with `:` as `plugin:on("page_changed", callback)`; the `register_*` functions and `on` work only while the plugin is loading. Fields assigned on it are kept as the plugin's own.
 
 | Field | Type | Description |
 |---|---|---|
@@ -1899,27 +1718,27 @@ What `onon.plugin.register` and `require("plugin-id")` return. Its functions are
 | <code>off(id)</code> | function | Removes the subscription `on` returned `id` for. |
 | <code>job(spec, callback)</code> | function | Starts a [Job spec](#job-spec)'s process, calling `callback` with its [Job result](#job-result). Returns a [Handle](#handle). |
 
-<a id="action-spec"></a>
+#### Action spec
 
-#### Action spec `plugin:register_action()`
+**Source:** `plugin:register_action()`
 
 | Field | Type | Description |
 |---|---|---|
 | <code>description</code> | string | What it does; its full name unless given. |
 | <code>countable</code> | boolean | Whether a count can be typed before its keys; false unless set. |
 
-<a id="command-spec"></a>
+#### Command spec
 
-#### Command spec `plugin:register_command()`
+**Source:** `plugin:register_command()`
 
 | Field | Type | Description |
 |---|---|---|
 | <code>description</code> | string | Shown in the help menu; `:plugin-id-name` unless given. |
 | <code>arg_completions</code> | string[] | Arguments offered as the command is typed. |
 
-<a id="command-context"></a>
+#### Command context
 
-#### Command context plugin command callback
+**Source:** plugin command callback
 
 What a command's callback is given.
 
@@ -1929,9 +1748,9 @@ What a command's callback is given.
 | <code>raw</code> | string | Everything typed after the command. |
 | <code>args</code> | string[] | `raw` split at whitespace. |
 
-<a id="filesystem-options"></a>
+#### Filesystem options
 
-#### Filesystem options `plugin.fs:read_dir()` / `stat()`
+**Source:** `plugin.fs:read_dir()` / `stat()`
 
 The optional `options` of `plugin.fs:read_dir` and `plugin.fs:stat`.
 
@@ -1939,9 +1758,9 @@ The optional `options` of `plugin.fs:read_dir` and `plugin.fs:stat`.
 |---|---|---|
 | <code>follow_symlinks</code> | boolean | Follow a symlink given as `path` instead of describing the link itself; false unless set. |
 
-<a id="http-request"></a>
+#### HTTP request
 
-#### HTTP request `plugin.http:request()`
+**Source:** `plugin.http:request()`
 
 The `spec` of `plugin.http:request`.
 
@@ -1953,9 +1772,9 @@ The `spec` of `plugin.http:request`.
 | <code>body</code> | string | The request body. |
 | <code>timeout_ms</code> | integer | Milliseconds before the request is given up; no limit unless greater than 0. |
 
-<a id="job-spec"></a>
+#### Job spec
 
-#### Job spec `plugin:job()`
+**Source:** `plugin:job()`
 
 The `spec` of `plugin:job`. The command runs without a shell.
 
@@ -1972,9 +1791,9 @@ The `spec` of `plugin:job`. The command runs without a shell.
 
 Callbacks are given these. The results of a plugin's filesystem, HTTP, document and job calls, and of `onon.check_updates`, have the [Operation result](#operation-result)'s fields as well as their own; timers and `onon.schedule` call their callbacks with nothing.
 
-<a id="handle"></a>
+#### Handle
 
-#### Handle `onon.schedule()` and async plugin calls
+**Source:** `onon.schedule()` and async plugin calls
 
 Returned by `onon.schedule` and every asynchronous plugin call.
 
@@ -1984,9 +1803,9 @@ Returned by `onon.schedule` and every asynchronous plugin call.
 | <code>cancel()</code> | function | Stops the operation without calling its callback. Calling it again does nothing. |
 | <code>active()</code> | function | Returns true until the operation completes or is cancelled; a repeating timer stays active until cancelled. |
 
-<a id="operation-result"></a>
+#### Operation result
 
-#### Operation result async operation callback
+**Source:** async operation callback
 
 | Field | Type | Description |
 |---|---|---|
@@ -1996,9 +1815,9 @@ Returned by `onon.schedule` and every asynchronous plugin call.
 | <code>timed_out</code> | boolean | Whether its `timeout_ms` ran out. |
 | <code>cancelled</code> | boolean | Always false: a cancelled operation calls nothing. |
 
-<a id="picker-result"></a>
+#### Picker result
 
-#### Picker result `onon.pick_file()` / `onon.pick_directory()` callback
+**Source:** `onon.pick_file()` / `onon.pick_directory()` callback
 
 What `onon.pick_file` and `onon.pick_directory` give their callbacks.
 
@@ -2009,9 +1828,9 @@ What `onon.pick_file` and `onon.pick_directory` give their callbacks.
 | <code>cancelled</code> | boolean | Whether the picker was closed without picking, which is not an error. |
 | <code>error</code> | string | Why the picker failed, or empty. |
 
-<a id="update-info"></a>
+#### Update info
 
-#### Update info `onon.check_updates()` callback
+**Source:** `onon.check_updates()` callback
 
 What `onon.check_updates` gives its callback, with the [Operation result](#operation-result)'s fields. `:check-updates` reports the same check.
 
@@ -2024,9 +1843,9 @@ What `onon.check_updates` gives its callback, with the [Operation result](#opera
 | <code>method</code> | string | The package manager onon was installed with, or empty for a download. |
 | <code>url</code> | string | The releases page, or for a git build main's commits. |
 
-<a id="file-info"></a>
+#### File info
 
-#### File info `plugin.fs:stat()` result / `read_dir()` entries
+**Source:** `plugin.fs:stat()` result / `read_dir()` entries
 
 A `plugin.fs:stat` result, and each of a `read_dir` result's `entries`.
 
@@ -2039,9 +1858,9 @@ A `plugin.fs:stat` result, and each of a `read_dir` result's `entries`.
 | <code>modified_unix</code> | integer | When it last changed, in whole seconds since the Unix epoch. |
 | <code>error</code> | string | In `entries`: why the entry could not be read, its `size_bytes` and `modified_unix` then 0; else empty. |
 
-<a id="directory-result"></a>
+#### Directory result
 
-#### Directory result `plugin.fs:read_dir()` result
+**Source:** `plugin.fs:read_dir()` result
 
 A `plugin.fs:read_dir` result.
 
@@ -2049,9 +1868,9 @@ A `plugin.fs:read_dir` result.
 |---|---|---|
 | <code>entries</code> | [File info](#file-info)[] | The directory's entries. |
 
-<a id="http-response"></a>
+#### HTTP response
 
-#### HTTP response `plugin.http:request()` callback
+**Source:** `plugin.http:request()` callback
 
 A `plugin.http:request` result. An HTTP error status is still a response, and `success` is true.
 
@@ -2061,9 +1880,9 @@ A `plugin.http:request` result. An HTTP error status is still a response, and `s
 | <code>headers</code> | { [string]: string[] } | Response headers by name, each a list of its values. |
 | <code>body</code> | string | The response body. |
 
-<a id="job-result"></a>
+#### Job result
 
-#### Job result `plugin:job()` callback
+**Source:** `plugin:job()` callback
 
 A `plugin:job` result. `success` needs the process to exit with 0, in time.
 
@@ -2073,9 +1892,9 @@ A `plugin:job` result. `success` needs the process to exit with 0, in time.
 | <code>stdout</code> | string | Its standard output. |
 | <code>stderr</code> | string | Its standard error. |
 
-<a id="page-text-result"></a>
+#### Page text result
 
-#### Page text result `plugin.document:page_text()` callback
+**Source:** `plugin.document:page_text()` callback
 
 A `plugin.document:page_text` result.
 
@@ -2084,9 +1903,9 @@ A `plugin.document:page_text` result.
 | <code>page</code> | integer | The 1-based page. |
 | <code>text</code> | string | Its text. |
 
-<a id="page-links-result"></a>
+#### Page links result
 
-#### Page links result `plugin.document:page_links()` callback
+**Source:** `plugin.document:page_links()` callback
 
 A `plugin.document:page_links` result.
 
@@ -2095,13 +1914,13 @@ A `plugin.document:page_links` result.
 | <code>page</code> | integer | The 1-based page. |
 | <code>links</code> | [Page link](#page-link)[] | Its links. |
 
-### Events
+## Events
 
-What `plugin:on(event, callback)` gives its callback. `shutdown` gives an empty table.
+What `plugin:on(event, callback)` and `onon.config:on(event, callback)` give their callbacks. `shutdown` gives an empty table.
 
-<a id="document-event"></a>
+### Document event
 
-#### Document event document event callbacks
+**Source:** document event callbacks
 
 `app_ready`, `document_opened`, `document_reloaded`, `config_reloaded`, `document_close_pre` and `document_closed`.
 
@@ -2110,9 +1929,9 @@ What `plugin:on(event, callback)` gives its callback. `shutdown` gives an empty 
 | <code>document</code> | table | `path`, `name`, and `page_count`, an integer, of the document concerned; `path` is empty when none is open. |
 | <code>generation</code> | integer | A number that changes whenever a document is opened or reloaded. |
 
-<a id="opening-event"></a>
+### Opening event
 
-#### Opening event `document_open_pre` callback
+**Source:** `document_open_pre` callback
 
 `document_open_pre`, before a document opens.
 
@@ -2120,9 +1939,9 @@ What `plugin:on(event, callback)` gives its callback. `shutdown` gives an empty 
 |---|---|---|
 | <code>document</code> | table | The `path` and `name` of the document opening. |
 
-<a id="mouse-button-event"></a>
+### Mouse button event
 
-#### Mouse button event `mouse_button_pre` / `mouse_button` callbacks
+**Source:** `mouse_button_pre` / `mouse_button` callbacks
 
 `mouse_button_pre`, before onon handles a press or release, and `mouse_button`, after. A `mouse_button_pre` callback returning true keeps onon from handling it.
 
@@ -2138,9 +1957,9 @@ What `plugin:on(event, callback)` gives its callback. `shutdown` gives an empty 
 | <code>page_x</code> | number | Over a page: where on it, in points from its left. |
 | <code>page_y</code> | number | Over a page: where on it, in points from its top. |
 
-<a id="selection-event"></a>
+### Selection event
 
-#### Selection event `selection_changed` callback
+**Source:** `selection_changed` callback
 
 `selection_changed`.
 
@@ -2150,9 +1969,9 @@ What `plugin:on(event, callback)` gives its callback. `shutdown` gives an empty 
 | <code>text</code> | string | The selected text. |
 | <code>pages</code> | integer[] | The 1-based pages the selection covers, in order. [`onon.document.selection()`](#selection) gives where on them. |
 
-<a id="page-event"></a>
+### Page event
 
-#### Page event `page_changed` callback
+**Source:** `page_changed` callback
 
 `page_changed`.
 
@@ -2163,9 +1982,9 @@ What `plugin:on(event, callback)` gives its callback. `shutdown` gives an empty 
 | <code>previous_page</code> | integer | The 1-based page current before. |
 | <code>page_count</code> | integer | The document's number of pages. |
 
-<a id="zoom-event"></a>
+### Zoom event
 
-#### Zoom event `zoom_changed` callback
+**Source:** `zoom_changed` callback
 
 `zoom_changed`.
 
@@ -2175,9 +1994,9 @@ What `plugin:on(event, callback)` gives its callback. `shutdown` gives an empty 
 | <code>previous_scale</code> | number | The zoom before. |
 | <code>percent</code> | number | The zoom now as a percentage. |
 
-<a id="tab-event"></a>
+### Tab event
 
-#### Tab event `tab_changed` callback
+**Source:** `tab_changed` callback
 
 `tab_changed`, when the window shows another tab.
 
@@ -2188,9 +2007,9 @@ What `plugin:on(event, callback)` gives its callback. `shutdown` gives an empty 
 | <code>index</code> | integer | The 1-based position of the tab now shown. |
 | <code>previous</code> | integer | The 1-based position of the tab shown before, or 0 when that tab was closed. |
 
-<a id="tab-list-event"></a>
+### Tab list event
 
-#### Tab list event `tab_list_changed` callback
+**Source:** `tab_list_changed` callback
 
 `tab_list_changed`, when a tab of the window opens, closes or moves, or gains or loses unsaved edits, so a plugin drawing its own tabs can redraw them from `onon.tabs.list()`.
 
@@ -2200,9 +2019,9 @@ What `plugin:on(event, callback)` gives its callback. `shutdown` gives an empty 
 | <code>index</code> | integer | The 1-based position of the tab that changed: where it is now, or where it was for one closed. |
 | <code>count</code> | integer | How many tabs the window has now. |
 
-<a id="option-event"></a>
+### Option event
 
-#### Option event `option_changed` callback
+**Source:** `option_changed` callback
 
 `option_changed`, after Lua code changes options.
 
@@ -2210,7 +2029,7 @@ What `plugin:on(event, callback)` gives its callback. `shutdown` gives an empty 
 |---|---|---|
 | <code>source</code> | string | What ran the code that changed them: the event's name for an event callback, `ui_select`, `ui_click` and so on for a view's callback, or `action`, `command`, `set`, `theme` or `plugin operation`. |
 
-### Status bar
+## Status bar
 
 Show or hide the status bar with `onon.options.status_bar_visible`. Its look comes from the theme: `status_bar_style` places it along the bottom or floating as pills, `status_bar_padding` sets its horizontal spacing and `font.size` its text size, and the `status`, `status_left` and `status_right` elements style it further. The `status_bar_left` and `status_bar_right` options are templates with these substitutions:
 
@@ -2228,3 +2047,232 @@ Show or hide the status bar with `onon.options.status_bar_visible`. Its look com
 | `{modified}` | `[+] ` while the document has unsaved edits, else empty. |
 | `{input}` / `{prompt}` | Active input text and search prompt (`/` or `?`). |
 | `$$` | A literal dollar sign. |
+
+## UI views
+
+Create views with `local view = onon.ui.create(spec)`, then call `view:show()`. A view is a menu or a panel: a list of rows, or a body its `draw` function draws, with text fields, buttons and check boxes. onon's own menus are views made the same way, so they and plugins' look and behave alike, and the theme styles both.
+
+### Placing a view
+
+| Field | Meaning |
+|---|---|
+| `id`, `title` | The view's name and the title in its header. A view with a `draw` function and no title has no header. |
+| `modal` | True unless set false. A modal view is a menu: it takes the keys, closes on a click outside it, and replaces any other menu. A view that is not modal is a panel: it stays open over the document, under any menu, until closed, and takes the pointer over it, and the keys when it has them (see [Typing](#typing)). |
+| `stack` | For a menu: opens it over the menu open, which closing it returns to, instead of replacing it. |
+| `width`, `height` | Its size: logical pixels, or a percentage of the window such as `"30%"`; `"70%"` unless set, and at most the document's part of the window. A list fits its height to its rows. |
+| `anchor` | Where it sits in the document's part of the window: `center` (the default), `top`, `bottom`, `left`, `right`, `top_left`, `top_right`, `bottom_left` or `bottom_right`, a little in from the edges. With `at`, the part of the view that sits at that point instead, `top_left` unless given: `bottom_left` for a popup above a point, `center` for one centred on it. |
+| `at` | A point the view is pinned to: `{ x = 10, y = 40 }` in the window, in logical pixels, kept in the window, or `{ page = 3, x = 72, y = 100 }` on a page, in its points from its top left as the document events give them, moving with the page and hidden while it is not shown. |
+| `attach` | Attaches the view to something it moves with: `{ view = other }`, another view, beside its selected row with its first row level with it, as a submenu is; or a box, `{ x = 10, y = 40, w = 120, h = 20 }` in the window or with `page` on a page, as `at` takes a point, below it as a dropdown is. `side` (`right`, `left`, `below` or `above`) is the side tried first; without room there it takes the other, and is kept in the window. While what it is attached to is not shown, it sits at its `anchor`. |
+| `dock` | `left`, `right`, `top` or `bottom`: a panel against that side of the window, its `width` or `height` taken from the document, which lays itself out beside it. Panels docked to the same side stack inwards in the order they open. |
+| `order` | For a docked view: where it sits among the bars and docked views along the window's edges, each taking its side of what those of lower order leave. The status bar is 10 (`status_bar_order`), the tab bar 20 (`tab_bar_order`) and docked views 30 unless they say, so by default a view docked at the bottom sits above the status bar, and one docked at the left stops at it; with `order = 0` it takes its side of the whole window. |
+| `motion` | How the view moves: an animation for it to come in and go with, or a table of `enter` and `exit` for it and `rows`, `selection` and `cursor` for what moves in it, over the theme's `motion`, as `motion = { enter = "slide 200ms", rows = "fade 80ms stagger:10ms" }`. |
+| `resizable` | For a docked view: its inner edge can be dragged to resize it. `view:size()` gives a view's width and height. |
+
+### Lists
+
+| Field | Meaning |
+|---|---|
+| `rows` | The rows, each a string or a table; see below. |
+| `selected`, `scroll`, `query` | The selected row (1-based), the first row shown, and the search query to start with. |
+| `searchable` | Whether / searches the rows; true unless set false. |
+| `filter` | Whether the query filters the rows; true unless set false, as for a view that sets its own rows for each query in `on_query_changed`. |
+| `empty` | What the list says when it has no rows. |
+| `columns` | Lays out rows' `cells` as a table: a list of columns, each with a `title`, a `width` (logical pixels, a percentage of the row, or `"*"`, the default, for a share of what the others leave) and an `align` (`left`, `center` or `right`). Titles show above the rows. |
+
+A row is a string, its text, or a table of these fields. Other fields are the plugin's own, and come back with the row.
+
+| Field | Type | Meaning |
+|---|---|---|
+| `text` | string | The row's text; with `cells` and no text, the cells joined by spaces. |
+| `value` | string | What `on_select` is given as the value: the text unless set, or with `cells` the first cell. |
+| `id` | string | The row's own name, given to its callbacks. |
+| `secondary` | string | Drawn on the right. |
+| `hint` | string | Drawn on the right, muted, while the row is selected and has no `secondary`, such as what Enter on it does. |
+| `depth` | integer | Sets the row in a step for each level. |
+| `disabled` | boolean | Disables the row. |
+| `key` | string | A key binding, drawn in a column before the text. |
+| `marker` | string | Drawn before the text in the secondary colour, in a column as wide as the widest row's marker, so the text of rows with and without one lines up. |
+| `heading` | boolean | Makes the row a section title, which cannot be chosen. |
+| `swatch` | colour | A colour drawn before the text, written as in the elements table. |
+| `checked` | boolean | A check box before the text, checked or not; no check box unless set. |
+| `button` | boolean | Draws the row as a button, as the keybind menu's Add a key… is. |
+| `edit` | boolean or table | Makes choosing the row type into it rather than run `on_select`: see [Typing](#typing). `true` starts from its `secondary` text; a table may give the `text` to start from, a `hint` at what to type and a `placeholder` shown while nothing is. |
+| `cells` | string[] | Its text in the view's `columns`, searched as its text is. |
+
+### Drawing a view
+
+`draw = function(canvas, box, state)` draws the view's body, below its header, in place of its rows; `canvas:default()` draws the rows. The canvas has the methods element draw functions have (see [Drawing](#drawing)), and those below. `box` is the body, and `state.scroll` how far it is scrolled.
+
+- What the function draws below the body scrolls into it, by the wheel, the keys that move a list, the scrollbar, and `view:set_scroll(pixels)`.
+- A function that returns true is drawn again on the next frame, for drawing that moves. Otherwise the view is drawn again after its callbacks and as the pointer moves between its regions; call `view:redraw()` when what it draws changes otherwise, as from a timer.
+- If it fails, the error is reported once and the rows are drawn instead.
+
+| Method | Draws |
+|---|---|
+| <code>canvas:text(x, y, text [, color] [, options])</code> | Text in `color`, the foreground unless given, its options `true` for bold, or a table of `color`, `bold`, `mono` (a monospaced font), `size` (logical pixels), `width` (to truncate to, or with `wrap = true` wrap to) and `align` (`left`, `center` or `right`, within the width, or about x without one). Lines break at newlines. Returns its width and height. |
+| <code>canvas:measure(text [, options])</code> | Nothing; returns the width and height text would take. |
+| <code>canvas:clip(x, y, w, h)</code> | Nothing; limits what is drawn after to the rect, until `canvas:clip()`. |
+| <code>canvas:image(path, x, y [, w [, h]])</code> | A PNG, JPEG, GIF, WebP or BMP file, a path not absolute being from the configuration's directory, at its size in logical pixels, or a width or height given, keeping its proportions if only one is. It reloads when the file changes. Returns its width and height. |
+| <code>canvas:page(page, x, y, w [, h [, area]])</code> | The page, turned as the document's are: its thumbnail fitted to the width, or within the width and height, rendering as it is first drawn. With `area`, `{ x =, y = [, zoom =] }`, the part of the page from that point, in its points, at the box's top left, at `zoom` times the document's zoom (1 unless set), drawn sharp from the page's tiles; it needs a height. Returns its width and height. |
+| <code>canvas:animate(key, target [, animation])</code> | Nothing; returns where the value named `key` is on its way to `target`, gliding as the animation's timing says, `"200ms ease-out"` unless given; a value not asked for on the frame before is at its target. Return true from the draw function while it moves. |
+| <code>canvas:region(id, x, y, w, h)</code> | Nothing; names the rect for the pointer events over it, which carry the id. Returns whether the pointer is over it, for drawing it hovered. |
+| <code>canvas:input(id, x, y, w [, options])</code> | The text field `id`, `w` wide, with options `placeholder`, `secret` (bullets for a password) and `lines` (more than one wraps and takes newlines). Returns its width and height. See [Typing](#typing). |
+| <code>canvas:button(id, x, y, w, label)</code> | A button, `w` wide, clicked with the pointer, or with Space or Enter when Tab reaches it; `on_click(id)` hears of it. Returns its width and height. |
+| <code>canvas:column([options])</code> | Nothing; returns a column that lays out what it draws down the canvas: see [Columns](#columns). |
+| <code>canvas:checkbox(id, x, y, label, checked)</code> | A check box with its label, clicked as a button is; the plugin keeps whether it is checked, as `on_click` tells it. Returns its width and height. |
+
+The fields, buttons and check boxes take the theme's `input`, `input_focused`, `button`, `button_focused` and `check` elements. The cursor shows an I-beam over a field and a hand over a button or check box.
+
+### Columns
+
+`canvas:column({ x =, y =, width =, gap = })` lays out a form, or anything drawn down a body, without working out where each thing goes: each method draws at the column's left, below what it drew last, `gap` (8 unless given) apart, and returns its width and height. The column starts at `x`, `y` (0, 0 unless given), `width` wide, as far in from the right as from the left unless given.
+
+| Method | Draws |
+|---|---|
+| <code>col:text(text [, color] [, options])</code> | Text, as `canvas:text` draws it, wrapped to the column unless `wrap = false`. |
+| <code>col:input(id [, options])</code> | A text field the column's width. |
+| <code>col:button(id, label [, width])</code> | A button, the column's width unless given. |
+| <code>col:checkbox(id, label, checked)</code> | A check box. |
+| <code>col:page(page [, height [, area]])</code> | A page, or part of one, the column's width. |
+| <code>col:image(path [, w [, h]])</code> | An image. |
+| <code>col:space(height)</code> | Nothing; moves down. |
+| <code>col:y()</code> | Nothing; returns where the next thing goes. |
+
+Everything a canvas draws out of sight, below or above what shows of the body, is neither drawn nor, for a page, rendered, so a view can draw all it holds, as every page of a long document, and costs only what shows.
+
+### Typing
+
+- `prompt = "Open"` puts a text field in the header, labelled with it, whose text is the query: typing filters a list without /, and Enter chooses the selected row, or runs `on_submit` if the view has one.
+- `canvas:input` draws a text field. The first drawn has the typing until Tab, Shift-Tab or a click moves it; Tab and Shift-Tab move through the prompt, fields, buttons and check boxes in the order they are drawn. `view:field(id)` and `view:set_field(id, text)` read and write a field's text, before the view opens too, and `view:fields()` gives them all, as an `on_submit` reading a form wants.
+- A row with `edit` is typed into in place: Enter or a click on it, or `view:edit_row(index)`, turns its secondary text into the text being typed, all of it selected, with the hint after the row's text while there is room. `on_input` and `on_submit` hear it by the row's `id`, or its value without one; Enter keeps the text, and Escape drops it, with no callback. While it is typed into, the keys edit it rather than move through the list. onon's print dialog and options menu type their values this way.
+- Fields and prompts edit as onon's own prompt does, with the same keys, a press placing the cursor, a drag selecting, and copy, cut and paste with the clipboard actions. Text an input method is composing shows underlined at the cursor. In a field of more than one line, Enter starts a new line, Ctrl- or Cmd-Enter submits, and the arrows, Home and End move by line.
+- A menu has the keys while it is open. A panel takes them when clicked, if it has fields, buttons, check boxes, a prompt or `on_key`, or from `view:focus()`, until Escape, a click elsewhere, or `view:blur()`; `view:focused()` says whether it has them.
+
+### Callbacks
+
+| Callback | Runs |
+|---|---|
+| `on_select(index, value, text, id, row)` | When a row is chosen. `index` and `id` are the row's in the rows as set, however filtered, and `row` is the row as given, string or table. |
+| `on_selection_changed(index, value, text, id, row)` | When a key, the pointer or the query moves the selection, not when the view opens or `set_selected` moves it, as for a live preview. |
+| `on_query_changed(query)` | When the user changes the search query or prompt, not when `set_query` does. |
+| `on_input(text, id)` | When the user changes a field's text, or a row's being typed into. |
+| `on_submit(text, id)` | On Enter in a field, a row being typed into, or the prompt, whose `id` is nil. |
+| `on_click(id)` | When a button or check box is clicked. |
+| `on_key(key)` | For each key pressed while the view has the keys and is not being typed in, named as `bind` names it, before the view's own keys; returning true takes the key. |
+| `on_action(action)` | For the action bound to a key pressed while the view has the keys, before the view runs it; returning true takes the action. |
+| `on_mouse(event)` | For the pointer over the view, and after a press on it until the release; returning true keeps the view from handling it. `event.type` is `press`, `release`, `move`, `leave` or `wheel`; `event.x` and `event.y` are logical pixels from the top left of what the body draws, scrolled; `event.region` is the id of the region there; a press or release has `button` (`left`, `middle`, `right`, `x1` or `x2`) and a press `clicks`; a wheel has `dx` and `dy`, positive to the right and down. A press on a text field, button or check box goes to it instead. |
+| `on_close()` | When the view closes: by `view:close()` or, for a menu, the user, another menu replacing it, or the document closing. |
+
+View methods are `show()`, `close()`, `visible()`, `redraw()`, `size()`, `focus()`, `blur()`, `focused()`, `set_title(title)`, `set_rows(rows)`, `set_selected(index)`, `set_scroll(scroll)`, `set_query(query)`, `field(id)`, `fields()`, `set_field(id, text)`, `edit_row(index)`, `selected()`, `scroll()`, and `query()`. Selection indices are 1-based, with 0 meaning no selection. A drawn body's scroll is in logical pixels, a list's in rows. Once a view closes, its methods read the state it closed with, as `on_close` does, until it is shown again from its spec.
+
+```lua
+-- A sidebar of page thumbnails, docked left and resizable; clicking one
+-- goes to it.
+local sidebar = onon.ui.create({
+  dock = "left", width = 144, resizable = true,
+  draw = function(canvas, box)
+    local size, y = box.w - 24, 8
+    for page = 1, onon.page_count() do
+      local _, h = canvas:page(page, 12, y, size)
+      if canvas:region(page, 12, y, size, h) or page == onon.page() then
+        canvas:stroke(canvas:path():rect(11, y - 1, size + 2, h + 2), "accent", 2)
+      end
+      y = y + h + 12
+    end
+  end,
+  on_mouse = function(ev)
+    if ev.type == "press" and ev.region then onon.page(ev.region) return true end
+  end,
+})
+sidebar:show()
+
+-- A form over the document, laid out by a column.
+local form
+form = onon.ui.create({
+  title = "New bookmark", width = 360, height = 260,
+  draw = function(canvas, box)
+    local col = canvas:column({ x = 12, y = 8 })
+    col:text("Name", "muted")
+    col:input("name", { placeholder = "Chapter 1" })
+    col:input("note", { placeholder = "Note", lines = 3 })
+    col:button("save", "Save")
+  end,
+  on_click = function(id)
+    if id == "save" then
+      local fields = form:fields()
+      onon.message("saved " .. fields.name)
+      form:close()
+    end
+  end,
+})
+form:show()
+```
+
+## Plugins
+
+Plugins are discovered without being executed. Enable one explicitly with `local plugin = require("plugin-id")`; only the required plugin and its declared dependencies execute. The entrypoint must call `onon.plugin.register("plugin-id"[, spec])`; `require` returns the registered module.
+
+A plugin may describe itself in a [Plugin manifest](#plugin-manifest), `onon-plugin.json`, and declares its options in a [Plugin spec](#plugin-spec). The [Plugin module](#plugin-module) `register` returns has the functions below, and those that register actions, commands and event callbacks. Registered actions use `plugin-id.action`; commands use `:plugin-id-command`, where the command name cannot contain `-`; options use `plugin-id.option`.
+
+| Function | Returns / fields | Description |
+|---|---|---|
+| <code>plugin.fs:read_dir(path[, options], callback)</code> | [Handle](#handle) | Read one directory asynchronously, calling `callback` with a [Directory result](#directory-result). `options` are [Filesystem options](#filesystem-options). Without following, a symlink supplied as `path` is rejected; entries themselves are reported as symlinks. |
+| <code>plugin.fs:stat(path[, options], callback)</code> | [Handle](#handle) | Stat a path asynchronously, calling `callback` with its [File info](#file-info). `options` are [Filesystem options](#filesystem-options). |
+| <code>plugin.timer:after(ms, callback)</code> | [Handle](#handle) | Call `callback()` once after `ms` milliseconds. `ms` may be zero. |
+| <code>plugin.timer:every(ms, callback)</code> | [Handle](#handle) | Call `callback()` repeatedly, waiting `ms` milliseconds between dispatches. `ms` must be greater than zero. |
+| <code>plugin.storage:get(key)</code> | value or nil | Synchronously return the value stored for this plugin ID, or nil when absent or when no session database is available. |
+| <code>plugin.storage:set(key, value)</code> | none | Synchronously persist a plugin-scoped value. Supports nil, booleans, finite numbers, strings, contiguous arrays, and string-keyed objects; tables cannot be cyclic or mix array and object keys. Raises an error when no session database is available; the value is not silently discarded. |
+| <code>plugin.storage:delete(key)</code> | none | Synchronously delete a plugin-scoped value. |
+| <code>plugin.storage:keys()</code> | string[] | Synchronously return this plugin's keys in lexical order. |
+| <code>plugin.http:request(spec, callback)</code> | [Handle](#handle) | Make an asynchronous [HTTP request](#http-request), calling `callback` with its [HTTP response](#http-response). |
+| <code>plugin:job(spec, callback)</code> | [Handle](#handle) | Start a subprocess from a [Job spec](#job-spec) without invoking a shell, calling `callback` with its [Job result](#job-result). |
+
+### Plugins in config.lua
+
+`config.lua` has a plugin module of its own, `onon.config`, with the ID `config`, so the configuration can do what a plugin does without being one: subscribe to events, start timers, jobs and HTTP requests, keep storage, and register actions and commands. Its actions are `config.<name>` and its commands `:config-<name>`. It registers while `config.lua` runs, though not while a plugin `config.lua` requires is loading, and hears each event after every plugin, so the configuration has the last word. No plugin may take the ID `config`.
+
+```lua
+local cfg = onon.config
+local pinned, timer = false, nil
+
+cfg:on("tab_changed", function()
+  if pinned then return end
+  if timer then timer:cancel() end
+  onon.command("tabbar on")
+  timer = cfg.timer:after(1000, function() onon.command("tabbar off") end)
+end)
+
+onon.bind("bt", cfg:register_action("pin_tabbar", function()
+  if timer then timer:cancel() end
+  pinned = not pinned
+  onon.command(pinned and "tabbar on" or "tabbar off")
+end))
+```
+
+### Handles and results
+
+Every `schedule`, filesystem, timer, HTTP, document-extraction, and job call returns a handle with numeric `id`, `cancel()`, and `active()`. `active()` becomes false before a one-shot completion callback runs. Repeating timers remain active between callbacks until cancelled. `cancel()` is idempotent, removes the operation, and does not invoke its callback, so delivered result tables always have `cancelled=false`. Callbacks run serially on the main Lua thread, never on worker goroutines. [Results](#results) lists each result's fields.
+
+### Limits
+
+| Resource | Returns / fields | Description |
+|---|---|---|
+| <code>Storage value</code> | 65,536 bytes | Limit applies to the encoded JSON value for each key. |
+| <code>HTTP response body</code> | 8 MiB | A larger response fails the operation; request bodies have no API-specific size limit. |
+| <code>HTTP redirects</code> | 10 | Following a redirect after the tenth redirect fails the operation. |
+| <code>Job stdout</code> | 4 MiB | Captured independently; additional output is discarded. |
+| <code>Job stderr</code> | 4 MiB | Captured independently; additional output is discarded. |
+
+### Lifecycle
+
+Each plugin has an isolated local-module cache and search root. It may require another discovered plugin by ID only when that ID is declared in `dependencies`. Dependencies load first, and events are delivered in activation order, so dependencies receive an event before their dependents; `onon.config` receives each one last. Registration of actions, commands, and event subscriptions is allowed only while the plugin entrypoint is loading; `off(id)`, storage calls, timers, filesystem and HTTP operations, and jobs remain available afterward.
+
+A successful `:reload-config` replaces the Lua state and cancels all handles and jobs from the old generation without invoking their callbacks. If reload fails, the previous state and its operations remain active. A failed plugin load rolls back that plugin and cancels work it started. Viewer shutdown emits `shutdown` before runtime close; close then cancels remaining operations and jobs. Storage is keyed by plugin ID in the session database and survives reloads and application restarts.
+
+Supported events are `app_ready`, `document_open_pre`, `document_opened`, `document_close_pre`, `document_closed`, `document_reloaded`, `config_reloaded`, `mouse_button_pre`, `mouse_button`, `selection_changed`, `page_changed`, `zoom_changed`, `option_changed`, `tab_changed`, `tab_list_changed`, and `shutdown`. Each callback is given a table, listed in [Events](#events). `page_changed` and `zoom_changed` are emitted once per frame with the settled value, so a continuous gesture reports where it came to rest. Event callbacks run in subscription order within each plugin; returning true marks an event consumed where the host supports consumption but does not stop later callbacks.
+
+Plugins are found in every one of the platform plugin directories, and rescanned by `:reload-config`: on Linux `/usr/lib/onon/plugins`, `$XDG_DATA_HOME/onon/plugins` (or `~/.local/share/onon/plugins`), `$XDG_CONFIG_HOME/onon/plugins`, `~/.config/onon/plugins` and each `$XDG_CONFIG_DIRS/onon/plugins`; on macOS `~/Library/Application Support/onon/plugins` and `~/.config/onon/plugins`; on Windows `%LOCALAPPDATA%\onon\plugins` and `%APPDATA%\onon\plugins`. Where two have a plugin with the same id, the first wins. Disable plugin discovery with `--no-plugins`, or start from built-in defaults with `--no-config`, which also skips the generated settings file.
+
+## Single instance
+
+Instances are per document. Each tab listens on a socket named after the document it is showing, and the address follows the document when the tab opens another one. `--unique` hands the request to the tab already showing that document, which its window shows and brings forward, and exits; with no such window, this process opens it. `--tab` opens the document in a new tab of the window focused last, when that window's process was started with the same `--config`, `--no-config` and `--no-plugins`, even when another tab shows it; with `--unique` as well, a tab showing it is brought forward instead. With no document it opens an empty tab there. On macOS one process opens every window, so the system can gather them into tabs, and a document named on the command line goes to the running onon started with the same flags, as one Finder sends does: the tab showing it, or where `open_documents` says. `--goto PAGE` opens at a page and `--goto PAGE:X:Y` at a point on it, overriding any remembered session position, whether the work is done here or by an existing window. `--command TEXT` runs a viewer command there, as typed after `:`, including any command registered by a plugin. An unrecognised command exits non-zero. `X` and `Y` are points measured from the page's top-left corner, which is also SyncTeX's convention. Sockets live under `$XDG_RUNTIME_DIR/onon` on Linux, the per-user temporary directory on macOS, and `%LOCALAPPDATA%\onon` on Windows. They are mode 0600 and named by a hash of the document path, which keeps them within the platform socket length limit. A socket left by a crashed process is reclaimed on the next start.
