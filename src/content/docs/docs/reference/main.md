@@ -1320,7 +1320,7 @@ draws, with text fields, buttons and check boxes, placed in the window,
 pinned to a point or page, or docked.
 
 The spec may contain id, title, detail, rows, selected, scroll, query, searchable,
-filter, empty, columns, aside, prompt, modal, stack, width, height, anchor, at,
+filter, empty, columns, prompt, modal, stack, width, height, anchor, at,
 dock, resizable, draw, and the callbacks on_select, on_selection_changed,
 on_query_changed, on_input, on_submit, on_click, on_key, on_action,
 on_mouse, and on_close. Rows may be strings or row tables with text,
@@ -2135,7 +2135,6 @@ Create views with `local view = onon.ui.create(spec)`, then call `view:show()`. 
 | `filter` | Whether the query filters the rows; true unless set false, as for a view that sets its own rows for each query in `on_query_changed`. |
 | `empty` | What the list says when it has no rows. |
 | `columns` | Lays out rows' `cells` as a table: a list of columns, each with a `title`, a `width` (logical pixels, a percentage of the row, or `"*"`, the default, for a share of what the others leave) and an `align` (`left`, `center` or `right`). Titles show above the rows. |
-| `aside` | A part of the view beside its rows, under its header, that a function draws, as a file browser shows the file selected: `{ side =, width =, grow =, min_rows =, draw = }`. It sits on the view's `side`, `left` or `right` (the default), `width` wide: logical pixels, or a share of the view's own width (`"40%"` unless set), at most 60% of the view. With `grow`, true unless set, the view widens by it, as far as there is room; with `grow = false` the view keeps its width and the rows give way. Either way the view is as tall as its rows make it, or `min_rows` rows if that is more, as far as there is room, and the aside draws in what that leaves. `draw = function(canvas, box, state)` draws in it as a view's `draw` draws its body (see [Drawing a view](#drawing-a-view)); the aside is not scrolled, and its regions take no pointer events. The rows, their column titles and the scrollbar keep to the rest. `view:set_aside(aside)` changes it while the view is open, and `view:set_aside(nil)` takes it away. |
 
 A row is a string, its text, or a table of these fields. Other fields are the plugin's own, and come back with the row.
 
@@ -2223,7 +2222,7 @@ Everything a canvas draws out of sight, below or above what shows of the body, i
 | `on_mouse(event)` | For the pointer over the view, and after a press on it until the release; returning true keeps the view from handling it. `event.type` is `press`, `release`, `move`, `leave` or `wheel`; `event.x` and `event.y` are logical pixels from the top left of what the body draws, scrolled; `event.region` is the id of the region there; a press or release has `button` (`left`, `middle`, `right`, `x1` or `x2`) and a press `clicks`; a wheel has `dx` and `dy`, positive to the right and down. A press on a text field, button or check box goes to it instead. |
 | `on_close()` | When the view closes: by `view:close()` or, for a menu, the user, another menu replacing it, or the document closing. |
 
-View methods are `show()`, `close()`, `visible()`, `redraw()`, `size()`, `focus()`, `blur()`, `focused()`, `set_title(title)`, `set_detail(detail)`, `set_aside(aside)`, `set_rows(rows)`, `set_selected(index)`, `set_scroll(scroll)`, `set_query(query)`, `field(id)`, `fields()`, `set_field(id, text)`, `edit_row(index)`, `selected()`, `scroll()`, and `query()`. Selection indices are 1-based, with 0 meaning no selection. A drawn body's scroll is in logical pixels, a list's in rows. Once a view closes, its methods read the state it closed with, as `on_close` does, until it is shown again from its spec.
+View methods are `show()`, `close()`, `visible()`, `redraw()`, `size()`, `focus()`, `blur()`, `focused()`, `set_title(title)`, `set_detail(detail)`, `set_rows(rows)`, `set_selected(index)`, `set_scroll(scroll)`, `set_query(query)`, `field(id)`, `fields()`, `set_field(id, text)`, `edit_row(index)`, `selected()`, `scroll()`, and `query()`. Selection indices are 1-based, with 0 meaning no selection. A drawn body's scroll is in logical pixels, a list's in rows. Once a view closes, its methods read the state it closed with, as `on_close` does, until it is shown again from its spec.
 
 ```lua
 -- A sidebar of page thumbnails, docked left and resizable; clicking one
