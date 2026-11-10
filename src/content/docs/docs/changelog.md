@@ -6,6 +6,16 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.14.0
+
+Released 2026-11-10. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.0)
+
+### What's Changed
+* Expressive motion: tracks for every target and moment, reduced motion table by @Aethar01 in [#51](https://github.com/Aethar01/onon/pull/51)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.13.4...0.14.0
+
 ## 0.13.4
 
 Released 2026-11-05. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.13.4)
