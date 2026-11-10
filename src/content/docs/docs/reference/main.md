@@ -111,8 +111,6 @@ Fields left out keep the base theme's values. Assign a preset by name with `onon
 
 Colours are `"#RRGGBB"` or `{ r, g, b }`. The `alt` table holds the colours used in alternate-color mode, toggled with `:colors`, and has the same colour fields as the theme. The `font` table picks the UI font; with neither `family` nor `path` set it is the system's interface font.
 
-The `motion` table sets how the UI moves. Each transition is written as CSS writes one, a duration and an easing such as `"140ms ease-out"`, or as `{ duration = 140, easing = "ease-out" }`; easings are `linear`, `ease`, `ease-in`, `ease-out`, `ease-in-out` and `cubic-bezier(x1, y1, x2, y2)`, and `"none"` turns one transition off. By default everything moves, briefly: the selection, the cursor and the sides of the status bar glide to where they go, menus and messages fade in and out, and the bars and docked views slide in and out along the edges. `scale` slows or speeds every transition, and `0` turns motion off altogether, as the classic theme does.
-
 | Field | Type | Default | Description |
 |---|---|---|---|
 | <code>background</code> | color | <code>&#34;#e6e4dd&#34;</code> | Canvas behind the pages. |
@@ -152,13 +150,80 @@ The `motion` table sets how the UI moves. Each transition is written as CSS writ
 | <code>status_bar_style</code> | string | <code>&#34;bar&#34;</code> | Status bar layout: bar along the bottom of the window, or pill, floating over the page. |
 | <code>status_bar_padding</code> | integer | <code>10</code> | Horizontal status bar padding in logical pixels. |
 | <code>tab_bar_style</code> | string | <code>&#34;bar&#34;</code> | Tab bar layout: bar, along the window's edge, or pill, tabs floating over the page as pills. |
-| <code>motion.scale</code> | number | <code>1</code> | Speed of every transition: 1 as given, 2 twice as slow, 0 for no motion at all, as when the OS is set to reduce motion. |
-| <code>motion.panel</code> | transition | <code>&#34;120ms ease-out&#34;</code> | Menus and completion fading in as they open, and menus fading out as they close. |
-| <code>motion.selection</code> | transition | <code>&#34;80ms ease-out&#34;</code> | The selected row's highlight gliding to the next row selected. |
-| <code>motion.prompt</code> | transition | <code>&#34;100ms ease-out&#34;</code> | The sides of the status bar growing and shrinking with their text, as a pill does when a prompt opens. |
-| <code>motion.message</code> | transition | <code>&#34;150ms ease-out&#34;</code> | Status messages fading in, and out when cleared. |
-| <code>motion.cursor</code> | transition | <code>&#34;50ms ease-out&#34;</code> | The prompt's cursor gliding to where it moves. |
-| <code>motion.edges</code> | transition | <code>&#34;160ms ease-out&#34;</code> | The status bar, tab bar and docked views sliding in along the window's edges as they are shown, the bars sliding out as they are hidden, the page moving with them only where it must. |
+| <code>motion.scale</code> | number | <code>1</code> | Speed of every animation: 1 as given, 2 twice as slow, 0 for no motion at all. |
+| <code>motion.force_reduced</code> | boolean | <code>false</code> | Use reduced motion whether or not the OS asks for less motion. |
+| <code>motion.panel</code> | motion | <code>&#34;fade 120ms ease-out&#34;</code> | Menus, panels and completion opening and closing. A slide comes in from the side the view is anchored to. |
+| <code>motion.rows</code> | motion | <code>&#34;none&#34;</code> | A list's rows as its view opens and closes, one after another with stagger. |
+| <code>motion.selection</code> | motion | <code>&#34;glide 80ms ease-out&#34;</code> | The selected row's highlight moving to another row: glide moves it there, other tracks bring the new one in and take the old one out. |
+| <code>motion.overview_selection</code> | motion | <code>&#34;glide 80ms ease-out&#34;</code> | The outline round the overview's selected page moving to another, as selection does. |
+| <code>motion.prompt</code> | motion | <code>&#34;glide 100ms ease-out&#34;</code> | The sides of the status bar growing and shrinking with their text, as a pill does when a prompt opens; only its timing and glide count. |
+| <code>motion.message</code> | motion | <code>&#34;fade 150ms ease-out&#34;</code> | Status messages coming in, and going once cleared. |
+| <code>motion.cursor</code> | motion | <code>&#34;glide 50ms ease-out&#34;</code> | The text cursor moving, as selection does. |
+| <code>motion.edges</code> | motion | <code>&#34;slide 160ms ease-out&#34;</code> | The status bar, tab bar and docked views coming in along the window's edges as they are shown and going as they are hidden, the page moving with them only where it must. The timing moves the page; the tracks follow it, a slide by default. |
+| <code>motion.title_bar</code> | motion | <code>&#34;fade 160ms linear&#34;</code> | The window's buttons over the page appearing as the pointer reaches the top of the window. |
+| <code>motion.reduced</code> | string | <code>&#34;fade&#34;</code> | The motion while motion is reduced: fade, the motion with only its fades; none; full, the motion as it is; or a motion table, over base. |
+| <code>motion.reduced.base</code> | string | <code>&#34;fade&#34;</code> | What reduced motion starts from: fade, the motion with only its fades; none; or full, the motion as it is. |
+| <code>motion.reduced.scale</code> | number | <code>nil</code> | Speed of every animation while motion is reduced; the motion's scale unless set. |
+
+### Motion
+
+The `motion` table sets how the UI moves. Each thing that moves is a target, with an animation for each moment it moves at: `enter` as it comes, `exit` as it goes, or `change` as it moves to another place, as the selection does. By default everything moves, briefly: the selection, the cursor and the sides of the status bar glide to where they go, menus and messages fade in and out, and the bars and docked views slide in and out along the edges.
+
+```lua
+onon.theme.motion = {
+  panel = { enter = "fade rise zoom 160ms ease-out", exit = "fade 90ms" },
+  rows = { enter = "fade x:-6px 120ms ease-out stagger:15ms" },
+  selection = "crossfade 80ms",
+  message = "fade slide from:left 200ms spring(220, 22)",
+  edges = "240ms cubic-bezier(0.22, 1, 0.36, 1)",
+}
+```
+
+An animation written as text is a list of words in any order: effects and tracks, a duration and then a delay, an easing, and `delay:`, `stagger:` and `from:`. `"none"` turns it off. Written with no effects or tracks, as `"140ms ease-out"`, it changes only the timing and keeps the effects it had; a duration without an easing eases as CSS does by default, with `ease`. Set for a target, it is that target's animation at each of its moments; a table of `enter`, `exit` or `change` sets them one at a time.
+
+| Word | Meaning |
+|---|---|
+| `fade`, `crossfade` | Opacity from 0. |
+| `rise`, `drop` | Up from 12px below, or down from 12px above. |
+| `zoom`, `pop` | Scale from 0.95, or from 0.8. |
+| `slide` | In from out of the window, on its side: the side a view is anchored to (from below for one in the middle), the edge a bar lines, or the left for rows. |
+| `wipe` | Uncovered from its side. |
+| `glide` | For a change: moves the thing itself to where it goes. Without it, the new one comes in with the tracks and the old one goes. |
+| `opacity:v`, `x:v`, `y:v`, `scale:v`, `slide:v`, `clip:v` | A track: the value while hidden, from which it comes in and to which it goes out. `x`, `y` and `slide` are lengths, in px or in % of the thing's own size; `slide:auto` goes out of the window, and `slide:left` goes towards a side. `clip` is how much is cut away, from 0 to 1. `from>to`, as `opacity:0.5>1`, moves from one to the other either way. |
+| `from:side` | The side `slide` and `wipe` go to: `top`, `bottom`, `left` or `right`. |
+| `140ms`, `0.14s` | The duration; a second one is the delay. |
+| `delay:40ms`, `stagger:15ms` | Wait before starting; for rows, each waits that much longer than the one before. |
+| easings | `linear`, `ease`, `ease-in`, `ease-out`, `ease-in-out`, `cubic-bezier(x1, y1, x2, y2)`, `steps(n)`, or `spring(stiffness, damping)`, a spring that settles over the duration and overshoots when damping is low. |
+
+As a table, an animation has `duration`, `delay` and `stagger` (milliseconds, or text such as `"140ms"`), `easing` (text, or a Lua function from the time through the change, 0 to 1, to how far it is), `glide`, `effect` (text, as above), `from`, and its tracks, each a value as written after its name, `{ from, to }`, or a table with its own `duration`, `delay`, `easing` and `side`:
+
+```lua
+onon.theme.motion.panel = {
+  enter = {
+    opacity = 0,
+    y = "16px",
+    scale = { 0.9, 1, duration = 320, easing = "spring(170, 18)" },
+    duration = 160,
+    easing = function(t) return 1 - (1 - t) ^ 3 end,
+  },
+  exit = "fade 90ms",
+}
+```
+
+Targets: `panel` (enter, exit), `rows` (enter, exit), `selection` (change), `overview_selection` (change), `prompt` (change), `message` (enter, exit), `cursor` (change), `edges` (enter, exit), `title_bar` (enter, exit). What each moves is in the table above.
+
+`reduced` is the motion used instead when the OS asks for less motion, as macOS's Reduce motion or GNOME's animations switch do, or `force_reduced` is true. It is `"fade"` by default: the motion with only its fades, so nothing glides, slides or grows and the bars and the page do not move. `"none"` is no motion and `"full"` the motion as it is. A table is a whole motion table of its own, over its `base`, `fade` unless it says; what it leaves out comes from the base:
+
+```lua
+onon.theme.motion.reduced = {
+  base = "none",
+  panel = "fade 80ms",
+  selection = "crossfade 60ms",
+  scale = 1,
+}
+```
+
+A view can move its own way: `onon.ui.create` takes `motion`, as a target's animation for its panel, or a table of `enter` and `exit` for the panel and `panel`, `rows`, `selection` and `cursor` for what moves in it. A draw function can move its own values with `canvas:animate(key, target [, animation])`, which returns where the value named `key` is on its way to `target`, gliding as the animation's timing says, `"200ms ease-out"` unless given.
 
 ### Elements
 
@@ -271,6 +336,7 @@ The canvas's coordinates are logical pixels from the box's top left, and may rea
 | <code>canvas:text(x, y, text, color [, bold])</code> | Text with the top of its line at y, in the UI font; returns its width. |
 | <code>canvas:measure(text [, bold])</code> | Nothing; returns the width and line height of text. |
 | <code>canvas:path()</code> | Nothing; returns an empty path, with the methods a shape function's path has. |
+| <code>canvas:animate(key, target [, animation])</code> | Nothing; returns where the value named key is on its way to target, gliding as the animation's timing says (see Motion). |
 
 Colours are written as in the elements table, and the element's `opacity` applies to them. Panels and the link preview draw their border over their contents, which they do only when the function called `canvas:default()`. If the function fails, the element is drawn as it would be without it, the error is reported once, and the function is not called again until the configuration changes.
 
@@ -1259,6 +1325,7 @@ Create views with `local view = onon.ui.create(spec)`, then call `view:show()`. 
 | `attach` | Attaches the view to something it moves with: `{ view = other }`, another view, beside its selected row with its first row level with it, as a submenu is; or a box, `{ x = 10, y = 40, w = 120, h = 20 }` in the window or with `page` on a page, as `at` takes a point, below it as a dropdown is. `side` (`right`, `left`, `below` or `above`) is the side tried first; without room there it takes the other, and is kept in the window. While what it is attached to is not shown, it sits at its `anchor`. |
 | `dock` | `left`, `right`, `top` or `bottom`: a panel against that side of the window, its `width` or `height` taken from the document, which lays itself out beside it. Panels docked to the same side stack inwards in the order they open. |
 | `order` | For a docked view: where it sits among the bars and docked views along the window's edges, each taking its side of what those of lower order leave. The status bar is 10 (`status_bar_order`), the tab bar 20 (`tab_bar_order`) and docked views 30 unless they say, so by default a view docked at the bottom sits above the status bar, and one docked at the left stops at it; with `order = 0` it takes its side of the whole window. |
+| `motion` | How the view moves: an animation for it to come in and go with, or a table of `enter` and `exit` for it and `rows`, `selection` and `cursor` for what moves in it, over the theme's `motion`, as `motion = { enter = "slide 200ms", rows = "fade 80ms stagger:10ms" }`. |
 | `resizable` | For a docked view: its inner edge can be dragged to resize it. `view:size()` gives a view's width and height. |
 
 #### Lists
@@ -1307,6 +1374,7 @@ A row is a string, its text, or a table of these fields. Other fields are the pl
 | <code>canvas:clip(x, y, w, h)</code> | Nothing; limits what is drawn after to the rect, until `canvas:clip()`. |
 | <code>canvas:image(path, x, y [, w [, h]])</code> | A PNG, JPEG, GIF, WebP or BMP file, a path not absolute being from the configuration's directory, at its size in logical pixels, or a width or height given, keeping its proportions if only one is. It reloads when the file changes. Returns its width and height. |
 | <code>canvas:page(page, x, y, w [, h [, area]])</code> | The page, turned as the document's are: its thumbnail fitted to the width, or within the width and height, rendering as it is first drawn. With `area`, `{ x =, y = [, zoom =] }`, the part of the page from that point, in its points, at the box's top left, at `zoom` times the document's zoom (1 unless set), drawn sharp from the page's tiles; it needs a height. Returns its width and height. |
+| <code>canvas:animate(key, target [, animation])</code> | Nothing; returns where the value named `key` is on its way to `target`, gliding as the animation's timing says, `"200ms ease-out"` unless given; a value not asked for on the frame before is at its target. Return true from the draw function while it moves. |
 | <code>canvas:region(id, x, y, w, h)</code> | Nothing; names the rect for the pointer events over it, which carry the id. Returns whether the pointer is over it, for drawing it hovered. |
 | <code>canvas:input(id, x, y, w [, options])</code> | The text field `id`, `w` wide, with options `placeholder`, `secret` (bullets for a password) and `lines` (more than one wraps and takes newlines). Returns its width and height. See [Typing](#typing). |
 | <code>canvas:button(id, x, y, w, label)</code> | A button, `w` wide, clicked with the pointer, or with Space or Enter when Tab reaches it; `on_click(id)` hears of it. Returns its width and height. |
