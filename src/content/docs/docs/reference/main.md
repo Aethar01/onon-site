@@ -2,8 +2,6 @@
 title: "Development version"
 description: "Reference for onon's main branch, which may change before the next release."
 editUrl: false
-tableOfContents:
-  maxHeadingLevel: 2
 ---
 
 
