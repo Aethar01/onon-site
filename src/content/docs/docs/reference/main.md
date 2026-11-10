@@ -1717,6 +1717,7 @@ What `onon.plugin.register` and `require("plugin-id")` return; `onon.config` is 
 | <code>on(event, callback)</code> | function | Calls `callback(payload)` for each event; see [Events](#events). Returns the subscription's ID, an integer. |
 | <code>off(id)</code> | function | Removes the subscription `on` returned `id` for. |
 | <code>job(spec, callback)</code> | function | Starts a [Job spec](#job-spec)'s process, calling `callback` with its [Job result](#job-result). Returns a [Handle](#handle). |
+| <code>open_document(path[, callback])</code> | function | Opens a local document without a tab, calling `callback` with a [Background document result](#background-document-result) once it opened or failed. Returns a [Background document](#background-document). |
 
 #### Action spec
 
@@ -1891,6 +1892,35 @@ A `plugin:job` result. `success` needs the process to exit with 0, in time.
 | <code>code</code> | integer | The exit code, or -1 when there is none. |
 | <code>stdout</code> | string | Its standard output. |
 | <code>stderr</code> | string | Its standard error. |
+
+#### Background document
+
+**Source:** `plugin:open_document()`
+
+A document `plugin:open_document` opened without a tab, to read or draw a file other than the one shown. It is not in the tabs, the recent files or the session. At most 8 are open at once: opening another closes the one used least recently. They close when the configuration reloads. `metadata`, `outline` and `page_info` raise an error unless it is open.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>path</code> | string | The document's absolute path. |
+| <code>state()</code> | function | Returns `opening`, `open`, `failed` or `closed`. |
+| <code>page_count()</code> | function | Returns its number of pages; 0 unless it is open. |
+| <code>error()</code> | function | Returns why it failed to open, such as `password required`; else empty. |
+| <code>metadata()</code> | function | Returns its [Document metadata](#document-metadata), as `onon.document.metadata()` does the shown document's. |
+| <code>outline()</code> | function | Returns its outline, a list of [Outline entry](#outline-entry) tables. |
+| <code>page_info(page)</code> | function | Returns [Page info](#page-info) for a 1-based page. |
+| <code>page_text(page, callback)</code> | function | Reads a page's text asynchronously, as `plugin.document:page_text` does. Returns a [Handle](#handle). |
+| <code>page_links(page, callback)</code> | function | Reads a page's links asynchronously, as `plugin.document:page_links` does. Returns a [Handle](#handle). |
+| <code>close()</code> | function | Closes it, with the pages drawn of it. |
+
+#### Background document result
+
+**Source:** `plugin:open_document()` callback
+
+What `plugin:open_document`'s callback is given. `success` is whether it opened.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>page_count</code> | integer | Its number of pages; 0 if it failed. |
 
 #### Page text result
 
@@ -2115,6 +2145,7 @@ A row is a string, its text, or a table of these fields. Other fields are the pl
 | <code>canvas:clip(x, y, w, h)</code> | Nothing; limits what is drawn after to the rect, until `canvas:clip()`. |
 | <code>canvas:image(path, x, y [, w [, h]])</code> | A PNG, JPEG, GIF, WebP or BMP file, a path not absolute being from the configuration's directory, at its size in logical pixels, or a width or height given, keeping its proportions if only one is. It reloads when the file changes. Returns its width and height. |
 | <code>canvas:page(page, x, y, w [, h [, area]])</code> | The page, turned as the document's are: its thumbnail fitted to the width, or within the width and height, rendering as it is first drawn. With `area`, `{ x =, y = [, zoom =] }`, the part of the page from that point, in its points, at the box's top left, at `zoom` times the document's zoom (1 unless set), drawn sharp from the page's tiles; it needs a height. Returns its width and height. |
+| <code>canvas:document_page(doc, page, x, y, w [, h])</code> | A page of a [Background document](#background-document), fitted to the width, or within the width and height, upright: the page's colour until it renders, which it does once first drawn, and nothing for a page it does not have or a document that failed to open. Returns its width and height. |
 | <code>canvas:animate(key, target [, animation])</code> | Nothing; returns where the value named `key` is on its way to `target`, gliding as the animation's timing says, `"200ms ease-out"` unless given; a value not asked for on the frame before is at its target. Return true from the draw function while it moves. |
 | <code>canvas:region(id, x, y, w, h)</code> | Nothing; names the rect for the pointer events over it, which carry the id. Returns whether the pointer is over it, for drawing it hovered. |
 | <code>canvas:input(id, x, y, w [, options])</code> | The text field `id`, `w` wide, with options `placeholder`, `secret` (bullets for a password) and `lines` (more than one wraps and takes newlines). Returns its width and height. See [Typing](#typing). |
@@ -2135,6 +2166,7 @@ The fields, buttons and check boxes take the theme's `input`, `input_focused`, `
 | <code>col:button(id, label [, width])</code> | A button, the column's width unless given. |
 | <code>col:checkbox(id, label, checked)</code> | A check box. |
 | <code>col:page(page [, height [, area]])</code> | A page, or part of one, the column's width. |
+| <code>col:document_page(doc, page [, height])</code> | A page of a [Background document](#background-document), the column's width. |
 | <code>col:image(path [, w [, h]])</code> | An image. |
 | <code>col:space(height)</code> | Nothing; moves down. |
 | <code>col:y()</code> | Nothing; returns where the next thing goes. |
