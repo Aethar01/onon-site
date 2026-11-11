@@ -1,6 +1,6 @@
 ---
 title: "Reference"
-description: "Every option, command, Lua function, key and action in onon 0.14.11."
+description: "Every option, command, Lua function, key and action in onon 0.14.12."
 editUrl: false
 ---
 
@@ -356,7 +356,14 @@ onon.theme.elements.panel = { shader = "frost.glsl", fill = "panel/40" }
 | <code>iAlt</code> | float | 1 when alternate colours are on, otherwise 0. |
 | <code>iShape(coord)</code> | float | How far coord is from the edge of the element's shape in pixels, negative inside it, for a rect or pill. |
 
-The alpha the shader gives is how much of it shows, and the element's `opacity` applies to it. Shaders are experimental, and run only with `onon.options.shaders = true`, read when onon starts; until then, choosing a theme with shaders with `:theme` says they are off. They run on SDL's GPU renderer, which `renderer = "auto"` uses where it can start once shaders are on; other renderers draw the element without its shader, so give it a `fill` that stands on its own. If a shader fails to compile, the error is reported once, with the line it is on, and the element is drawn without it until the configuration changes.
+The alpha the shader gives is how much of it shows, and the element's `opacity` applies to it. Shaders are experimental, and run only with `onon.options.shaders = true`, read when onon starts; until then, choosing a theme with shaders with `:theme` says they are off. They run on SDL's GPU renderer, which `renderer = "auto"` uses where it can start once shaders are on; other renderers draw the element without its shader, so give it a `fill` that stands on its own. A theme can read `onon.options.shaders` to style itself for either, as a translucent fill over its shader with them on and a solid one without:
+
+```lua
+local shaders = onon.options.shaders
+return { elements = { panel = { shader = "frost.glsl", fill = shaders and "panel/40" or "panel" } } }
+```
+
+If a shader fails to compile, the error is reported once, with the line it is on, and the element is drawn without it until the configuration changes.
 
 #### Drawing
 
