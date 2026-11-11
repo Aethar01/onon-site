@@ -6,6 +6,17 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.14.9
+
+Released 2026-11-11. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.9)
+
+### What's Changed
+* Carry the jump list across documents and runs, as Vim does by @Aethar01 in [#70](https://github.com/Aethar01/onon/pull/70)
+* Give macOS key events the modifiers of their key press by @Aethar01 in [#37](https://github.com/Aethar01/onon/pull/37)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.14.8...0.14.9
+
 ## 0.14.8
 
 Released 2026-11-11. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.8)
