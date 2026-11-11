@@ -1,6 +1,6 @@
 ---
 title: "Reference"
-description: "Every option, command, Lua function, key and action in onon 0.14.9."
+description: "Every option, command, Lua function, key and action in onon 0.14.10."
 editUrl: false
 ---
 
@@ -63,12 +63,13 @@ Assign options with `onon.options.<name> = <value>` in Lua or `:set <name>=<valu
 | <code>render_mode</code> | string | <code>&#34;continuous&#34;</code> | Initial render mode: continuous or single. |
 | <code>render_oversample</code> | number | <code>1</code> | Render scale multiplier; values above 1 supersample. |
 | <code>render_threads</code> | integer | <code>0</code> | Page rendering threads; 0 picks one per core up to 4, leaving a core free. Applies to newly opened documents. |
-| <code>renderer</code> | string | <code>&#34;auto&#34;</code> | Renderer SDL draws with, read when onon starts: "auto" for SDL's own choice, "gpu" for its GPU renderer (Vulkan, Metal or Direct3D 12), or one of SDL's drivers, such as "vulkan", "opengl", "metal", "direct3d11" or "software". One that cannot start falls back to "auto"; SDL_RENDER_DRIVER in the environment overrides it. |
+| <code>renderer</code> | string | <code>&#34;auto&#34;</code> | Renderer SDL draws with, read when onon starts: "auto" for SDL's own choice, or with shaders on its GPU renderer where that can start, "gpu" for the GPU renderer (Vulkan, Metal or Direct3D 12), or one of SDL's drivers, such as "vulkan", "opengl", "metal", "direct3d11" or "software". One that cannot start falls back to "auto"; SDL_RENDER_DRIVER in the environment overrides it. |
 | <code>restore_tabs</code> | boolean | <code>true</code> | Open the tabs the window had when onon last closed with several, when it starts with no document named, each loaded when first shown. |
 | <code>scroll_off</code> | integer | <code>1</code> | Minimum number of rows kept visible above and below the selected item in UI menus, like Vim's scrolloff. |
 | <code>scroll_step</code> | integer | <code>64</code> | Keyboard and mouse scroll distance in pixels. |
 | <code>sequence_timeout_ms</code> | integer | <code>700</code> | Maximum delay between keys in a binding sequence. |
 | <code>session_database</code> | boolean | <code>true</code> | Persist per-document view state, marks, and recent files. |
+| <code>shaders</code> | boolean | <code>false</code> | Experimental: run themes' GLSL shaders. They run only on SDL's GPU renderer, which renderer "auto" then uses where it can start, so it is read when onon starts; with it off, elements are drawn without their shaders. |
 | <code>smooth_scroll</code> | table | <code>{ mouse = true, trackpad = true, keyboard = true }</code> | Animate scrolling for selected inputs; assignments update only specified mouse, trackpad, and keyboard fields. |
 | <code>smooth_scroll_dampening</code> | number | <code>0.8</code> | Catch-up factor for smooth scrolling per animation frame; higher values are more responsive and less damped; clamped to 0.01 through 1. |
 | <code>smooth_zoom</code> | table | <code>{ mouse = true, trackpad = true, keyboard = true }</code> | Animate zooming for selected inputs; assignments update only specified mouse, trackpad, and keyboard fields. |
@@ -104,7 +105,7 @@ onon.theme = {
 
 `require` searches the configuration file's directory first, so a theme can live in a file of its own beside `config.lua`. Have it return its table, as `themes/forest.lua` holding `return { accent = "#2f5d3a" }`, and apply it with `onon.theme = require("themes.forest")`; dots in the name are directories, and `require("forest")` would load `forest.lua`.
 
-`:theme` lists the built-in themes and the theme files, each named for its file: those in `themes/` beside `config.lua`, then those in each directory plugins are searched for with `themes` in place of `plugins`, as `/usr/lib/onon/themes` and `~/.config/onon/themes` on Linux. Where two directories have a file of the same name, the first wins. `:theme` shows each one as it is selected: Enter keeps it, Esc puts back the theme before, and `:theme <name>` switches straight to one. A file named for a built-in theme is left out. The theme chosen is remembered and applied before `config.lua` runs, so what `config.lua` changes field by field, as `onon.theme.accent = "#335533"` does, changes the chosen theme too; assigning `onon.theme` whole replaces it, and `:theme` then says that a theme it picks lasts only until onon restarts.
+`:theme` lists the built-in themes and the theme files, each named for its file: those in `themes/` beside `config.lua`, then those in each directory plugins are searched for with `themes` in place of `plugins`, as `/usr/lib/onon/themes` and `~/.config/onon/themes` on Linux. Directories under each of them are searched too, so a theme can be kept in a directory of its own with the shaders and images it draws with, as `themes/liquid/liquid.lua` beside `liquid.glsl`. Where two directories have a file of the same name, the first wins, and within one the file nearest it. `:theme` shows each one as it is selected: Enter keeps it, Esc puts back the theme before, and `:theme <name>` switches straight to one. A file named for a built-in theme is left out. The theme chosen is remembered and applied before `config.lua` runs, so what `config.lua` changes field by field, as `onon.theme.accent = "#335533"` does, changes the chosen theme too; assigning `onon.theme` whole replaces it, and `:theme` then says that a theme it picks lasts only until onon restarts.
 
 Fields left out keep the base theme's values. Assign a preset by name with `onon.theme = "birch"`, or a single field with `onon.theme.accent = "#335533"`; at runtime use `:set theme=birch` or `:set theme.accent=#335533`. Built-in themes: `birch`, `classic`, and `moss`. `onon.themes.<name>` gives a copy of one to change. Fields and element properties this version does not know are skipped with a warning, so a theme written for a newer version still loads; `:set` refuses them.
 
@@ -262,42 +263,43 @@ Colours name a palette colour, which follows the color mode, or are `"#RRGGBB"`,
 | <code>max_width</code> | number | The widest the element may be, in logical pixels; 0 for no limit. |
 | <code>gap</code> | number | Space between the element's parts in logical pixels. |
 | <code>floating</code> | boolean | Float over the page rather than take space from it. |
+| <code>shader</code> | string | File of a GLSL shader drawn in the box, under its fill, with what is behind the box to draw from; beside the theme's file unless absolute, and "" for none. See [Shaders](#shaders). |
 | <code>draw</code> | function | A function(canvas, box, state) that draws the box in place of the default drawing. See [Drawing](#drawing). |
 
-Every element starts from `shape = "rect", radius = 0, fill = "none", border = { width = 0, color = "border", sides = "all" }, shadow = "none", opacity = 1, text = "foreground", secondary = "muted", bold = false, padding = 0, margin = 0, width = 1, min_width = 0, max_width = 0, gap = 0, floating = false, draw = nil`. The elements, with what their styles change from that in the default theme:
+Every element starts from `shape = "rect", radius = 0, fill = "none", border = { width = 0, color = "border", sides = "all" }, shadow = "none", opacity = 1, text = "foreground", secondary = "muted", bold = false, padding = 0, margin = 0, width = 1, min_width = 0, max_width = 0, gap = 0, floating = false, shader = "", draw = nil`. The elements, with what their styles change from that in the default theme:
 
 | Element | Description | Properties | Default style |
 |---|---|---|---|
-| <code>panel</code> | Menus and other floating panels. Its padding surrounds a menu's header and rows. | shape, radius, fill, border, shadow, opacity, draw, padding | <code>radius = 3, fill = &#34;panel&#34;, border = { width = 1 }, shadow = &#34;0 2 1 0 shadow&#34;, padding = { 0, 0, 8, 0 }</code> |
-| <code>completion</code> | The completion panel above the prompt. Its padding surrounds its rows. Starts from <code>panel</code>. | shape, radius, fill, border, shadow, opacity, draw, padding | <code>radius = 3, fill = &#34;panel&#34;, border = { width = 1 }, shadow = &#34;0 2 1 0 shadow&#34;, padding = { 4, 0 }</code> |
-| <code>header</code> | A menu's title, a line of text with its padding around it. Its secondary colour is for the count or query after the title, set off by gap. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding, gap | <code>radius = { 3, 3, 0, 0 }, border = { width = 1, sides = &#34;bottom&#34; }, bold = true, padding = { 4, 14 }, gap = 8</code> |
-| <code>row</code> | A row of a menu or of completion. Its secondary colour is for key bindings and the detail on the right. Its padding above and below sets the height of rows. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding | <code>padding = { 4, 14 }</code> |
-| <code>row_selected</code> | The selected row. Starts from <code>row</code>. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding | <code>fill = &#34;accent/10&#34;, border = { width = 3, color = &#34;accent&#34;, sides = &#34;left&#34; }, padding = { 4, 14 }</code> |
-| <code>row_disabled</code> | A row that cannot be chosen. Starts from <code>row</code>. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding | <code>text = &#34;muted&#34;, padding = { 4, 14 }</code> |
-| <code>heading</code> | A section title among a menu's rows. Starts from <code>row</code>. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding | <code>text = &#34;accent&#34;, bold = true, padding = { 4, 14 }</code> |
-| <code>button</code> | A button in a menu, such as the keybind menu's Add a key…. Starts from <code>row</code>. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding | <code>radius = 3, text = &#34;accent&#34;, bold = true, padding = { 4, 14 }</code> |
-| <code>scrollbar</code> | The thumb of a menu's scrollbar; margin.right sets it off the panel's edge. | shape, radius, fill, border, shadow, opacity, draw, width, margin | <code>shape = &#34;pill&#34;, fill = &#34;muted/56&#34;, margin = { 0, 5, 0, 0 }, width = 4</code> |
-| <code>swatch</code> | A colour sample before a row's text, gap before the text. | shape, radius, fill, border, shadow, opacity, draw, gap | <code>radius = 1.5, border = { width = 1 }, gap = 8</code> |
-| <code>status</code> | The status bar as a whole: margin sets it off the window's edges, gap between its sides, and floating draws it over the page instead of below it. | shape, radius, fill, border, shadow, opacity, draw, margin, gap, floating | <code>fill = &#34;status_bar&#34;, border = { width = 1, sides = &#34;top&#34; }</code> |
-| <code>status_left</code> | The left of the status bar, holding messages and prompts. Its padding above and below sets the bar's height. | shape, radius, fill, border, shadow, opacity, draw, text, padding | <code>padding = { 4, 10 }</code> |
-| <code>status_right</code> | The right of the status bar; the sides of its padding set its text in. Starts from <code>status_left</code>. | shape, radius, fill, border, shadow, opacity, draw, text, padding | <code>text = &#34;muted&#34;, padding = { 4, 10 }</code> |
+| <code>panel</code> | Menus and other floating panels. Its padding surrounds a menu's header and rows. | shape, radius, fill, border, shadow, opacity, shader, draw, padding | <code>radius = 3, fill = &#34;panel&#34;, border = { width = 1 }, shadow = &#34;0 2 1 0 shadow&#34;, padding = { 0, 0, 8, 0 }</code> |
+| <code>completion</code> | The completion panel above the prompt. Its padding surrounds its rows. Starts from <code>panel</code>. | shape, radius, fill, border, shadow, opacity, shader, draw, padding | <code>radius = 3, fill = &#34;panel&#34;, border = { width = 1 }, shadow = &#34;0 2 1 0 shadow&#34;, padding = { 4, 0 }</code> |
+| <code>header</code> | A menu's title, a line of text with its padding around it. Its secondary colour is for the count or query after the title, set off by gap. | shape, radius, fill, border, shadow, opacity, shader, draw, text, secondary, bold, padding, gap | <code>radius = { 3, 3, 0, 0 }, border = { width = 1, sides = &#34;bottom&#34; }, bold = true, padding = { 4, 14 }, gap = 8</code> |
+| <code>row</code> | A row of a menu or of completion. Its secondary colour is for key bindings and the detail on the right. Its padding above and below sets the height of rows. | shape, radius, fill, border, shadow, opacity, shader, draw, text, secondary, bold, padding | <code>padding = { 4, 14 }</code> |
+| <code>row_selected</code> | The selected row. Starts from <code>row</code>. | shape, radius, fill, border, shadow, opacity, shader, draw, text, secondary, bold, padding | <code>fill = &#34;accent/10&#34;, border = { width = 3, color = &#34;accent&#34;, sides = &#34;left&#34; }, padding = { 4, 14 }</code> |
+| <code>row_disabled</code> | A row that cannot be chosen. Starts from <code>row</code>. | shape, radius, fill, border, shadow, opacity, shader, draw, text, secondary, bold, padding | <code>text = &#34;muted&#34;, padding = { 4, 14 }</code> |
+| <code>heading</code> | A section title among a menu's rows. Starts from <code>row</code>. | shape, radius, fill, border, shadow, opacity, shader, draw, text, secondary, bold, padding | <code>text = &#34;accent&#34;, bold = true, padding = { 4, 14 }</code> |
+| <code>button</code> | A button in a menu, such as the keybind menu's Add a key…. Starts from <code>row</code>. | shape, radius, fill, border, shadow, opacity, shader, draw, text, secondary, bold, padding | <code>radius = 3, text = &#34;accent&#34;, bold = true, padding = { 4, 14 }</code> |
+| <code>scrollbar</code> | The thumb of a menu's scrollbar; margin.right sets it off the panel's edge. | shape, radius, fill, border, shadow, opacity, shader, draw, width, margin | <code>shape = &#34;pill&#34;, fill = &#34;muted/56&#34;, margin = { 0, 5, 0, 0 }, width = 4</code> |
+| <code>swatch</code> | A colour sample before a row's text, gap before the text. | shape, radius, fill, border, shadow, opacity, shader, draw, gap | <code>radius = 1.5, border = { width = 1 }, gap = 8</code> |
+| <code>status</code> | The status bar as a whole: margin sets it off the window's edges, gap between its sides, and floating draws it over the page instead of below it. | shape, radius, fill, border, shadow, opacity, shader, draw, margin, gap, floating | <code>fill = &#34;status_bar&#34;, border = { width = 1, sides = &#34;top&#34; }</code> |
+| <code>status_left</code> | The left of the status bar, holding messages and prompts. Its padding above and below sets the bar's height. | shape, radius, fill, border, shadow, opacity, shader, draw, text, padding | <code>padding = { 4, 10 }</code> |
+| <code>status_right</code> | The right of the status bar; the sides of its padding set its text in. Starts from <code>status_left</code>. | shape, radius, fill, border, shadow, opacity, shader, draw, text, padding | <code>text = &#34;muted&#34;, padding = { 4, 10 }</code> |
 | <code>prompt</code> | A prompt's prefix, such as : or /. | text | <code>text = &#34;accent&#34;</code> |
-| <code>prompt_box</code> | A prompt in a box of its own, where the prompts option places it away from the status bar. Its padding surrounds its line of text. Starts from <code>panel</code>. | shape, radius, fill, border, shadow, opacity, draw, text, padding | <code>radius = 3, fill = &#34;panel&#34;, border = { width = 1 }, shadow = &#34;0 2 1 0 shadow&#34;, padding = { 6, 14 }</code> |
-| <code>cursor</code> | The text cursor in a prompt. | shape, radius, fill, border, shadow, opacity, draw, width | <code>fill = &#34;accent&#34;</code> |
-| <code>input_selection</code> | Selected text in a prompt. | shape, radius, fill, border, shadow, opacity, draw | <code>fill = &#34;accent/30&#34;</code> |
-| <code>input</code> | A text field a plugin's view draws. Its secondary colour is for the placeholder. Starts from <code>row</code>. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding | <code>radius = 1.5, fill = &#34;background&#34;, border = { width = 1 }, padding = { 4, 6 }</code> |
-| <code>input_focused</code> | The text field typing goes to. Starts from <code>input</code>. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding | <code>radius = 1.5, fill = &#34;background&#34;, border = { width = 1, color = &#34;accent&#34; }, padding = { 4, 6 }</code> |
-| <code>button_focused</code> | A button a plugin's view draws, under the pointer or with the keys, which Space or Enter clicks. Starts from <code>button</code>. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding | <code>radius = 3, fill = &#34;accent/10&#34;, text = &#34;accent&#34;, bold = true, padding = { 4, 14 }</code> |
-| <code>check</code> | The mark in a checked check box, drawn in the box; a check box's box is an input. | shape, radius, fill, border, shadow, opacity, draw | <code>radius = 0.75, fill = &#34;accent&#34;</code> |
-| <code>hint</code> | A link hint label. Its secondary colour is for the letters already typed. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding | <code>radius = 1.5, fill = &#34;accent&#34;, text = &#34;hint_foreground&#34;, secondary = &#34;hint_foreground/55&#34;, bold = true, padding = { 2, 5 }</code> |
-| <code>overview_selection</code> | The outline around the overview's selected page; padding is its distance from the page. | shape, radius, fill, border, shadow, opacity, draw, padding | <code>radius = 3, border = { width = 2.5, color = &#34;accent&#34; }, padding = 3</code> |
-| <code>link_preview</code> | The popup previewing a link's target, a rect with corners rounded by its radius. Its fill shows while the page renders. | radius, fill, border, shadow, opacity, draw | <code>radius = 3, fill = &#34;page&#34;, border = { width = 1 }, shadow = &#34;0 2 1 0 shadow&#34;</code> |
-| <code>title_bar</code> | Behind the window buttons onon draws where the system draws no title bar, as on Windows. Its text colour draws the buttons' symbols. | shape, radius, fill, border, shadow, opacity, draw, text | <code>fill = &#34;status_bar&#34;</code> |
-| <code>title_button</code> | A window button under the pointer, drawn a little fainter while pressed. | shape, radius, fill, border, shadow, opacity, draw, text | <code>fill = &#34;foreground/15&#34;</code> |
-| <code>title_close</code> | The close button under the pointer. Starts from <code>title_button</code>. | shape, radius, fill, border, shadow, opacity, draw, text | <code>fill = &#34;#c42b1c&#34;, text = &#34;#ffffff&#34;</code> |
-| <code>tab_bar</code> | onon's tab bar, where tab_bar_position puts it and tab_bar_visible shows it, wherever the system draws no tabs of its own. Its padding surrounds the tabs, margin sets it off the window's edges, gap is the space between tabs, and floating draws it over the page instead of beside it, as the status bar's does; a theme with tab_bar_style = "pill" floats its tabs as pills. In the title row, floating tabs sit their top margin below the window's top, or centred on the window's buttons if that is lower. Border sides and margins are given as for a bar at the top, and turn with the bar: its bottom is the side facing the document. | shape, radius, fill, border, shadow, opacity, draw, padding, margin, gap, floating | <code>fill = &#34;status_bar&#34;, border = { width = 1, sides = &#34;bottom&#34; }</code> |
-| <code>tab</code> | A tab in the tab bar, named for its document. Its secondary colour marks a tab with unsaved edits, and its padding sets the bar's height. min_width and max_width bound its width in a bar at the top or bottom; tab_width = "fill" ignores max_width. Its sides turn with the bar, as tab_bar's do. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding, min_width, max_width | <code>text = &#34;muted&#34;, secondary = &#34;accent&#34;, padding = { 4, 14 }, min_width = 90, max_width = 220</code> |
-| <code>tab_selected</code> | The tab shown. Starts from <code>tab</code>. | shape, radius, fill, border, shadow, opacity, draw, text, secondary, bold, padding, min_width, max_width | <code>fill = &#34;background&#34;, border = { width = 2, color = &#34;accent&#34;, sides = &#34;bottom&#34; }, secondary = &#34;accent&#34;, padding = { 4, 14 }, min_width = 90, max_width = 220</code> |
+| <code>prompt_box</code> | A prompt in a box of its own, where the prompts option places it away from the status bar. Its padding surrounds its line of text. Starts from <code>panel</code>. | shape, radius, fill, border, shadow, opacity, shader, draw, text, padding | <code>radius = 3, fill = &#34;panel&#34;, border = { width = 1 }, shadow = &#34;0 2 1 0 shadow&#34;, padding = { 6, 14 }</code> |
+| <code>cursor</code> | The text cursor in a prompt. | shape, radius, fill, border, shadow, opacity, shader, draw, width | <code>fill = &#34;accent&#34;</code> |
+| <code>input_selection</code> | Selected text in a prompt. | shape, radius, fill, border, shadow, opacity, shader, draw | <code>fill = &#34;accent/30&#34;</code> |
+| <code>input</code> | A text field a plugin's view draws. Its secondary colour is for the placeholder. Starts from <code>row</code>. | shape, radius, fill, border, shadow, opacity, shader, draw, text, secondary, bold, padding | <code>radius = 1.5, fill = &#34;background&#34;, border = { width = 1 }, padding = { 4, 6 }</code> |
+| <code>input_focused</code> | The text field typing goes to. Starts from <code>input</code>. | shape, radius, fill, border, shadow, opacity, shader, draw, text, secondary, bold, padding | <code>radius = 1.5, fill = &#34;background&#34;, border = { width = 1, color = &#34;accent&#34; }, padding = { 4, 6 }</code> |
+| <code>button_focused</code> | A button a plugin's view draws, under the pointer or with the keys, which Space or Enter clicks. Starts from <code>button</code>. | shape, radius, fill, border, shadow, opacity, shader, draw, text, secondary, bold, padding | <code>radius = 3, fill = &#34;accent/10&#34;, text = &#34;accent&#34;, bold = true, padding = { 4, 14 }</code> |
+| <code>check</code> | The mark in a checked check box, drawn in the box; a check box's box is an input. | shape, radius, fill, border, shadow, opacity, shader, draw | <code>radius = 0.75, fill = &#34;accent&#34;</code> |
+| <code>hint</code> | A link hint label. Its secondary colour is for the letters already typed. | shape, radius, fill, border, shadow, opacity, shader, draw, text, secondary, bold, padding | <code>radius = 1.5, fill = &#34;accent&#34;, text = &#34;hint_foreground&#34;, secondary = &#34;hint_foreground/55&#34;, bold = true, padding = { 2, 5 }</code> |
+| <code>overview_selection</code> | The outline around the overview's selected page; padding is its distance from the page. | shape, radius, fill, border, shadow, opacity, shader, draw, padding | <code>radius = 3, border = { width = 2.5, color = &#34;accent&#34; }, padding = 3</code> |
+| <code>link_preview</code> | The popup previewing a link's target, a rect with corners rounded by its radius. Its fill shows while the page renders. | radius, fill, border, shadow, opacity, shader, draw | <code>radius = 3, fill = &#34;page&#34;, border = { width = 1 }, shadow = &#34;0 2 1 0 shadow&#34;</code> |
+| <code>title_bar</code> | Behind the window buttons onon draws where the system draws no title bar, as on Windows. Its text colour draws the buttons' symbols. | shape, radius, fill, border, shadow, opacity, shader, draw, text | <code>fill = &#34;status_bar&#34;</code> |
+| <code>title_button</code> | A window button under the pointer, drawn a little fainter while pressed. | shape, radius, fill, border, shadow, opacity, shader, draw, text | <code>fill = &#34;foreground/15&#34;</code> |
+| <code>title_close</code> | The close button under the pointer. Starts from <code>title_button</code>. | shape, radius, fill, border, shadow, opacity, shader, draw, text | <code>fill = &#34;#c42b1c&#34;, text = &#34;#ffffff&#34;</code> |
+| <code>tab_bar</code> | onon's tab bar, where tab_bar_position puts it and tab_bar_visible shows it, wherever the system draws no tabs of its own. Its padding surrounds the tabs, margin sets it off the window's edges, gap is the space between tabs, and floating draws it over the page instead of beside it, as the status bar's does; a theme with tab_bar_style = "pill" floats its tabs as pills. In the title row, floating tabs sit their top margin below the window's top, or centred on the window's buttons if that is lower. Border sides and margins are given as for a bar at the top, and turn with the bar: its bottom is the side facing the document. | shape, radius, fill, border, shadow, opacity, shader, draw, padding, margin, gap, floating | <code>fill = &#34;status_bar&#34;, border = { width = 1, sides = &#34;bottom&#34; }</code> |
+| <code>tab</code> | A tab in the tab bar, named for its document. Its secondary colour marks a tab with unsaved edits, and its padding sets the bar's height. min_width and max_width bound its width in a bar at the top or bottom; tab_width = "fill" ignores max_width. Its sides turn with the bar, as tab_bar's do. | shape, radius, fill, border, shadow, opacity, shader, draw, text, secondary, bold, padding, min_width, max_width | <code>text = &#34;muted&#34;, secondary = &#34;accent&#34;, padding = { 4, 14 }, min_width = 90, max_width = 220</code> |
+| <code>tab_selected</code> | The tab shown. Starts from <code>tab</code>. | shape, radius, fill, border, shadow, opacity, shader, draw, text, secondary, bold, padding, min_width, max_width | <code>fill = &#34;background&#34;, border = { width = 2, color = &#34;accent&#34;, sides = &#34;bottom&#34; }, secondary = &#34;accent&#34;, padding = { 4, 14 }, min_width = 90, max_width = 220</code> |
 | <code>loader</code> | The drops bouncing on a page still rendering; its box is the page. | fill, opacity, draw | <code>fill = &#34;muted&#34;</code> |
 | <code>autoscroll_marker</code> | The marker where autoscroll started: its fill, its outline as its border, and its width. | fill, border, opacity, width, draw | <code>fill = &#34;#fafafad7&#34;, border = { width = 1.2, color = &#34;#282828e6&#34; }, width = 32</code> |
 | <code>page</code> | Each page of the document, its fill showing until the page renders. Pages turned other than by quarter turns are drawn plain. | shape, radius, fill, border, shadow | <code>fill = &#34;page&#34;, shadow = &#34;0 2 1 0 shadow&#34;</code> |
@@ -319,6 +321,42 @@ onon.theme.elements.status_left.shape = function(path, w, h)
   path:move_to(h / 2, 0):line_to(w, 0):line_to(w - h / 2, h):line_to(0, h):close()
 end
 ```
+
+#### Shaders
+
+Shaders are experimental: turn them on with `onon.options.shaders = true` and restart onon.
+
+An element's `shader` is the file of a GLSL fragment shader, beside the theme's file unless its path is absolute. It is drawn in the element's box, cut to its shape, under its fill and border, so a translucent fill tints it. It is written as a [Shadertoy](https://www.shadertoy.com) shader is, a `mainImage` giving the colour of each pixel:
+
+```glsl
+// frost.glsl: what is behind the box, softened.
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+  vec3 sum = vec3(0.0);
+  for (int i = 0; i < 16; i++) {
+    float a = float(i) * 2.39996, r = sqrt(float(i) / 16.0) * 6.0 * iScale;
+    sum += texture(iChannel0, (fragCoord + r * vec2(cos(a), sin(a))) / iResolution.xy).rgb;
+  }
+  fragColor = vec4(sum / 16.0, 1.0);
+}
+```
+
+```lua
+onon.theme.elements.panel = { shader = "frost.glsl", fill = "panel/40" }
+```
+
+`fragCoord` is in pixels from the bottom left of the box. The shader is given:
+
+| Name | Type | Holds |
+|---|---|---|
+| <code>iChannel0</code> | sampler2D | What is drawn behind the box, the box's size: `texture(iChannel0, fragCoord / iResolution.xy)` is the pixel behind this one. |
+| <code>iResolution</code> | vec3 | The box's width and height in pixels. |
+| <code>iTime</code> | float | Seconds since onon started. A shader that reads it is drawn on every frame. |
+| <code>iScale</code> | float | Pixels to the logical pixel, for sizes that keep to the display's density. |
+| <code>iRadius</code> | vec4 | The box's corner radii in pixels, clockwise from the top left. |
+| <code>iAlt</code> | float | 1 when alternate colours are on, otherwise 0. |
+| <code>iShape(coord)</code> | float | How far coord is from the edge of the element's shape in pixels, negative inside it, for a rect or pill. |
+
+The alpha the shader gives is how much of it shows, and the element's `opacity` applies to it. Shaders are experimental, and run only with `onon.options.shaders = true`, read when onon starts; until then, choosing a theme with shaders with `:theme` says they are off. They run on SDL's GPU renderer, which `renderer = "auto"` uses where it can start once shaders are on; other renderers draw the element without its shader, so give it a `fill` that stands on its own. If a shader fails to compile, the error is reported once, with the line it is on, and the element is drawn without it until the configuration changes.
 
 #### Drawing
 
