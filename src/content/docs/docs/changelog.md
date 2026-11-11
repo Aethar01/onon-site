@@ -6,6 +6,16 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.14.12
+
+Released 2026-11-11. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.12)
+
+### What's Changed
+* Let a theme see onon.options.shaders when onon starts with it by @Aethar01 in [#73](https://github.com/Aethar01/onon/pull/73)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.14.11...0.14.12
+
 ## 0.14.11
 
 Released 2026-11-11. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.11)
