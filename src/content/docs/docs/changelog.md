@@ -6,6 +6,12 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.14.8
+
+Released 2026-11-11. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.8)
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.14.7...0.14.8
+
 ## 0.14.7
 
 Released 2026-11-11. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.7)
