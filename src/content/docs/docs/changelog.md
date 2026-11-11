@@ -6,6 +6,16 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.14.10
+
+Released 2026-11-11. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.10)
+
+### What's Changed
+* Let themes draw elements with GLSL shaders, behind an experimental option by @Aethar01 in [#71](https://github.com/Aethar01/onon/pull/71)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.14.9...0.14.10
+
 ## 0.14.9
 
 Released 2026-11-11. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.9)

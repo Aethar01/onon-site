@@ -1,46 +1,46 @@
 {
-  "tag": "0.14.9",
-  "url": "https://github.com/Aethar01/onon/releases/tag/0.14.9",
+  "tag": "0.14.10",
+  "url": "https://github.com/Aethar01/onon/releases/tag/0.14.10",
   "assets": {
     "macos_amd64": {
-      "name": "onon-0.14.9-darwin-amd64.dmg",
-      "url": "https://github.com/Aethar01/onon/releases/download/0.14.9/onon-0.14.9-darwin-amd64.dmg",
-      "size": 59484843
+      "name": "onon-0.14.10-darwin-amd64.dmg",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.14.10/onon-0.14.10-darwin-amd64.dmg",
+      "size": 63176298
     },
     "macos_arm64": {
-      "name": "onon-0.14.9-darwin-arm64.dmg",
-      "url": "https://github.com/Aethar01/onon/releases/download/0.14.9/onon-0.14.9-darwin-arm64.dmg",
-      "size": 57810764
+      "name": "onon-0.14.10-darwin-arm64.dmg",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.14.10/onon-0.14.10-darwin-arm64.dmg",
+      "size": 61151341
     },
     "linux_appimage": {
-      "name": "onon-0.14.9-linux-x86_64.AppImage",
-      "url": "https://github.com/Aethar01/onon/releases/download/0.14.9/onon-0.14.9-linux-x86_64.AppImage",
-      "size": 47442424
+      "name": "onon-0.14.10-linux-x86_64.AppImage",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.14.10/onon-0.14.10-linux-x86_64.AppImage",
+      "size": 48630264
     },
     "linux_deb": {
-      "name": "onon-0.14.9-linux-x86_64.deb",
-      "url": "https://github.com/Aethar01/onon/releases/download/0.14.9/onon-0.14.9-linux-x86_64.deb",
-      "size": 39984084
+      "name": "onon-0.14.10-linux-x86_64.deb",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.14.10/onon-0.14.10-linux-x86_64.deb",
+      "size": 41369998
     },
     "linux_rpm": {
-      "name": "onon-0.14.9-linux-x86_64.rpm",
-      "url": "https://github.com/Aethar01/onon/releases/download/0.14.9/onon-0.14.9-linux-x86_64.rpm",
-      "size": 41002154
+      "name": "onon-0.14.10-linux-x86_64.rpm",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.14.10/onon-0.14.10-linux-x86_64.rpm",
+      "size": 42410485
     },
     "linux_tarball": {
-      "name": "onon-0.14.9-linux-x86_64.tar.gz",
-      "url": "https://github.com/Aethar01/onon/releases/download/0.14.9/onon-0.14.9-linux-x86_64.tar.gz",
-      "size": 39625029
+      "name": "onon-0.14.10-linux-x86_64.tar.gz",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.14.10/onon-0.14.10-linux-x86_64.tar.gz",
+      "size": 40979488
     },
     "windows_installer": {
-      "name": "onon-0.14.9-windows-amd64-installer.exe",
-      "url": "https://github.com/Aethar01/onon/releases/download/0.14.9/onon-0.14.9-windows-amd64-installer.exe",
-      "size": 39905443
+      "name": "onon-0.14.10-windows-amd64-installer.exe",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.14.10/onon-0.14.10-windows-amd64-installer.exe",
+      "size": 49247043
     },
     "windows_zip": {
-      "name": "onon-0.14.9-windows-amd64.zip",
-      "url": "https://github.com/Aethar01/onon/releases/download/0.14.9/onon-0.14.9-windows-amd64.zip",
-      "size": 51563961
+      "name": "onon-0.14.10-windows-amd64.zip",
+      "url": "https://github.com/Aethar01/onon/releases/download/0.14.10/onon-0.14.10-windows-amd64.zip",
+      "size": 66463404
     }
   },
   "date": "2026-11-11"
