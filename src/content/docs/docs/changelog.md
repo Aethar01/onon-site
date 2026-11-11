@@ -6,6 +6,17 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.14.6
+
+Released 2026-11-11. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.6)
+
+### What's Changed
+* Resize a view in place, and render a background page ahead of drawing it by @Aethar01 in [#67](https://github.com/Aethar01/onon/pull/67)
+* Keep a page's shadow off the other pages by @Aethar01 in [#68](https://github.com/Aethar01/onon/pull/68)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.14.5...0.14.6
+
 ## 0.14.4
 
 Released 2026-11-10. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.4)
