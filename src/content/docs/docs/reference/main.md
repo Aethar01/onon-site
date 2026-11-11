@@ -32,12 +32,13 @@ Assign options with `onon.options.<name> = <value>` in Lua or `:set <name>=<valu
 | <code>hint_chars</code> | string | <code>&#34;asdfghjkl&#34;</code> | Characters used for link hint labels, in order of preference. |
 | <code>http_headers</code> | table | <code>{}</code> | Headers sent when fetching remote documents, by host, host:port or *.domain, such as an API token; :set shows only their names. |
 | <code>invert_scroll</code> | table | <code>{ mouse = false, trackpad = false }</code> | Invert horizontal and vertical wheel scrolling for selected inputs; true or false sets both, and a table updates only the mouse and trackpad fields it names. |
+| <code>jump_list_max</code> | integer | <code>100</code> | Maximum places a jump list keeps, the oldest dropped first; 0 keeps them all. |
 | <code>link_preview</code> | boolean | <code>true</code> | Preview the destination of an internal link after hovering it briefly. |
 | <code>link_preview_delay_ms</code> | integer | <code>400</code> | Milliseconds to hover an internal link before its preview appears. |
 | <code>link_schemes</code> | table | <code>{&#34;http&#34;, &#34;https&#34;, &#34;mailto&#34;}</code> | URI schemes that document links may open externally; other links only show their target. |
 | <code>loading_indicator</code> | boolean | <code>true</code> | Animate a loading indicator on pages still rendering for the first time. |
 | <code>max_zoom</code> | number | <code>8</code> | Maximum manual zoom scale. |
-| <code>menus</code> | table | <code>{}</code> | Where onon's own menus sit, by name, such as { outline = { anchor = "left", width = "40%" } }: each takes width and height, the most of the window it takes, in logical pixels or a percentage, and anchor, as views do, or beside, for a menu opened over another, beside the row it was opened from, as keybind_keys and printers are unless set. Menus: annotation, choice, colors, help, keybind_keys, keybinds, matches, options, outline, print, printers, recent, tabs, themes. |
+| <code>menus</code> | table | <code>{}</code> | Where onon's own menus sit, by name, such as { outline = { anchor = "left", width = "40%" } }: each takes width and height, the most of the window it takes, in logical pixels or a percentage, and anchor, as views do, or beside, for a menu opened over another, beside the row it was opened from, as keybind_keys and printers are unless set. Menus: annotation, choice, colors, help, jumps, keybind_keys, keybinds, matches, options, outline, print, printers, recent, tabs, themes. |
 | <code>min_zoom</code> | number | <code>0.5</code> | Minimum manual zoom scale. |
 | <code>mouse_text_select</code> | boolean | <code>true</code> | Enable text selection with the left mouse button. |
 | <code>mupdf_store_mb</code> | integer | <code>256</code> | MuPDF cache for fonts and decoded images in MiB; applies to newly opened documents. |
@@ -392,7 +393,7 @@ Keys in a system's own column are bound there as well as the default keys.
 | <code>fit_width</code> | <code>a</code> |  |  |  | false |
 | <code>fit_page</code> | <code>s</code> |  |  |  | false |
 | <code>fit_height</code> | <code>S</code> |  |  |  | false |
-| <code>reload_config</code> | <code>&lt;C-S-r&gt;</code> |  |  |  | false |
+| <code>reload_config</code> | <code>&lt;C-S-r&gt;</code> | <code>&lt;D-S-r&gt;</code> |  |  | false |
 | <code>open_config</code> |  | <code>&lt;D-,&gt;</code> |  |  | false |
 | <code>rotate_cw</code> | <code>r</code> |  |  |  | true |
 | <code>rotate_ccw</code> | <code>R</code> |  |  |  | true |
@@ -410,8 +411,8 @@ Keys in a system's own column are bound there as well as the default keys.
 | <code>cut</code> | <code>&lt;C-x&gt;</code> | <code>&lt;D-x&gt;</code> |  |  | false |
 | <code>paste</code> | <code>&lt;C-v&gt;</code> | <code>&lt;D-v&gt;</code> |  |  | false |
 | <code>close</code> | <code>&lt;Esc&gt;</code> |  |  |  | false |
-| <code>jump_forward</code> | <code>&lt;C-i&gt;</code> | <code>&lt;D-]&gt;</code> | <code>&lt;A-Right&gt;</code> | <code>&lt;A-Right&gt;</code> | true |
-| <code>jump_backward</code> | <code>&lt;C-o&gt;</code> | <code>&lt;D-[&gt;</code> | <code>&lt;A-Left&gt;</code> | <code>&lt;A-Left&gt;</code> | true |
+| <code>jump_forward</code> | <code>&lt;C-i&gt;</code> | <code>&lt;D-]&gt;</code>, <code>&lt;A-Right&gt;</code> | <code>&lt;A-Right&gt;</code> | <code>&lt;A-Right&gt;</code> | true |
+| <code>jump_backward</code> | <code>&lt;C-o&gt;</code> | <code>&lt;D-[&gt;</code>, <code>&lt;A-Left&gt;</code> | <code>&lt;A-Left&gt;</code> | <code>&lt;A-Left&gt;</code> | true |
 | <code>open_file_picker</code> | <code>&lt;C-S-o&gt;</code> | <code>&lt;D-o&gt;</code> |  |  | false |
 | <code>show_recent_files</code> | <code>gr</code> |  |  |  | false |
 | <code>save</code> | <code>&lt;C-s&gt;</code> | <code>&lt;D-s&gt;</code> |  |  | false |
@@ -497,7 +498,8 @@ On macOS, prompts also edit as Mac text fields do: Option with Left, Right, Back
 
 | Command | Description |
 |---|---|
-| <code>:back</code> | Jump back to the previous position |
+| <code>:jumps</code> | List the places of the jump list, to go to one |
+| <code>:back</code> | Jump back to the previous position, in this document or the one before it |
 | <code>:check-updates</code> | Check GitHub for a newer release and say how to upgrade |
 | <code>:colors normal&#124;alt</code> | Set color mode |
 | <code>:config</code> | Open the config file in a text editor, creating it if there is none |
