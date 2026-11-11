@@ -1553,6 +1553,7 @@ Every table onon gives Lua code or takes from it, with its fields. A type such a
 |---|---|---|
 | <code>os</code> | string | `linux`, `macos` or `windows`. |
 | <code>arch</code> | string | The processor architecture, as Go names it: `amd64`, `arm64` and so on. |
+| <code>hostname</code> | string | The machine's name, up to its first dot; empty when the system gives none. |
 | <code>home_dir</code> | string | The user's home directory. |
 | <code>config_dir</code> | string | The directory onon reads `config.lua` from. |
 | <code>data_dir</code> | string | onon's data directory. |
