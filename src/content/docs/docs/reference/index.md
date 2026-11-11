@@ -1,6 +1,6 @@
 ---
 title: "Reference"
-description: "Every option, command, Lua function, key and action in onon 0.14.5."
+description: "Every option, command, Lua function, key and action in onon 0.14.6."
 editUrl: false
 ---
 
@@ -150,7 +150,7 @@ Colours are `"#RRGGBB"` or `{ r, g, b }`. The `alt` table holds the colours used
 | <code>tab_bar_style</code> | string | <code>&#34;bar&#34;</code> | Tab bar layout: bar, along the window's edge, or pill, tabs floating over the page as pills. |
 | <code>motion.scale</code> | number | <code>1</code> | Speed of every animation: 1 as given, 2 twice as slow, 0 for no motion at all. |
 | <code>motion.force_reduced</code> | boolean | <code>false</code> | Use reduced motion whether or not the OS asks for less motion. |
-| <code>motion.panel</code> | motion | <code>&#34;fade 120ms ease-out&#34;</code> | Menus, panels and completion opening and closing. A slide comes in from the side the view is anchored to. |
+| <code>motion.panel</code> | motion | <code>&#34;fade 120ms ease-out&#34;</code> | Menus, panels and completion opening and closing. A slide comes in from the side the view is anchored to. A view given another size glides to it in the time it takes to open. |
 | <code>motion.rows</code> | motion | <code>&#34;none&#34;</code> | A list's rows as its view opens and closes, one after another with stagger. |
 | <code>motion.selection</code> | motion | <code>&#34;glide 80ms ease-out&#34;</code> | The selected row's highlight moving to another row: glide moves it there, other tracks bring the new one in and take the old one out. |
 | <code>motion.overview_selection</code> | motion | <code>&#34;glide 80ms ease-out&#34;</code> | The outline round the overview's selected page moving to another, as selection does. |
@@ -1936,6 +1936,7 @@ A document `onon.load_document` loaded without a tab, to read or draw a file oth
 | <code>page_info(page)</code> | function | Returns [Page info](#page-info) for a 1-based page. |
 | <code>page_text(page, callback)</code> | function | Reads a page's text asynchronously, as `plugin.document:page_text` does. Returns a [Handle](#handle). |
 | <code>page_links(page, callback)</code> | function | Reads a page's links asynchronously, as `plugin.document:page_links` does. Returns a [Handle](#handle). |
+| <code>prepare_page(page, width [, callback])</code> | function | Renders a 1-based page ahead of drawing it, as sharp as `canvas:document_page` draws it `width` logical pixels wide in this window, so that it is there the first time it is drawn rather than the page's colour. The callback, if given, is called with a [Page prepared result](#page-prepared-result) once it is rendered, straight away if it already is. With a callback, returns a [Handle](#handle). |
 | <code>close()</code> | function | Closes it, with the pages drawn of it. |
 
 #### Background document result
@@ -1947,6 +1948,16 @@ What `onon.load_document`'s callback is given. `success` is whether it opened.
 | Field | Type | Description |
 |---|---|---|
 | <code>page_count</code> | integer | Its number of pages; 0 if it failed. |
+
+#### Page prepared result
+
+**Source:** background document `prepare_page()` callback
+
+What a background document's `prepare_page` callback is given. `success` is whether the page is rendered.
+
+| Field | Type | Description |
+|---|---|---|
+| <code>page</code> | integer | The 1-based page. |
 
 #### Page text result
 
@@ -2123,7 +2134,7 @@ Create views with `local view = onon.ui.create(spec)`, then call `view:show()`. 
 | `dock` | `left`, `right`, `top` or `bottom`: a panel against that side of the window, its `width` or `height` taken from the document, which lays itself out beside it. Panels docked to the same side stack inwards in the order they open. |
 | `order` | For a docked view: where it sits among the bars and docked views along the window's edges, each taking its side of what those of lower order leave. The status bar is 10 (`status_bar_order`), the tab bar 20 (`tab_bar_order`) and docked views 30 unless they say, so by default a view docked at the bottom sits above the status bar, and one docked at the left stops at it; with `order = 0` it takes its side of the whole window. |
 | `motion` | How the view moves: an animation for it to come in and go with, or a table of `enter` and `exit` for it and `rows`, `selection` and `cursor` for what moves in it, over the theme's `motion`, as `motion = { enter = "slide 200ms", rows = "fade 80ms stagger:10ms" }`. |
-| `resizable` | For a docked view: its inner edge can be dragged to resize it. `view:size()` gives a view's width and height. |
+| `resizable` | For a docked view: its inner edge can be dragged to resize it. `view:size()` gives a view's width and height, and `view:set_size(width, height)` gives any view another where it is, without closing it, gliding there as its panel's motion times its opening, each as `width` and `height` are written and kept if nil. |
 
 ### Lists
 
@@ -2171,7 +2182,7 @@ A row is a string, its text, or a table of these fields. Other fields are the pl
 | <code>canvas:clip(x, y, w, h)</code> | Nothing; limits what is drawn after to the rect, until `canvas:clip()`. |
 | <code>canvas:image(path, x, y [, w [, h]])</code> | A PNG, JPEG, GIF, WebP or BMP file, a path not absolute being from the configuration's directory, at its size in logical pixels, or a width or height given, keeping its proportions if only one is. It reloads when the file changes. Returns its width and height. |
 | <code>canvas:page(page, x, y, w [, h [, area]])</code> | The page, turned as the document's are: its thumbnail fitted to the width, or within the width and height, rendering as it is first drawn. With `area`, `{ x =, y = [, zoom =] }`, the part of the page from that point, in its points, at the box's top left, at `zoom` times the document's zoom (1 unless set), drawn sharp from the page's tiles; it needs a height. Returns its width and height. |
-| <code>canvas:document_page(doc, page, x, y, w [, h])</code> | A page of a [Background document](#background-document), fitted to the width, or within the width and height, upright: the page's colour until it renders, which it does once first drawn, and nothing for a page it does not have or a document that failed to open. Returns its width and height. |
+| <code>canvas:document_page(doc, page, x, y, w [, h])</code> | A page of a [Background document](#background-document), fitted to the width, or within the width and height, upright: the page's colour until it renders, which it does once first drawn or once the document's `prepare_page` asks, cut to the corners of a panel whose corners are round, and nothing for a page it does not have or a document that failed to open. Returns its width and height. |
 | <code>canvas:animate(key, target [, animation])</code> | Nothing; returns where the value named `key` is on its way to `target`, gliding as the animation's timing says, `"200ms ease-out"` unless given; a value not asked for on the frame before is at its target. Return true from the draw function while it moves. |
 | <code>canvas:region(id, x, y, w, h)</code> | Nothing; names the rect for the pointer events over it, which carry the id. Returns whether the pointer is over it, for drawing it hovered. |
 | <code>canvas:input(id, x, y, w [, options])</code> | The text field `id`, `w` wide, with options `placeholder`, `secret` (bullets for a password) and `lines` (more than one wraps and takes newlines). Returns its width and height. See [Typing](#typing). |
@@ -2222,7 +2233,7 @@ Everything a canvas draws out of sight, below or above what shows of the body, i
 | `on_mouse(event)` | For the pointer over the view, and after a press on it until the release; returning true keeps the view from handling it. `event.type` is `press`, `release`, `move`, `leave` or `wheel`; `event.x` and `event.y` are logical pixels from the top left of what the body draws, scrolled; `event.region` is the id of the region there; a press or release has `button` (`left`, `middle`, `right`, `x1` or `x2`) and a press `clicks`; a wheel has `dx` and `dy`, positive to the right and down. A press on a text field, button or check box goes to it instead. |
 | `on_close()` | When the view closes: by `view:close()` or, for a menu, the user, another menu replacing it, or the document closing. |
 
-View methods are `show()`, `close()`, `visible()`, `redraw()`, `size()`, `focus()`, `blur()`, `focused()`, `set_title(title)`, `set_detail(detail)`, `set_rows(rows)`, `set_selected(index)`, `set_scroll(scroll)`, `set_query(query)`, `field(id)`, `fields()`, `set_field(id, text)`, `edit_row(index)`, `selected()`, `scroll()`, and `query()`. Selection indices are 1-based, with 0 meaning no selection. A drawn body's scroll is in logical pixels, a list's in rows. Once a view closes, its methods read the state it closed with, as `on_close` does, until it is shown again from its spec.
+View methods are `show()`, `close()`, `visible()`, `redraw()`, `size()`, `set_size(width, height)`, `focus()`, `blur()`, `focused()`, `set_title(title)`, `set_detail(detail)`, `set_rows(rows)`, `set_selected(index)`, `set_scroll(scroll)`, `set_query(query)`, `field(id)`, `fields()`, `set_field(id, text)`, `edit_row(index)`, `selected()`, `scroll()`, and `query()`. Selection indices are 1-based, with 0 meaning no selection. A drawn body's scroll is in logical pixels, a list's in rows. Once a view closes, its methods read the state it closed with, as `on_close` does, until it is shown again from its spec.
 
 ```lua
 -- A sidebar of page thumbnails, docked left and resizable; clicking one
