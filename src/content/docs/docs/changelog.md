@@ -6,6 +6,16 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.14.15
+
+Released 2026-11-12. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.15)
+
+### What's Changed
+* Make movement feel consistent, and give glass liquid motion by @Aethar01 in [#76](https://github.com/Aethar01/onon/pull/76)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.14.14...0.14.15
+
 ## 0.14.14
 
 Released 2026-11-12. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.14)
