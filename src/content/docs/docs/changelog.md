@@ -6,6 +6,16 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.14.13
+
+Released 2026-11-12. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.13)
+
+### What's Changed
+* Make theme shaders cheap to draw by @Aethar01 in [#74](https://github.com/Aethar01/onon/pull/74)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.14.12...0.14.13
+
 ## 0.14.12
 
 Released 2026-11-11. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.12)
