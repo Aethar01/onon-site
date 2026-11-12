@@ -1,6 +1,6 @@
 ---
 title: "Reference"
-description: "Every option, command, Lua function, key and action in onon 0.14.14."
+description: "Every option, command, Lua function, key and action in onon 0.14.15."
 editUrl: false
 ---
 
@@ -156,13 +156,16 @@ Colours are `"#RRGGBB"` or `{ r, g, b }`. The `alt` table holds the colours used
 | <code>motion.force_reduced</code> | boolean | <code>false</code> | Use reduced motion whether or not the OS asks for less motion. |
 | <code>motion.panel</code> | motion | <code>&#34;fade 120ms ease-out&#34;</code> | Menus, panels and completion opening and closing. A slide comes in from the side the view is anchored to. A view given another size glides to it in the time it takes to open. |
 | <code>motion.rows</code> | motion | <code>&#34;none&#34;</code> | A list's rows as its view opens and closes, one after another with stagger. |
-| <code>motion.selection</code> | motion | <code>&#34;glide 80ms ease-out&#34;</code> | The selected row's highlight moving to another row: glide moves it there, other tracks bring the new one in and take the old one out. |
-| <code>motion.overview_selection</code> | motion | <code>&#34;glide 80ms ease-out&#34;</code> | The outline round the overview's selected page moving to another, as selection does. |
-| <code>motion.prompt</code> | motion | <code>&#34;glide 100ms ease-out&#34;</code> | The sides of the status bar growing and shrinking with their text, as a pill does when a prompt opens; only its timing and glide count. |
+| <code>motion.selection</code> | motion | <code>&#34;glide 80ms ease-out&#34;</code> | The selected row's highlight moving to another row: glide moves it there, other tracks bring the new one in and take the old one out. keys, set by name, is its move when the pointer did not make it, as change unless set; press, its tracks as Enter or the pointer holds it down, and the row is then chosen as they are let go. |
+| <code>motion.overview_selection</code> | motion | <code>&#34;glide 80ms ease-out&#34;</code> | The outline round the overview's selected page moving to another, as selection does, keys too. |
+| <code>motion.prompt</code> | motion | <code>&#34;glide 100ms ease-out&#34;</code> | The sides of the status bar growing and shrinking with their text, as a pill does when a prompt opens or a message comes; only its timing, glide and stretch count, a stretch thinning a side as it grows fast and swelling it as a spring brings it back. |
 | <code>motion.message</code> | motion | <code>&#34;fade 150ms ease-out&#34;</code> | Status messages coming in, and going once cleared. |
 | <code>motion.cursor</code> | motion | <code>&#34;glide 50ms ease-out&#34;</code> | The text cursor moving, as selection does. |
-| <code>motion.edges</code> | motion | <code>&#34;slide 160ms ease-out&#34;</code> | The status bar, tab bar and docked views coming in along the window's edges as they are shown and going as they are hidden, the page moving with them only where it must. The timing moves the page; the tracks follow it, a slide by default. |
+| <code>motion.edges</code> | motion | <code>&#34;slide 160ms ease-out&#34;</code> | The status bar, tab bar and docked views coming in along the window's edges as they are shown and going as they are hidden, the page moving with them only where it must. The timing moves the page; the tracks follow it, a slide by default. A stretch stretches them a little the way they go, thinning them across, and swells them as a spring brings them back. |
 | <code>motion.title_bar</code> | motion | <code>&#34;fade 160ms linear&#34;</code> | The window's buttons over the page appearing as the pointer reaches the top of the window. |
+| <code>motion.tab_selection</code> | motion | <code>&#34;glide 120ms ease-out&#34;</code> | The shown tab's highlight moving to the tab shown next, as selection does: glide moves it there, each tab's own box clearing as it passes over, and other tracks bring the new one in and take the old one out. press, set by name, is a tab held down by the pointer, shown as it is let go. |
+| <code>motion.hover</code> | motion | <code>&#34;fade 100ms ease-out&#34;</code> | A tab taking its hovered look as the pointer comes onto it, and losing it as the pointer goes; only its timing counts. |
+| <code>motion.document</code> | motion | <code>&#34;fade 120ms ease-out&#34;</code> | The document going as another tab's is shown, the new one coming in under it: its tracks move the one before out, towards the start of the bar when the tab shown next is after it, and the new one in from the other side; fades only the one before. |
 | <code>motion.reduced</code> | string | <code>&#34;fade&#34;</code> | The motion while motion is reduced: fade, the motion with only its fades; none; full, the motion as it is; or a motion table, over base. |
 | <code>motion.reduced.base</code> | string | <code>&#34;fade&#34;</code> | What reduced motion starts from: fade, the motion with only its fades; none; or full, the motion as it is. |
 | <code>motion.reduced.scale</code> | number | <code>nil</code> | Speed of every animation while motion is reduced; the motion's scale unless set. |
@@ -181,7 +184,7 @@ onon.theme.motion = {
 }
 ```
 
-An animation written as text is a list of words in any order: effects and tracks, a duration and then a delay, an easing, and `delay:`, `stagger:` and `from:`. `"none"` turns it off. Written with no effects or tracks, as `"140ms ease-out"`, it changes only the timing and keeps the effects it had; a duration without an easing eases as CSS does by default, with `ease`. Set for a target, it is that target's animation at each of its moments; a table of `enter`, `exit` or `change` sets them one at a time.
+An animation written as text is a list of words in any order: effects and tracks, a duration and then a delay, an easing, and `delay:`, `stagger:`, `stretch:` and `from:`. `"none"` turns it off. Written with no effects or tracks, as `"140ms ease-out"`, it changes only the timing and keeps the effects it had; a duration without an easing eases as CSS does by default, with `ease`. Set for a target, it is that target's animation at each of its moments; a table of `enter`, `exit` or `change` sets them one at a time.
 
 | Word | Meaning |
 |---|---|
@@ -195,9 +198,10 @@ An animation written as text is a list of words in any order: effects and tracks
 | `from:side` | The side `slide` and `wipe` go to: `top`, `bottom`, `left` or `right`. |
 | `140ms`, `0.14s` | The duration; a second one is the delay. |
 | `delay:40ms`, `stagger:15ms` | Wait before starting; for rows, each waits that much longer than the one before. |
+| `stretch:40ms` | For a glide: the trailing edge sets off that much after the leading one, so the thing stretches as it goes, narrowing across as a drop of liquid does, and with a springy easing wobbles as it settles. The status bar's sides and what slides along the edges stretch and swell by it too, and something growing or shrinking, as with zoom, does so across first and down that much later, as a bubble does. |
 | easings | `linear`, `ease`, `ease-in`, `ease-out`, `ease-in-out`, `cubic-bezier(x1, y1, x2, y2)`, `steps(n)`, or `spring(stiffness, damping)`, a spring that settles over the duration and overshoots when damping is low. |
 
-As a table, an animation has `duration`, `delay` and `stagger` (milliseconds, or text such as `"140ms"`), `easing` (text, or a Lua function from the time through the change, 0 to 1, to how far it is), `glide`, `effect` (text, as above), `from`, and its tracks, each a value as written after its name, `{ from, to }`, or a table with its own `duration`, `delay`, `easing` and `side`:
+As a table, an animation has `duration`, `delay`, `stagger` and `stretch` (milliseconds, or text such as `"140ms"`), `easing` (text, or a Lua function from the time through the change, 0 to 1, to how far it is), `glide`, `effect` (text, as above), `from`, and its tracks, each a value as written after its name, `{ from, to }`, or a table with its own `duration`, `delay`, `easing` and `side`:
 
 ```lua
 onon.theme.motion.panel = {
@@ -212,7 +216,7 @@ onon.theme.motion.panel = {
 }
 ```
 
-Targets: `panel` (enter, exit), `rows` (enter, exit), `selection` (change), `overview_selection` (change), `prompt` (change), `message` (enter, exit), `cursor` (change), `edges` (enter, exit), `title_bar` (enter, exit). What each moves is in the table above.
+Targets: `panel` (enter, exit), `rows` (enter, exit), `selection` (change), `overview_selection` (change), `prompt` (change), `message` (enter, exit), `cursor` (change), `edges` (enter, exit), `title_bar` (enter, exit), `tab_selection` (change), `hover` (enter, exit), `document` (change). What each moves is in the table above.
 
 `reduced` is the motion used instead when the OS asks for less motion, as macOS's Reduce motion or GNOME's animations switch do, or `force_reduced` is true. It is `"fade"` by default: the motion with only its fades, so nothing glides, slides or grows and the bars and the page do not move. `"none"` is no motion and `"full"` the motion as it is. A table is a whole motion table of its own, over its `base`, `fade` unless it says; what it leaves out comes from the base:
 
@@ -301,7 +305,8 @@ Every element starts from `shape = "rect", radius = 0, fill = "none", border = {
 | <code>title_close</code> | The close button under the pointer. Starts from <code>title_button</code>. | shape, radius, fill, border, shadow, opacity, shader, draw, text | <code>fill = &#34;#c42b1c&#34;, text = &#34;#ffffff&#34;</code> |
 | <code>tab_bar</code> | onon's tab bar, where tab_bar_position puts it and tab_bar_visible shows it, wherever the system draws no tabs of its own. Its padding surrounds the tabs, margin sets it off the window's edges, gap is the space between tabs, and floating draws it over the page instead of beside it, as the status bar's does; a theme with tab_bar_style = "pill" floats its tabs as pills. In the title row, floating tabs sit their top margin below the window's top, or centred on the window's buttons if that is lower. Border sides and margins are given as for a bar at the top, and turn with the bar: its bottom is the side facing the document. | shape, radius, fill, border, shadow, opacity, shader, draw, padding, margin, gap, floating | <code>fill = &#34;status_bar&#34;, border = { width = 1, sides = &#34;bottom&#34; }</code> |
 | <code>tab</code> | A tab in the tab bar, named for its document. Its secondary colour marks a tab with unsaved edits, and its padding sets the bar's height. min_width and max_width bound its width in a bar at the top or bottom; tab_width = "fill" ignores max_width. Its sides turn with the bar, as tab_bar's do. | shape, radius, fill, border, shadow, opacity, shader, draw, text, secondary, bold, padding, min_width, max_width | <code>text = &#34;muted&#34;, secondary = &#34;accent&#34;, padding = { 4, 14 }, min_width = 90, max_width = 220</code> |
-| <code>tab_selected</code> | The tab shown. Starts from <code>tab</code>. | shape, radius, fill, border, shadow, opacity, shader, draw, text, secondary, bold, padding, min_width, max_width | <code>fill = &#34;background&#34;, border = { width = 2, color = &#34;accent&#34;, sides = &#34;bottom&#34; }, secondary = &#34;accent&#34;, padding = { 4, 14 }, min_width = 90, max_width = 220</code> |
+| <code>tab_selected</code> | The tab shown. Its box is drawn over the tabs, gliding from tab to tab as motion's tab_selection says, each tab's own box clearing where it covers it. Starts from <code>tab</code>. | shape, radius, fill, border, shadow, opacity, shader, draw, text, secondary, bold, padding, min_width, max_width | <code>fill = &#34;background&#34;, border = { width = 2, color = &#34;accent&#34;, sides = &#34;bottom&#34; }, secondary = &#34;accent&#34;, padding = { 4, 14 }, min_width = 90, max_width = 220</code> |
+| <code>tab_hover</code> | A tab under the pointer, other than the tab shown, fading in and out as motion's hover says. Starts from <code>tab</code>. | shape, radius, fill, border, shadow, opacity, shader, draw, text, secondary, bold, padding | <code>fill = &#34;foreground/6&#34;, secondary = &#34;accent&#34;, padding = { 4, 14 }</code> |
 | <code>loader</code> | The drops bouncing on a page still rendering; its box is the page. | fill, opacity, draw | <code>fill = &#34;muted&#34;</code> |
 | <code>autoscroll_marker</code> | The marker where autoscroll started: its fill, its outline as its border, and its width. | fill, border, opacity, width, draw | <code>fill = &#34;#fafafad7&#34;, border = { width = 1.2, color = &#34;#282828e6&#34; }, width = 32</code> |
 | <code>page</code> | Each page of the document, its fill showing until the page renders. Pages turned other than by quarter turns are drawn plain. | shape, radius, fill, border, shadow | <code>fill = &#34;page&#34;, shadow = &#34;0 2 1 0 shadow&#34;</code> |
@@ -351,6 +356,7 @@ onon.theme.elements.panel = { shader = "frost.glsl", fill = "panel/40" }
 | Name | Type | Holds |
 |---|---|---|
 | <code>iChannel0</code> | sampler2D | What is drawn behind the box, the box's size: `texture(iChannel0, fragCoord / iResolution.xy)` is the pixel behind this one. |
+| <code>iBackdrop(coord)</code> | vec4 | What is drawn behind coord, in pixels from the box's bottom left, which may lie up to 32 logical pixels outside the box, as far as the window goes, for a rim that bends in what is beyond its edge. A shader that calls it is given what lies round its box as well, and then reads iChannel0 only through it. |
 | <code>iResolution</code> | vec3 | The box's width and height in pixels. |
 | <code>iTime</code> | float | Seconds since onon started, less any time shaders were held still. A shader that reads it animates, at up to `shader_fps` frames a second. |
 | <code>iScale</code> | float | Pixels to the logical pixel, for sizes that keep to the display's density. |
@@ -369,7 +375,7 @@ If a shader fails to compile, the error is reported once, with the line it is on
 
 A theme's shaders compile in the background as soon as the theme is loaded, so an element may be drawn without its shader for a moment the first time. Compiled shaders are cached in onon's cache directory and kept until unused for 30 days, so the next start does not compile them again.
 
-What a shader costs depends on what it reads. One that samples `iChannel0` needs what is behind its box copied for it, and while one is in view the whole window is drawn into a texture first. One that does not is drawn like any other box. One that reads `iTime` animates, and each frame of it draws the whole window again: `shader_fps`, 30 by default, sets the most frames a second, and `shader_fps_unfocused`, 0 by default, the most while the window does not have focus, 0 holding shaders still. A hidden, minimised or covered window animates none.
+What a shader costs depends on what it reads. One that samples `iChannel0` needs what is behind its box copied for it, and one that calls `iBackdrop` what lies round its box too, and while one is in view the whole window is drawn into a texture first. One that does not is drawn like any other box. One that reads `iTime` animates, and each frame of it draws the whole window again: `shader_fps`, 30 by default, sets the most frames a second, and `shader_fps_unfocused`, 0 by default, the most while the window does not have focus, 0 holding shaders still. A hidden, minimised or covered window animates none.
 
 #### Drawing
 
