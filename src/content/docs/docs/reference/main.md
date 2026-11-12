@@ -69,6 +69,8 @@ Assign options with `onon.options.<name> = <value>` in Lua or `:set <name>=<valu
 | <code>scroll_step</code> | integer | <code>64</code> | Keyboard and mouse scroll distance in pixels. |
 | <code>sequence_timeout_ms</code> | integer | <code>700</code> | Maximum delay between keys in a binding sequence. |
 | <code>session_database</code> | boolean | <code>true</code> | Persist per-document view state, marks, and recent files. |
+| <code>shader_fps</code> | integer | <code>30</code> | Most frames a second a theme's shader that reads iTime animates at while the window has focus; each frame draws the whole window again, so fewer cost less. 0 holds shaders still. A hidden, minimised or covered window animates none. |
+| <code>shader_fps_unfocused</code> | integer | <code>0</code> | Most frames a second shaders animate at while the window does not have focus; 0 holds them still until it does. |
 | <code>shaders</code> | boolean | <code>false</code> | Experimental: run themes' GLSL shaders. They run only on SDL's GPU renderer, which renderer "auto" then uses where it can start, so it is read when onon starts; with it off, elements are drawn without their shaders. |
 | <code>smooth_scroll</code> | table | <code>{ mouse = true, trackpad = true, keyboard = true }</code> | Animate scrolling for selected inputs; assignments update only specified mouse, trackpad, and keyboard fields. |
 | <code>smooth_scroll_dampening</code> | number | <code>0.8</code> | Catch-up factor for smooth scrolling per animation frame; higher values are more responsive and less damped; clamped to 0.01 through 1. |
@@ -350,7 +352,7 @@ onon.theme.elements.panel = { shader = "frost.glsl", fill = "panel/40" }
 |---|---|---|
 | <code>iChannel0</code> | sampler2D | What is drawn behind the box, the box's size: `texture(iChannel0, fragCoord / iResolution.xy)` is the pixel behind this one. |
 | <code>iResolution</code> | vec3 | The box's width and height in pixels. |
-| <code>iTime</code> | float | Seconds since onon started. A shader that reads it is drawn on every frame. |
+| <code>iTime</code> | float | Seconds since onon started, less any time shaders were held still. A shader that reads it animates, at up to `shader_fps` frames a second. |
 | <code>iScale</code> | float | Pixels to the logical pixel, for sizes that keep to the display's density. |
 | <code>iRadius</code> | vec4 | The box's corner radii in pixels, clockwise from the top left. |
 | <code>iAlt</code> | float | 1 when alternate colours are on, otherwise 0. |
@@ -364,6 +366,10 @@ return { elements = { panel = { shader = "frost.glsl", fill = shaders and "panel
 ```
 
 If a shader fails to compile, the error is reported once, with the line it is on, and the element is drawn without it until the configuration changes.
+
+A theme's shaders compile in the background as soon as the theme is loaded, so an element may be drawn without its shader for a moment the first time. Compiled shaders are cached in onon's cache directory and kept until unused for 30 days, so the next start does not compile them again.
+
+What a shader costs depends on what it reads. One that samples `iChannel0` needs what is behind its box copied for it, and while one is in view the whole window is drawn into a texture first. One that does not is drawn like any other box. One that reads `iTime` animates, and each frame of it draws the whole window again: `shader_fps`, 30 by default, sets the most frames a second, and `shader_fps_unfocused`, 0 by default, the most while the window does not have focus, 0 holding shaders still. A hidden, minimised or covered window animates none.
 
 #### Drawing
 
