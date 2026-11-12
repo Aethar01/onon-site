@@ -6,6 +6,16 @@ tableOfContents:
   maxHeadingLevel: 2
 ---
 
+## 0.14.14
+
+Released 2026-11-12. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.14)
+
+### What's Changed
+* Let glass see what its zoom layer holds as it moves in by @Aethar01 in [#75](https://github.com/Aethar01/onon/pull/75)
+
+
+**Full Changelog**: https://github.com/Aethar01/onon/compare/0.14.13...0.14.14
+
 ## 0.14.13
 
 Released 2026-11-12. [Downloads](https://github.com/Aethar01/onon/releases/tag/0.14.13)
